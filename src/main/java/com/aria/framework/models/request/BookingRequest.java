@@ -16,7 +16,7 @@ import java.time.LocalDate;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@SuppressFBWarnings(value = {"EI_EXPOSE_REP", "EI_EXPOSE_REP2"}, justification = "Jackson/Lombok request DTO intentionally exposes mutable nested payload fields.")
+@SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "Jackson/Lombok request DTO intentionally exposes mutable nested payload fields.")
 public class BookingRequest {
 
     private String firstname;

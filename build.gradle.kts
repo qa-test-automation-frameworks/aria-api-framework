@@ -57,7 +57,10 @@ dependencies {
 
     // Mocking and CDC Contract Testing
     testImplementation(libs.wiremock)
-    testImplementation(libs.pact.consumer.junit5)
+    testImplementation(libs.pact.consumer.junit5) {
+        exclude(group = "org.apache.commons", module = "commons-io")
+    }
+    testImplementation(libs.commons.io)
 
     // Containerization Support
     testImplementation(libs.testcontainers)
@@ -71,8 +74,50 @@ dependencies {
         implementation("org.apache.commons:commons-lang3:3.18.0") {
             because("CVE-2025-48924 affects commons-lang3 versions before 3.18.0")
         }
+        implementation("org.mozilla:rhino:1.7.14.1") {
+            because("GHSA-3w8q-xq97-5j7x affects Rhino versions before 1.7.14.1")
+        }
         testImplementation("commons-fileupload:commons-fileupload:1.6.0") {
             because("CVE-2025-48976 affects commons-fileupload versions before 1.6.0")
+        }
+        testImplementation("commons-beanutils:commons-beanutils:1.11.0") {
+            because("CVE-2025-48734 affects commons-beanutils versions before 1.11.0")
+        }
+        testImplementation("com.google.protobuf:protobuf-java:3.25.5") {
+            because("GHSA-735f-pc8j-v9w8 affects protobuf-java versions before 3.25.5")
+        }
+        testImplementation("io.netty:netty-codec:4.1.133.Final") {
+            because("Multiple Netty advisories affect the locked 4.1.87/4.1.91 modules")
+        }
+        testImplementation("io.netty:netty-codec-http:4.1.133.Final") {
+            because("Multiple Netty advisories affect the locked 4.1.87/4.1.91 modules")
+        }
+        testImplementation("io.netty:netty-codec-http2:4.1.133.Final") {
+            because("Multiple Netty advisories affect the locked 4.1.87/4.1.91 modules")
+        }
+        testImplementation("io.netty:netty-common:4.1.133.Final") {
+            because("Multiple Netty advisories affect the locked 4.1.87/4.1.91 modules")
+        }
+        testImplementation("io.netty:netty-handler:4.1.133.Final") {
+            because("Multiple Netty advisories affect the locked 4.1.87/4.1.91 modules")
+        }
+        testImplementation("io.netty:netty-handler-proxy:4.1.133.Final") {
+            because("Multiple Netty advisories affect the locked 4.1.87/4.1.91 modules")
+        }
+        testImplementation("org.apache.commons:commons-compress:1.26.0") {
+            because("Commons Compress advisories affect versions before 1.26.0")
+        }
+        testImplementation("org.apache.logging.log4j:log4j-core:2.25.4") {
+            because("Multiple Log4j Core advisories affect the locked 2.22.0 version")
+        }
+        testImplementation("org.apache.tika:tika-core:3.2.2") {
+            because("GHSA-f58c-gq56-vjjf affects tika-core versions before 3.2.2")
+        }
+        testImplementation("org.json:json:20231013") {
+            because("GHSA-4jq9-2xhw-jpx7 affects org.json versions before 20231013")
+        }
+        testImplementation("org.mozilla:rhino:1.7.14.1") {
+            because("GHSA-3w8q-xq97-5j7x affects Rhino versions before 1.7.14.1")
         }
     }
 }
