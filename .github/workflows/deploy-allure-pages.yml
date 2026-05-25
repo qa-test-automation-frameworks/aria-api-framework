@@ -1,0 +1,38 @@
+name: Deploy Allure Pages
+
+on:
+  workflow_run:
+    workflows: ["ARIA API Framework CI"]
+    branches: [main]
+    types: [completed]
+
+permissions:
+  contents: read
+  actions: read
+  pages: write
+  id-token: write
+
+jobs:
+  deploy:
+    if: github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Download Allure Pages artifact from CI run
+        uses: actions/download-artifact@v4
+        with:
+          name: github-pages
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: allure-pages
+
+      - name: Re-upload Pages artifact for this deployment run
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: allure-pages
+
+      - name: Deploy Allure report to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="620" viewBox="0 0 1120 620" role="img" aria-labelledby="title desc">
+  <title id="title">ARIA API Framework Architecture</title>
+  <desc id="desc">Layered API test automation framework from JUnit tests through services, API clients, RestAssured, diagnostics, contracts, mocks, and target APIs.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#f8fbff"/>
+      <stop offset="1" stop-color="#eef4f8"/>
+    </linearGradient>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#2c5f73"/>
+    </marker>
+    <style>
+      .title { font: 700 28px Arial, sans-serif; fill: #183642; }
+      .subtitle { font: 400 14px Arial, sans-serif; fill: #52656d; }
+      .box { fill: #ffffff; stroke: #9bb6c2; stroke-width: 1.5; rx: 8; }
+      .box-accent { fill: #e8f5f0; stroke: #4e9f7b; stroke-width: 1.5; rx: 8; }
+      .box-warn { fill: #fff6e6; stroke: #c99128; stroke-width: 1.5; rx: 8; }
+      .label { font: 700 16px Arial, sans-serif; fill: #183642; }
+      .small { font: 400 12px Arial, sans-serif; fill: #52656d; }
+      .link { font: 700 12px Arial, sans-serif; fill: #1769aa; text-decoration: underline; }
+      .line { stroke: #2c5f73; stroke-width: 2.2; fill: none; marker-end: url(#arrow); }
+      .bus { stroke: #758a92; stroke-width: 1.7; fill: none; stroke-dasharray: 6 5; marker-end: url(#arrow); }
+    </style>
+  </defs>
+  <rect width="1120" height="620" fill="url(#bg)"/>
+  <text x="48" y="54" class="title">ARIA API Framework</text>
+  <text x="48" y="80" class="subtitle">Deterministic Java 21 API testing with live opt-in, contracts, security checks, and sanitized diagnostics</text>
+
+  <a href="../Writing_Tests.md">
+    <rect x="70" y="138" width="190" height="86" class="box"/>
+    <text x="100" y="173" class="label">JUnit 5 Tests</text>
+    <text x="100" y="196" class="small">tags, schemas, SLA checks</text>
+    <text x="100" y="214" class="link">Writing tests</text>
+  </a>
+  <a href="../Configuration_Guide.md">
+    <rect x="320" y="138" width="190" height="86" class="box"/>
+    <text x="350" y="173" class="label">Base Test</text>
+    <text x="350" y="196" class="small">config, services, cleanup</text>
+    <text x="350" y="214" class="link">Configuration</text>
+  </a>
+  <a href="../ARCHITECTURE.md">
+    <rect x="570" y="138" width="190" height="86" class="box-accent"/>
+    <text x="600" y="173" class="label">Services</text>
+    <text x="600" y="196" class="small">business-level operations</text>
+    <text x="600" y="214" class="link">Architecture</text>
+  </a>
+  <rect x="820" y="138" width="190" height="86" class="box-accent"/>
+  <text x="850" y="173" class="label">API Clients</text>
+  <text x="850" y="196" class="small">RestAssured mappings</text>
+  <text x="850" y="214" class="small">retry, auth, timeouts</text>
+
+  <rect x="70" y="318" width="190" height="86" class="box"/>
+  <text x="100" y="353" class="label">Data &amp; Models</text>
+  <text x="100" y="376" class="small">Datafaker, builders, DTOs</text>
+  <text x="100" y="394" class="small">JSON Schema validation</text>
+  <a href="../CONTRACT_STRATEGY.md">
+    <rect x="320" y="318" width="190" height="86" class="box-warn"/>
+    <text x="350" y="353" class="label">Contracts</text>
+    <text x="350" y="376" class="small">Pact + OpenAPI coverage</text>
+    <text x="350" y="394" class="link">Contract strategy</text>
+  </a>
+  <a href="../SECURITY_TEST_STRATEGY.md">
+    <rect x="570" y="318" width="190" height="86" class="box-warn"/>
+    <text x="600" y="353" class="label">Owned Provider</text>
+    <text x="600" y="376" class="small">deterministic security</text>
+    <text x="600" y="394" class="link">Security strategy</text>
+  </a>
+  <a href="../Debugging_Test_Failures.md">
+    <rect x="820" y="318" width="190" height="86" class="box"/>
+    <text x="850" y="353" class="label">Diagnostics</text>
+    <text x="850" y="376" class="small">Allure, logs, redaction</text>
+    <text x="850" y="394" class="link">Debug failures</text>
+  </a>
+
+  <rect x="320" y="498" width="440" height="70" class="box-accent"/>
+  <text x="370" y="532" class="label">Target APIs</text>
+  <text x="370" y="553" class="small">Restful Booker, GitHub REST API, Pact mocks, WireMock, Testcontainers</text>
+
+  <path d="M260 181 H310" class="line"/>
+  <path d="M510 181 H560" class="line"/>
+  <path d="M760 181 H810" class="line"/>
+  <path d="M915 224 V318" class="line"/>
+  <path d="M915 404 C915 470 760 505 760 532" class="line"/>
+  <path d="M665 224 V318" class="bus"/>
+  <path d="M415 224 V318" class="bus"/>
+  <path d="M165 224 V318" class="bus"/>
+  <path d="M260 361 H310" class="bus"/>
+  <path d="M510 361 H560" class="bus"/>
+  <path d="M760 361 H810" class="bus"/>
+</svg>

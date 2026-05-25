@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "GitHub rate limit response",
+  "type": "object",
+  "required": ["resources"],
+  "properties": {
+    "resources": {
+      "type": "object",
+      "required": ["core"],
+      "properties": {
+        "core": { "$ref": "#/definitions/rateLimit" },
+        "search": { "$ref": "#/definitions/rateLimit" }
+      }
+    }
+  },
+  "definitions": {
+    "rateLimit": {
+      "type": "object",
+      "required": ["limit", "remaining", "reset", "used"],
+      "properties": {
+        "limit": { "type": "integer" },
+        "remaining": { "type": "integer" },
+        "reset": { "type": "integer" },
+        "used": { "type": "integer" }
+      }
+    }
+  }
+}

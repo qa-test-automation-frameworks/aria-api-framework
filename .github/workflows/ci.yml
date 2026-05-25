@@ -1,0 +1,209 @@
+name: ARIA API Framework CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: '17 3 * * 1'
+  workflow_dispatch:
+    inputs:
+      env:
+        description: Target environment
+        required: true
+        default: dev
+        type: choice
+        options:
+          - dev
+          - staging
+          - prod
+
+permissions:
+  contents: read
+
+jobs:
+  osv-scan:
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    uses: google/osv-scanner-action/.github/workflows/osv-scanner-reusable.yml@v2.3.8
+    with:
+      scan-args: |-
+        --recursive
+        ./
+
+  dependency-review:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Dependency vulnerability review
+        uses: actions/dependency-review-action@v4
+
+  test:
+    runs-on: ubuntu-latest
+    env:
+      ENV: ${{ inputs.env || 'dev' }}
+      GITHUB_TOKEN: ${{ secrets.ARIA_GITHUB_TOKEN }}
+      pact_do_not_track: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: gradle
+
+      - name: Validate Gradle wrapper
+        uses: gradle/actions/wrapper-validation@v4
+
+      - name: Run Gradle quality gate
+        run: ./gradlew clean check securityScan allureReport -Denv=${ENV} --parallel
+
+      - name: Upload SBOM
+        uses: actions/upload-artifact@v4
+        with:
+          name: cyclonedx-sbom
+          path: build/reports/cyclonedx/**
+
+      - name: Upload failure artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: aria-test-artifacts
+          path: |
+            build/reports
+            build/test-results
+            build/allure-results
+            build/logs
+            build/reports/spotbugs
+            build/reports/openapi-coverage.md
+            build/reports/cyclonedx
+
+      - name: Upload OpenAPI coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: openapi-coverage
+          path: build/reports/openapi-coverage.md
+
+      - name: Upload quality reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: quality-reports
+          path: |
+            build/reports/openapi-coverage.md
+            build/reports/security-scan.md
+            build/reports/test-duration-report.md
+            build/reports/spotbugs/**
+
+      - name: Upload Pact contracts
+        uses: actions/upload-artifact@v4
+        with:
+          name: pact-contracts
+          path: build/pacts/**
+
+      - name: Upload Allure report artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/reports/allure-report/allureReport
+
+  container-test:
+    runs-on: ubuntu-latest
+    env:
+      ENV: ${{ inputs.env || 'dev' }}
+      pact_do_not_track: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: gradle
+
+      - name: Run Docker-backed container tests
+        run: ./gradlew containerTest -Denv=${ENV}
+
+  quality-gate:
+    if: always()
+    needs:
+      - test
+      - osv-scan
+      - container-test
+      - dependency-review
+    runs-on: ubuntu-latest
+    env:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+    steps:
+      - name: Verify required quality gates
+        run: |
+          set -euo pipefail
+          test_result='${{ needs.test.result }}'
+          osv_result='${{ needs.osv-scan.result }}'
+          container_result='${{ needs.container-test.result }}'
+          dependency_review_result='${{ needs.dependency-review.result }}'
+
+          echo "test=${test_result}"
+          echo "osv-scan=${osv_result}"
+          echo "container-test=${container_result}"
+          echo "dependency-review=${dependency_review_result}"
+
+          if [ "${test_result}" != "success" ]; then
+            exit 1
+          fi
+          if [ "${osv_result}" != "success" ]; then
+            exit 1
+          fi
+          if [ "${container_result}" != "success" ]; then
+            exit 1
+          fi
+          if [ "${dependency_review_result}" != "success" ] && [ "${dependency_review_result}" != "skipped" ]; then
+            exit 1
+          fi
+
+      - name: Notify Slack on failure
+        if: failure() && env.SLACK_WEBHOOK_URL != ''
+        run: |
+          curl -X POST -H 'Content-type: application/json' \
+            --data "{\"text\":\"ARIA API Framework CI failed for ${GITHUB_REPOSITORY}@${GITHUB_SHA}: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}\"}" \
+            "${SLACK_WEBHOOK_URL}"
+
+  live-smoke:
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    env:
+      ENV: dev
+      GITHUB_TOKEN: ${{ secrets.ARIA_GITHUB_TOKEN }}
+      BOOKER_USERNAME: ${{ secrets.BOOKER_USERNAME }}
+      BOOKER_PASSWORD: ${{ secrets.BOOKER_PASSWORD }}
+      pact_do_not_track: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: gradle
+
+      - name: Validate live smoke credentials
+        run: |
+          set -euo pipefail
+          test -n "${BOOKER_USERNAME}"
+          test -n "${BOOKER_PASSWORD}"
+
+      - name: Run scheduled live smoke tests
+        run: ./gradlew liveSmokeTest -Denv=${ENV}

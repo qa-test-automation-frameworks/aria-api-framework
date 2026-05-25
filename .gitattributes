@@ -1,0 +1,11 @@
+* text=auto eol=lf
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+/build export-ignore
+/.gradle export-ignore
+/.idea export-ignore
+/.codegraph export-ignore
+/.playwright-mcp export-ignore
+/allure-overview.png export-ignore
+*.iml export-ignore

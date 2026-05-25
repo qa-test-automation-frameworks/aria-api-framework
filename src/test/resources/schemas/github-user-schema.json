@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "GitHub user response",
+  "type": "object",
+  "required": ["login", "id", "type", "public_repos"],
+  "properties": {
+    "login": { "type": "string" },
+    "id": { "type": "integer" },
+    "type": { "type": "string" },
+    "public_repos": { "type": "integer" }
+  }
+}
