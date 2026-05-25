@@ -112,19 +112,19 @@ public final class ConfigManager {
             environment,
             resolveBaseUrl(config),
             firstNonBlank(
-                firstNonBlank(System.getenv("GITHUB_BASE_URL"), System.getProperty("github.base.url")),
+                firstNonBlank(System.getProperty("github.base.url"), System.getenv("GITHUB_BASE_URL")),
                 config.githubBaseUrl()
             ),
             firstNonBlank(
-                firstNonBlank(System.getenv("GITHUB_TOKEN"), System.getProperty("github.token")),
+                firstNonBlank(System.getProperty("github.token"), System.getenv("GITHUB_TOKEN")),
                 config.githubToken()
             ),
             firstNonBlank(
-                firstNonBlank(System.getenv("BOOKER_USERNAME"), System.getProperty("booker.username")),
+                firstNonBlank(System.getProperty("booker.username"), System.getenv("BOOKER_USERNAME")),
                 config.bookerUsername()
             ),
             firstNonBlank(
-                firstNonBlank(System.getenv("BOOKER_PASSWORD"), System.getProperty("booker.password")),
+                firstNonBlank(System.getProperty("booker.password"), System.getenv("BOOKER_PASSWORD")),
                 config.bookerPassword()
             ),
             intFromOverride("TIMEOUT_SECONDS", "timeout.seconds", config.timeoutSeconds()),
@@ -137,12 +137,12 @@ public final class ConfigManager {
     }
 
     private static String resolveBaseUrl(EnvironmentConfig config) {
-        String bookingAlias = firstNonBlank(
-            System.getenv("BOOKING_BASE_URL"),
-            System.getProperty("booking.base.url")
+        String systemPropertyOverride = firstNonBlank(
+            System.getProperty("booking.base.url"),
+            System.getProperty("base.url")
         );
         return firstNonBlank(
-            firstNonBlank(bookingAlias, System.getProperty("base.url")),
+            firstNonBlank(systemPropertyOverride, System.getenv("BOOKING_BASE_URL")),
             config.baseUrl()
         );
     }
@@ -164,12 +164,12 @@ public final class ConfigManager {
     }
 
     private static int intFromOverride(String envKey, String propertyKey, int defaultValue) {
-        String override = firstNonBlank(System.getenv(envKey), System.getProperty(propertyKey));
+        String override = firstNonBlank(System.getProperty(propertyKey), System.getenv(envKey));
         return override == null ? defaultValue : Integer.parseInt(override);
     }
 
     private static long longFromOverride(String envKey, String propertyKey, long defaultValue) {
-        String override = firstNonBlank(System.getenv(envKey), System.getProperty(propertyKey));
+        String override = firstNonBlank(System.getProperty(propertyKey), System.getenv(envKey));
         return override == null ? defaultValue : Long.parseLong(override);
     }
 
