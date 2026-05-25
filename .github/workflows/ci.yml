@@ -70,14 +70,14 @@ jobs:
         run: ./gradlew clean check securityScan allureReport -Denv=${ENV} --parallel
 
       - name: Upload SBOM
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: cyclonedx-sbom
           path: build/reports/cyclonedx/**
 
       - name: Upload failure artifacts
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: aria-test-artifacts
           path: |
@@ -90,13 +90,13 @@ jobs:
             build/reports/cyclonedx
 
       - name: Upload OpenAPI coverage
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: openapi-coverage
           path: build/reports/openapi-coverage.md
 
       - name: Upload quality reports
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: quality-reports
           path: |
@@ -106,7 +106,7 @@ jobs:
             build/reports/spotbugs/**
 
       - name: Upload Pact contracts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: pact-contracts
           path: build/pacts/**
