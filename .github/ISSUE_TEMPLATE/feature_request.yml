@@ -1,0 +1,27 @@
+name: Feature request
+description: Propose a framework capability, test coverage expansion, or documentation improvement.
+title: "[Feature]: "
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What testing, reporting, configuration, or CI gap does this address?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal
+      description: Describe the expected behavior, API, docs, or workflow change.
+    validations:
+      required: true
+  - type: textarea
+    id: validation
+    attributes:
+      label: Validation
+      description: Which tests, reports, or examples should prove this is done?
+    validations:
+      required: false

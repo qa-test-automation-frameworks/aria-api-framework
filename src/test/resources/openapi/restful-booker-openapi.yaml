@@ -1,0 +1,317 @@
+openapi: 3.0.3
+info:
+  title: Restful Booker API subset
+  version: 1.0.0
+servers:
+  - url: https://restful-booker.herokuapp.com
+paths:
+  /auth:
+    post:
+      operationId: createAuthToken
+      summary: Create an auth token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthRequest'
+      responses:
+        '200':
+          description: Token issued or invalid credentials reported by the demo provider
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/AuthResponse'
+                  - $ref: '#/components/schemas/ErrorResponse'
+  /ping:
+    get:
+      operationId: ping
+      summary: Health check
+      responses:
+        '201':
+          description: Provider is reachable
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Created
+  /booking:
+    get:
+      operationId: listBookingIds
+      summary: List booking ids
+      responses:
+        '200':
+          description: Booking id list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookingIdList'
+    post:
+      operationId: createBooking
+      summary: Create a booking
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookingRequest'
+      responses:
+        '200':
+          description: Created booking envelope
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookingEnvelope'
+        '400':
+          description: Invalid or unsafe request body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    options:
+      operationId: bookingOptions
+      summary: Discover supported booking collection methods
+      responses:
+        '204':
+          description: Allowed methods and CORS metadata
+          headers:
+            Allow:
+              schema:
+                type: string
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+  /booking/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+    get:
+      operationId: getBooking
+      summary: Get a booking
+      responses:
+        '200':
+          description: Booking details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+        '403':
+          description: Caller is not allowed to read the booking
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Booking does not exist
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Not Found
+    put:
+      operationId: updateBooking
+      summary: Update a booking
+      security:
+        - bookerCookie: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookingRequest'
+      responses:
+        '200':
+          description: Updated booking
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+        '403':
+          description: Missing, expired, or underprivileged token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Booking does not exist
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Not Found
+    patch:
+      operationId: partialUpdateBooking
+      summary: Partially update a booking
+      security:
+        - bookerCookie: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PartialBookingRequest'
+      responses:
+        '200':
+          description: Updated booking
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+        '403':
+          description: Missing, expired, or underprivileged token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Booking does not exist
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Not Found
+    delete:
+      operationId: deleteBooking
+      summary: Delete a booking
+      security:
+        - bookerCookie: []
+      responses:
+        '201':
+          description: Booking deleted
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Created
+        '403':
+          description: Missing, expired, or underprivileged token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Booking already absent
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Not Found
+components:
+  securitySchemes:
+    bookerCookie:
+      type: apiKey
+      in: cookie
+      name: token
+  schemas:
+    AuthRequest:
+      type: object
+      required: [username, password]
+      additionalProperties: false
+      properties:
+        username:
+          type: string
+          minLength: 1
+        password:
+          type: string
+          minLength: 1
+    AuthResponse:
+      type: object
+      required: [token]
+      additionalProperties: false
+      properties:
+        token:
+          type: string
+          minLength: 1
+    BookingId:
+      type: object
+      required: [bookingid]
+      additionalProperties: false
+      properties:
+        bookingid:
+          type: integer
+          minimum: 1
+    BookingIdList:
+      type: array
+      items:
+        $ref: '#/components/schemas/BookingId'
+    BookingEnvelope:
+      type: object
+      required: [bookingid, booking]
+      additionalProperties: false
+      properties:
+        bookingid:
+          type: integer
+          minimum: 1
+        booking:
+          $ref: '#/components/schemas/Booking'
+    Booking:
+      type: object
+      required: [firstname, lastname, totalprice, depositpaid, bookingdates, additionalneeds]
+      additionalProperties: false
+      properties:
+        firstname:
+          type: string
+          minLength: 1
+        lastname:
+          type: string
+          minLength: 1
+        totalprice:
+          type: integer
+          minimum: 0
+        depositpaid:
+          type: boolean
+        bookingdates:
+          $ref: '#/components/schemas/BookingDates'
+        additionalneeds:
+          type: string
+    BookingDates:
+      type: object
+      required: [checkin, checkout]
+      additionalProperties: false
+      properties:
+        checkin:
+          type: string
+          format: date
+        checkout:
+          type: string
+          format: date
+    BookingRequest:
+      allOf:
+        - $ref: '#/components/schemas/Booking'
+    PartialBookingRequest:
+      type: object
+      minProperties: 1
+      additionalProperties: false
+      properties:
+        firstname:
+          type: string
+          minLength: 1
+        lastname:
+          type: string
+          minLength: 1
+        totalprice:
+          type: integer
+          minimum: 0
+        depositpaid:
+          type: boolean
+        bookingdates:
+          $ref: '#/components/schemas/BookingDates'
+        additionalneeds:
+          type: string
+    ErrorResponse:
+      type: object
+      required: [error]
+      additionalProperties: true
+      properties:
+        error:
+          type: string
+        reason:
+          type: string

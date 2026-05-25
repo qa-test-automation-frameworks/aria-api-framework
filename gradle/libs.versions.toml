@@ -1,0 +1,52 @@
+[versions]
+allure = "2.25.0"
+allurePlugin = "2.11.2"
+assertj = "3.25.3"
+cyclonedxPlugin = "3.2.4"
+datafaker = "2.5.4"
+jackson = "2.20.1"
+junit = "5.10.2"
+lombokPlugin = "8.6"
+logback = "1.5.3"
+owner = "1.0.12"
+pact = "4.6.3"
+restassured = "5.4.0"
+slf4j = "2.0.17"
+snakeyaml = "2.2"
+spotbugs = "4.8.3"
+spotbugsPlugin = "6.0.7"
+spotless = "6.25.0"
+testcontainers = "1.19.7"
+wiremock = "3.13.2"
+
+[libraries]
+allure-java-commons = { module = "io.qameta.allure:allure-java-commons", version.ref = "allure" }
+allure-junit5 = { module = "io.qameta.allure:allure-junit5", version.ref = "allure" }
+allure-rest-assured = { module = "io.qameta.allure:allure-rest-assured", version.ref = "allure" }
+assertj = { module = "org.assertj:assertj-core", version.ref = "assertj" }
+datafaker = { module = "net.datafaker:datafaker", version.ref = "datafaker" }
+jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }
+jackson-datatype-jsr310 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jsr310", version.ref = "jackson" }
+junit-bom = { module = "org.junit:junit-bom", version.ref = "junit" }
+junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
+junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
+junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
+junit-jupiter-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "junit" }
+logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
+owner = { module = "org.aeonbits.owner:owner", version.ref = "owner" }
+pact-consumer-junit5 = { module = "au.com.dius.pact.consumer:junit5", version.ref = "pact" }
+rest-assured = { module = "io.rest-assured:rest-assured", version.ref = "restassured" }
+rest-assured-json-schema-validator = { module = "io.rest-assured:json-schema-validator", version.ref = "restassured" }
+slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
+snakeyaml = { module = "org.yaml:snakeyaml", version.ref = "snakeyaml" }
+spotbugs-annotations = { module = "com.github.spotbugs:spotbugs-annotations", version.ref = "spotbugs" }
+testcontainers = { module = "org.testcontainers:testcontainers", version.ref = "testcontainers" }
+testcontainers-junit-jupiter = { module = "org.testcontainers:junit-jupiter", version.ref = "testcontainers" }
+wiremock = { module = "org.wiremock:wiremock", version.ref = "wiremock" }
+
+[plugins]
+allure = { id = "io.qameta.allure", version.ref = "allurePlugin" }
+cyclonedx = { id = "org.cyclonedx.bom", version.ref = "cyclonedxPlugin" }
+lombok = { id = "io.freefair.lombok", version.ref = "lombokPlugin" }
+spotbugs = { id = "com.github.spotbugs", version.ref = "spotbugsPlugin" }
+spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }

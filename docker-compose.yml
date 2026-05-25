@@ -1,0 +1,17 @@
+services:
+  aria-tests:
+    build:
+      context: .
+    environment:
+      ENV: ${ENV:-dev}
+      GITHUB_TOKEN: ${GITHUB_TOKEN:-}
+      BOOKING_BASE_URL: ${BOOKING_BASE_URL:-https://restful-booker.herokuapp.com}
+      GITHUB_BASE_URL: ${GITHUB_BASE_URL:-https://api.github.com}
+      BOOKER_USERNAME: ${BOOKER_USERNAME:-}
+      BOOKER_PASSWORD: ${BOOKER_PASSWORD:-}
+      RETRY_MAX_ATTEMPTS: ${RETRY_MAX_ATTEMPTS:-3}
+      RETRY_BASE_DELAY_MS: ${RETRY_BASE_DELAY_MS:-1000}
+      RETRY_MAX_DELAY_MS: ${RETRY_MAX_DELAY_MS:-8000}
+      RETRY_JITTER_MS: ${RETRY_JITTER_MS:-250}
+    volumes:
+      - ./build:/workspace/build

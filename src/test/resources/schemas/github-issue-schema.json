@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "GitHub issue response",
+  "type": "object",
+  "required": ["id", "number", "title", "state", "url"],
+  "properties": {
+    "id": { "type": "integer" },
+    "number": { "type": "integer" },
+    "title": { "type": "string" },
+    "state": { "type": "string", "enum": ["open", "closed"] },
+    "body": { "type": ["string", "null"] },
+    "url": { "type": "string" }
+  }
+}

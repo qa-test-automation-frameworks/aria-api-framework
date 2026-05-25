@@ -1,0 +1,29 @@
+name: Bug report
+description: Report a reproducible framework or test-suite defect.
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What failed, and what did you expect instead?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduction
+      description: Include commands, environment, tags, and relevant sanitized output.
+      placeholder: |
+        .\gradlew.bat test -Denv=dev
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Java version, OS, Docker availability, and any relevant API target details.
+    validations:
+      required: false

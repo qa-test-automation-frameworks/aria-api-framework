@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "GitHub repository search response",
+  "type": "object",
+  "required": ["total_count", "incomplete_results", "items"],
+  "properties": {
+    "total_count": { "type": "integer" },
+    "incomplete_results": { "type": "boolean" },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "full_name", "private", "fork", "default_branch"],
+        "properties": {
+          "id": { "type": "integer" },
+          "name": { "type": "string" },
+          "full_name": { "type": "string" },
+          "private": { "type": "boolean" },
+          "fork": { "type": "boolean" },
+          "default_branch": { "type": "string" },
+          "visibility": { "type": "string" }
+        }
+      }
+    }
+  }
+}

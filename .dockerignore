@@ -1,0 +1,11 @@
+.gradle/
+.idea/
+build/
+out/
+bin/
+allure-results/
+allure-report/
+pacts/
+*.log
+.env
+*.local.properties
