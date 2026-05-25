@@ -1,20 +1,21 @@
 [versions]
 allure = "2.25.0"
 allurePlugin = "2.11.2"
-assertj = "3.25.3"
+assertj = "3.27.7"
+commonsIo = "2.20.0"
 cyclonedxPlugin = "3.2.4"
 datafaker = "2.5.4"
-jackson = "2.20.1"
+jackson = "2.21.1"
 junit = "5.10.2"
 lombokPlugin = "8.6"
-logback = "1.5.3"
+logback = "1.5.25"
 owner = "1.0.12"
-pact = "4.6.3"
+pact = "4.6.17"
 restassured = "5.4.0"
 slf4j = "2.0.17"
 snakeyaml = "2.2"
-spotbugs = "4.8.3"
-spotbugsPlugin = "6.0.7"
+spotbugs = "4.9.8"
+spotbugsPlugin = "6.5.5"
 spotless = "6.25.0"
 testcontainers = "1.19.7"
 wiremock = "3.13.2"
@@ -24,6 +25,7 @@ allure-java-commons = { module = "io.qameta.allure:allure-java-commons", version
 allure-junit5 = { module = "io.qameta.allure:allure-junit5", version.ref = "allure" }
 allure-rest-assured = { module = "io.qameta.allure:allure-rest-assured", version.ref = "allure" }
 assertj = { module = "org.assertj:assertj-core", version.ref = "assertj" }
+commons-io = { module = "commons-io:commons-io", version.ref = "commonsIo" }
 datafaker = { module = "net.datafaker:datafaker", version.ref = "datafaker" }
 jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }
 jackson-datatype-jsr310 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jsr310", version.ref = "jackson" }
@@ -42,7 +44,7 @@ snakeyaml = { module = "org.yaml:snakeyaml", version.ref = "snakeyaml" }
 spotbugs-annotations = { module = "com.github.spotbugs:spotbugs-annotations", version.ref = "spotbugs" }
 testcontainers = { module = "org.testcontainers:testcontainers", version.ref = "testcontainers" }
 testcontainers-junit-jupiter = { module = "org.testcontainers:junit-jupiter", version.ref = "testcontainers" }
-wiremock = { module = "org.wiremock:wiremock", version.ref = "wiremock" }
+wiremock = { module = "org.wiremock:wiremock-standalone", version.ref = "wiremock" }
 
 [plugins]
 allure = { id = "io.qameta.allure", version.ref = "allurePlugin" }

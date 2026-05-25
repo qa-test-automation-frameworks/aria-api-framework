@@ -1,6 +1,5 @@
 package com.aria.framework.tools;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.junit.jupiter.api.Tag;
 import org.yaml.snakeyaml.Yaml;
 
@@ -424,10 +423,6 @@ public final class OpenApiCoverageReporter {
         Files.writeString(outputFile, markdown.toString(), StandardCharsets.UTF_8);
     }
 
-    @SuppressFBWarnings(
-        value = {"EI_EXPOSE_REP", "EI_EXPOSE_REP2"},
-        justification = "Endpoint defensively stores immutable response-status lists for report generation."
-    )
     public record Endpoint(
         String method,
         String path,
@@ -445,10 +440,6 @@ public final class OpenApiCoverageReporter {
         }
     }
 
-    @SuppressFBWarnings(
-        value = {"EI_EXPOSE_REP", "EI_EXPOSE_REP2"},
-        justification = "OpenApiInventory defensively stores immutable collections for report generation."
-    )
     private record OpenApiInventory(List<Endpoint> endpoints, List<String> contractIssues) {
         OpenApiInventory {
             endpoints = List.copyOf(endpoints);
@@ -456,10 +447,6 @@ public final class OpenApiCoverageReporter {
         }
     }
 
-    @SuppressFBWarnings(
-        value = {"EI_EXPOSE_REP", "EI_EXPOSE_REP2"},
-        justification = "TestReference defensively stores immutable values for report generation."
-    )
     public record TestReference(
         String className,
         String methodName,
@@ -472,10 +459,6 @@ public final class OpenApiCoverageReporter {
         }
     }
 
-    @SuppressFBWarnings(
-        value = {"EI_EXPOSE_REP", "EI_EXPOSE_REP2"},
-        justification = "CoverageEntry defensively stores immutable test lists for report generation."
-    )
     public record CoverageEntry(String method, String path, List<TestReference> tests, String category) {
         public CoverageEntry {
             tests = List.copyOf(tests);
@@ -509,10 +492,6 @@ public final class OpenApiCoverageReporter {
         }
     }
 
-    @SuppressFBWarnings(
-        value = {"EI_EXPOSE_REP", "EI_EXPOSE_REP2"},
-        justification = "CoverageReport defensively stores immutable collections for test assertions and report generation."
-    )
     public record CoverageReport(
         List<Endpoint> endpoints,
         Map<String, CoverageEntry> coverage,
