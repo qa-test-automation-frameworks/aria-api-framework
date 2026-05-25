@@ -28,7 +28,6 @@ public class BookingService implements BookingOperations {
         this(new BookingApiClient(config), new TokenManager(config));
     }
 
-    @SuppressFBWarnings(value = "EI_EXPOSE_REP2", justification = "Constructor injection intentionally stores a stateless API client adapter.")
     public BookingService(BookingApiClient apiClient) {
         this(apiClient, new TokenManager(apiClient.config()));
     }

@@ -97,7 +97,7 @@ class BookingConsumerPactTest {
                           "bookingid": 1,
                           "booking": %s
                         }
-                        """.formatted(BOOKING_BODY), "application/json")))
+                        """.replace("%s", BOOKING_BODY), "application/json")))
             .toPact();
     }
 
