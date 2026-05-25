@@ -44,7 +44,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Dependency vulnerability review
-        uses: actions/dependency-review-action@v4
+        uses: actions/dependency-review-action@v5
 
   test:
     runs-on: ubuntu-latest
