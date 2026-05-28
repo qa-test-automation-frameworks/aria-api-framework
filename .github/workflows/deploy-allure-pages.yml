@@ -23,15 +23,15 @@ jobs:
       - name: Download Allure Pages artifact from CI run
         uses: actions/download-artifact@v4
         with:
-          name: github-pages
+          name: allure-report
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          path: allure-pages
+          path: allure-report
 
       - name: Re-upload Pages artifact for this deployment run
         uses: actions/upload-pages-artifact@v3
         with:
-          path: allure-pages
+          path: allure-report
 
       - name: Deploy Allure report to GitHub Pages
         id: deployment
