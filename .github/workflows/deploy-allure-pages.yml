@@ -29,7 +29,7 @@ jobs:
           path: allure-report
 
       - name: Re-upload Pages artifact for this deployment run
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           path: allure-report
 
