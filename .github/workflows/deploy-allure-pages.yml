@@ -29,10 +29,10 @@ jobs:
           path: allure-report
 
       - name: Re-upload Pages artifact for this deployment run
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           path: allure-report
 
       - name: Deploy Allure report to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
