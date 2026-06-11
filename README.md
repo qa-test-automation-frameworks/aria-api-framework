@@ -5,9 +5,24 @@
 [![Java 21](https://img.shields.io/badge/Java-21-blue.svg)](.java-version)
 [![Gradle](https://img.shields.io/badge/build-Gradle-02303A.svg)](build.gradle.kts)
 
-ARIA is the Automated REST Interface Assertion Framework: a Java 21 API test automation framework for portfolio-quality REST testing with service objects, reusable clients, generated data, schema validation, mocks, contracts, security checks, OpenAPI coverage, reporting, and CI/CD.
+ARIA is the Automated REST Interface Assertion Framework: a Java 21 API test automation framework with service objects, reusable clients, generated data, schema validation, mocks, contracts, security checks, OpenAPI coverage, reporting, and CI.
 
-Allure report: [qa-test-automation-frameworks.github.io/aria-api-framework](https://qa-test-automation-frameworks.github.io/aria-api-framework/)
+## Reviewer Proof
+
+| Evidence | Link |
+| --- | --- |
+| Live report | [Allure report](https://qa-test-automation-frameworks.github.io/aria-api-framework/) |
+| Release | [v1.0.0](https://github.com/qa-test-automation-frameworks/aria-api-framework/releases/tag/v1.0.0) |
+| CI | [Workflow and badge](https://github.com/qa-test-automation-frameworks/aria-api-framework/actions/workflows/ci.yml) |
+| Activity snapshot | 26 commits and 26 pull requests as of June 11, 2026 |
+| Docs and assets | [`docs/`](docs/) and [`docs/assets/`](docs/assets/) |
+| Best screenshot | [Sanitized Allure diagnostic](docs/assets/allure/allure-diagnostic-attachment.png) |
+
+![Sanitized Allure diagnostic attachment](docs/assets/allure/allure-diagnostic-attachment.png)
+
+## Release Summary
+
+The current published release is `v1.0.0`. The repository version is `1.1.0`; its changelog adds deterministic execution refinements, safer diagnostics, retry-policy coverage, duration and portfolio metrics, documentation, and CI evidence. Publish `v1.1.0` after the branch gate passes on the default branch.
 
 ## Architecture
 
@@ -131,6 +146,17 @@ Response-time SLA thresholds are environment-configurable through `sla.responseT
 
 GitHub Actions also runs dependency review, OSV scanning, Gradle wrapper validation, Docker-backed container tests, scheduled live smoke tests, and uploads Allure, SpotBugs, test-result, log, SBOM, and OpenAPI coverage artifacts.
 
+## Runtime Metrics and CI Shape
+
+The main CI gate runs deterministic JUnit, Spotless, SpotBugs, OpenAPI coverage, SBOM/security checks, and Allure generation on Ubuntu with Java 21. A separate Ubuntu job enforces Docker-backed tests, while scheduled live smoke tests remain outside the deterministic gate.
+
+After `test`, Gradle writes:
+
+- `build/reports/portfolio-metrics-v1.json`: test, pass, failure, skip, retry, and duration totals.
+- `build/reports/test-duration-report.md`: the 20 slowest test cases.
+
+The metrics contract reports zero test-level retries by design. See the [reliability policy](docs/RELIABILITY_POLICY.md) for request retry and quarantine rules.
+
 Generate a local SBOM plus OSV scan instructions:
 
 ```powershell
@@ -186,6 +212,7 @@ Generated output belongs under `build/` and is intentionally ignored by version 
 - SpotBugs reports: `build/reports/spotbugs`
 - OpenAPI coverage: `build/reports/openapi-coverage.md`
 - Test duration summary: `build/reports/test-duration-report.md`
+- Portfolio metrics: `build/reports/portfolio-metrics-v1.json`
 
 Do not distribute `.gradle/`, `.idea/`, or `build/` as part of the portfolio source artifact.
 
@@ -198,8 +225,12 @@ Do not distribute `.gradle/`, `.idea/`, or `build/` as part of the portfolio sou
 - [Debugging Test Failures](docs/Debugging_Test_Failures.md)
 - [Dos and Don'ts](docs/Dos_And_Dont.md)
 - [Security Test Strategy](docs/SECURITY_TEST_STRATEGY.md)
+- [Threat Model](docs/security/aria-api-framework-threat-model.md)
+- [Reliability and Quarantine Policy](docs/RELIABILITY_POLICY.md)
+- [Failure Example and Triage](docs/failure-example.md)
+- [Seeded Defect Examples](docs/seeded-defects.md)
 - [Architecture](docs/ARCHITECTURE.md)
-- [Architecture Decision Records](docs/Adr)
+- [Architecture Decision Records](docs/Adr/README.md)
 
 ## Repository Governance
 

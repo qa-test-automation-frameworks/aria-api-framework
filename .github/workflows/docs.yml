@@ -1,0 +1,21 @@
+name: Documentation checks
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  links-and-claims:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Reject workstation-only links and unsupported superlatives
+        shell: bash
+        run: |
+          set -euo pipefail
+          ! grep -RInE 'file:///' --include='*.md' .
+          ! grep -RInE 'expert-level|bulletproof|production-ready|zero leakage' --include='*.md' .

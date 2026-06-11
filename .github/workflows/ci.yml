@@ -103,6 +103,7 @@ jobs:
             build/reports/openapi-coverage.md
             build/reports/security-scan.md
             build/reports/test-duration-report.md
+            build/reports/portfolio-metrics-v1.json
             build/reports/spotbugs/**
 
       - name: Upload Pact contracts

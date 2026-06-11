@@ -1,0 +1,11 @@
+schemaVersion: 1
+repository: aria-api-framework
+framework: Java 21, JUnit 5, RestAssured
+defaultGate: .\gradlew.bat clean check securityScan allureReport -Denv=dev
+metrics: build/reports/portfolio-metrics-v1.json
+durationReport: build/reports/test-duration-report.md
+liveReport: https://qa-test-automation-frameworks.github.io/aria-api-framework/
+release: https://github.com/qa-test-automation-frameworks/aria-api-framework/releases/tag/v1.0.0
+reliabilityPolicy: docs/RELIABILITY_POLICY.md
+quarantine: reliability/quarantine.yml
+threatModel: docs/security/aria-api-framework-threat-model.md

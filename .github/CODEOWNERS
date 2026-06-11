@@ -1,0 +1,5 @@
+* @qa-test-automation-frameworks/maintainers
+
+/.github/ @qa-test-automation-frameworks/maintainers
+/src/main/ @qa-test-automation-frameworks/maintainers
+/src/test/ @qa-test-automation-frameworks/maintainers

@@ -1,6 +1,6 @@
 # Contributing
 
-ARIA is a portfolio-grade API test automation framework. Contributions should preserve deterministic default execution, secret-safe diagnostics, and clear service/client boundaries.
+ARIA is an API test automation framework. Contributions should preserve deterministic default execution, secret-safe diagnostics, and clear service/client boundaries.
 
 ## Local Setup
 
