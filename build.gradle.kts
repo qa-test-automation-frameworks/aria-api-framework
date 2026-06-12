@@ -1,4 +1,5 @@
 import java.io.ByteArrayOutputStream
+import java.util.Locale
 
 plugins {
     java
@@ -10,7 +11,7 @@ plugins {
 }
 
 group = "com.aria.framework"
-version = "1.0.0"
+version = "1.1.0"
 
 repositories {
     mavenCentral()
@@ -178,7 +179,7 @@ tasks.test {
             excludeTags("live")
         }
     }
-    finalizedBy("testDurationReport")
+    finalizedBy("testDurationReport", "portfolioMetrics")
 }
 
 tasks.register("testDurationReport") {
@@ -214,6 +215,55 @@ tasks.register("testDurationReport") {
                 appendLine("| `$className` | `$testName` | `${"%.3f".format(seconds)}` |")
             }
         })
+    }
+}
+
+tasks.register("portfolioMetrics") {
+    description = "Writes the portfolio metrics contract from JUnit XML results."
+    group = "verification"
+    doLast {
+        val resultDir = layout.buildDirectory.dir("test-results/test").get().asFile
+        val reportFile = layout.buildDirectory.file("reports/portfolio-metrics-v1.json").get().asFile
+        val suites = fileTree(resultDir) {
+            include("TEST-*.xml")
+        }.files.map { file ->
+            javax.xml.parsers.DocumentBuilderFactory.newInstance()
+                .newDocumentBuilder()
+                .parse(file)
+                .documentElement
+        }
+        if (suites.isEmpty()) {
+            throw GradleException("portfolioMetrics found no JUnit XML under ${resultDir.absolutePath}")
+        }
+
+        fun attributeTotal(name: String): Long = suites.sumOf {
+            it.getAttribute(name).ifBlank { "0" }.toLong()
+        }
+        val durationSeconds = suites.sumOf {
+            it.getAttribute("time").ifBlank { "0" }.toDouble()
+        }
+        val tests = attributeTotal("tests")
+        val failures = attributeTotal("failures")
+        val errors = attributeTotal("errors")
+        val skipped = attributeTotal("skipped")
+
+        reportFile.parentFile.mkdirs()
+        reportFile.writeText(
+            """
+            {
+              "schemaVersion": 1,
+              "framework": "aria-api-framework",
+              "generatedFrom": "JUnit XML",
+              "tests": $tests,
+              "passed": ${tests - failures - errors - skipped},
+              "failures": $failures,
+              "errors": $errors,
+              "skipped": $skipped,
+              "retries": 0,
+              "durationSeconds": ${"%.3f".format(Locale.ROOT, durationSeconds)}
+            }
+            """.trimIndent() + System.lineSeparator()
+        )
     }
 }
 
@@ -357,7 +407,13 @@ tasks.withType<com.github.spotbugs.snom.SpotBugsTask>().configureEach {
 }
 
 tasks.named("check") {
-    dependsOn("spotlessCheck", "spotbugsMain", "spotbugsTest", openApiCoverageReport, "verifyLiveSmokeTagExpression")
+    dependsOn(
+        "spotlessCheck",
+        "spotbugsMain",
+        "spotbugsTest",
+        openApiCoverageReport,
+        "verifyLiveSmokeTagExpression"
+    )
 }
 
 tasks.named("cyclonedxBom") {

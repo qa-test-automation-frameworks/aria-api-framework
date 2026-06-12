@@ -4,6 +4,7 @@ import com.aria.framework.clients.AuthApiClient;
 import com.aria.framework.config.FrameworkConfig;
 import com.aria.framework.exceptions.AuthenticationException;
 import com.aria.framework.models.request.AuthRequest;
+import com.aria.framework.reporting.RedactionPolicy;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.restassured.response.Response;
 import org.slf4j.Logger;
@@ -86,7 +87,10 @@ public final class TokenManager {
 
         String token = response.jsonPath().getString("token");
         if (token == null || token.trim().isEmpty()) {
-            log.error("Auth endpoint did not return a token in response body: {}", response.getBody().asString());
+            log.error(
+                "Auth endpoint did not return a token in response body: {}",
+                RedactionPolicy.sanitize(response.getBody().asString())
+            );
             throw new AuthenticationException("Auth token is missing from RestfulBooker response");
         }
 
