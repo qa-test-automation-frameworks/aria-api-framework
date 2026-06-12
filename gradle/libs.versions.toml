@@ -1,5 +1,5 @@
 [versions]
-allure = "2.25.0"
+allure = "2.35.2"
 allurePlugin = "2.11.2"
 assertj = "3.27.7"
 commonsIo = "2.20.0"
