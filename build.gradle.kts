@@ -1,4 +1,3 @@
-import java.io.ByteArrayOutputStream
 import java.util.Locale
 
 plugins {
@@ -126,6 +125,13 @@ dependencies {
 
 dependencyLocking {
     lockAllConfigurations()
+}
+
+configurations.configureEach {
+    resolutionStrategy.force(
+        "org.apache.logging.log4j:log4j-api:2.25.4",
+        "org.apache.logging.log4j:log4j-core:2.25.4"
+    )
 }
 
 allure {
@@ -432,19 +438,19 @@ tasks.register("securityScan") {
         val requireScanner = providers.gradleProperty("requireOsvScanner")
             .map(String::toBoolean)
             .getOrElse(false)
-        val scannerLookup = ByteArrayOutputStream()
-        val scannerLookupResult = exec {
+        val scannerLookup = providers.exec {
             isIgnoreExitValue = true
             if (System.getProperty("os.name").lowercase().contains("windows")) {
                 commandLine("cmd", "/c", "where", "osv-scanner")
             } else {
                 commandLine("sh", "-c", "command -v osv-scanner")
             }
-            standardOutput = scannerLookup
-            errorOutput = ByteArrayOutputStream()
         }
 
-        val scannerPath = scannerLookup.toString().lineSequence().firstOrNull { it.isNotBlank() }
+        val scannerLookupResult = scannerLookup.result.get()
+        val scannerPath = scannerLookup.standardOutput.asText.get()
+            .lineSequence()
+            .firstOrNull { it.isNotBlank() }
         if (scannerLookupResult.exitValue != 0 || scannerPath == null) {
             reportFile.writeText(
                 """
@@ -473,12 +479,14 @@ tasks.register("securityScan") {
             return@doLast
         }
 
-        val scanOutput = ByteArrayOutputStream()
-        val scanResult = exec {
+        val scanOutput = providers.exec {
             isIgnoreExitValue = true
             commandLine(scannerPath, "--sbom", sbomFile.absolutePath)
-            standardOutput = scanOutput
-            errorOutput = scanOutput
+        }
+        val scanResult = scanOutput.result.get()
+        val scanText = buildString {
+            append(scanOutput.standardOutput.asText.get())
+            append(scanOutput.standardError.asText.get())
         }
         reportFile.writeText(
             """
@@ -491,7 +499,7 @@ tasks.register("securityScan") {
             Exit code: `${scanResult.exitValue}`
 
             ```text
-            ${scanOutput.toString().trim()}
+            ${scanText.trim()}
             ```
             """.trimIndent()
         )
