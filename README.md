@@ -5,7 +5,10 @@
 [![Java 21](https://img.shields.io/badge/Java-21-blue.svg)](.java-version)
 [![Gradle](https://img.shields.io/badge/build-Gradle-02303A.svg)](build.gradle.kts)
 
-ARIA is the Automated REST Interface Assertion Framework: a Java 21 API test automation framework with service objects, reusable clients, generated data, schema validation, mocks, contracts, security checks, OpenAPI coverage, reporting, and CI.
+ARIA is the Automated REST Interface Assertion Framework: a Java 21 API
+engineering platform with layered services, deterministic providers, reusable
+clients, generated data, schema validation, Pact contracts, security boundaries,
+OpenAPI coverage, redacted diagnostics, and CI quality gates.
 
 ## Reviewer Proof
 
@@ -14,15 +17,28 @@ ARIA is the Automated REST Interface Assertion Framework: a Java 21 API test aut
 | Live report | [Allure report](https://qa-test-automation-frameworks.github.io/aria-api-framework/) |
 | Release | [v1.0.0](https://github.com/qa-test-automation-frameworks/aria-api-framework/releases/tag/v1.0.0) |
 | CI | [Workflow and badge](https://github.com/qa-test-automation-frameworks/aria-api-framework/actions/workflows/ci.yml) |
-| Activity snapshot | 26 commits and 26 pull requests as of June 11, 2026 |
+| Repository activity | [Default-branch commits](https://github.com/qa-test-automation-frameworks/aria-api-framework/commits/main/) · [Pull requests](https://github.com/qa-test-automation-frameworks/aria-api-framework/pulls?q=is%3Apr) |
 | Docs and assets | [`docs/`](docs/) and [`docs/assets/`](docs/assets/) |
 | Best screenshot | [Sanitized Allure diagnostic](docs/assets/allure/allure-diagnostic-attachment.png) |
 
 ![Sanitized Allure diagnostic attachment](docs/assets/allure/allure-diagnostic-attachment.png)
 
+## What This Framework Proves
+
+| Engineering question | Implemented answer |
+| --- | --- |
+| How are API tests prevented from becoming endpoint scripts? | Clients own transport, services own business operations, and tests remain intent-focused. |
+| How is deterministic evidence produced? | WireMock, Pact, and an owned in-memory provider cover contracts and security boundaries without public-service dependence. |
+| How are specifications connected to execution? | JSON schema validation and endpoint-to-test OpenAPI coverage make contract gaps visible. |
+| How are failures shared safely? | Structured logs and Allure attachments redact credentials and sensitive payload fields before publication. |
+| How is supply-chain risk controlled? | Wrapper validation, dependency review, OSV scanning, SBOM generation, and a required quality gate. |
+
 ## Release Summary
 
-The current published release is `v1.0.0`. The repository version is `1.1.0`; its changelog adds deterministic execution refinements, safer diagnostics, retry-policy coverage, duration and portfolio metrics, documentation, and CI evidence. Publish `v1.1.0` after the branch gate passes on the default branch.
+The current published release is `v1.0.0`. Current `main` adds deterministic
+execution refinements, safer diagnostics, retry-policy coverage, duration and
+portfolio metrics, security dependency remediation, documentation, and CI
+evidence. See [CHANGELOG.md](CHANGELOG.md).
 
 ## Architecture
 
