@@ -8,7 +8,8 @@
 ARIA is the Automated REST Interface Assertion Framework: a Java 21 API
 engineering platform with layered services, deterministic providers, reusable
 clients, generated data, schema validation, Pact contracts, security boundaries,
-OpenAPI coverage, redacted diagnostics, and CI quality gates.
+OpenAPI coverage, redacted diagnostics, and CI quality gates. The name refers to
+REST API assertions and is not related to WAI-ARIA accessibility standards.
 
 ## Reviewer Proof
 
