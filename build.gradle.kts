@@ -114,8 +114,8 @@ dependencies {
         testImplementation("org.apache.tika:tika-core:3.2.2") {
             because("GHSA-f58c-gq56-vjjf affects tika-core versions before 3.2.2")
         }
-        testImplementation("org.json:json:20231013") {
-            because("GHSA-4jq9-2xhw-jpx7 affects org.json versions before 20231013")
+        testImplementation("org.json:json:20260522") {
+            because("GHSA-4jq9-2xhw-jpx7 affects org.json versions before 20260522")
         }
         testImplementation("org.mozilla:rhino:1.7.14.1") {
             because("GHSA-3w8q-xq97-5j7x affects Rhino versions before 1.7.14.1")
