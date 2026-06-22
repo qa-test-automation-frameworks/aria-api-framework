@@ -72,8 +72,8 @@ dependencies {
     testImplementation(libs.allure.junit5)
 
     constraints {
-        implementation("org.apache.commons:commons-lang3:3.18.0") {
-            because("CVE-2025-48924 affects commons-lang3 versions before 3.18.0")
+        implementation("org.apache.commons:commons-lang3:3.20.0") {
+            because("CVE-2025-48924 affects commons-lang3 versions before 3.20.0")
         }
         implementation("org.mozilla:rhino:1.7.14.1") {
             because("GHSA-3w8q-xq97-5j7x affects Rhino versions before 1.7.14.1")
