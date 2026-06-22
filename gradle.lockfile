@@ -232,5 +232,5 @@ org.testcontainers:junit-jupiter:1.19.7=testCompileClasspath,testRuntimeClasspat
 org.testcontainers:testcontainers:1.19.7=testCompileClasspath,testRuntimeClasspath
 org.wiremock:wiremock-standalone:3.13.2=testCompileClasspath,testRuntimeClasspath
 org.xmlresolver:xmlresolver:5.3.3=spotbugs
-org.yaml:snakeyaml:2.5=testCompileClasspath,testRuntimeClasspath
+org.yaml:snakeyaml:2.6=testCompileClasspath,testRuntimeClasspath
 empty=allureGenerateCategories,allureRawResultDirs,allureReport,cyclonedxBom,spotbugsPlugins
