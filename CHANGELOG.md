@@ -18,3 +18,5 @@
 - Added atomic optimistic-concurrency evidence, portfolio metrics, reliability policy, failure triage, seeded-defect examples, and an application security threat model.
 - Added mutation-score publishing through PITest for redaction, retry, and OpenAPI coverage utilities.
 - Added Pact provider verification against the owned fixture and corrected the Allure plugin version pin that blocked dependency-lock regeneration.
+- Added OpenAPI response body-schema validation via swagger-request-validator, alongside the existing documented-response and media-type checks.
+- Forced patched versions for OSV-flagged transitive dependencies reachable only through tool-classpath resolution.
