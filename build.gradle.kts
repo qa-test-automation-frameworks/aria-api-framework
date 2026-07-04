@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.lombok)
     alias(libs.plugins.allure)
     alias(libs.plugins.cyclonedx)
+    alias(libs.plugins.pitest)
     alias(libs.plugins.spotless)
     alias(libs.plugins.spotbugs)
 }
@@ -44,6 +45,7 @@ dependencies {
     // Test data generation and reporting tools
     testImplementation(libs.datafaker)
     testImplementation(libs.snakeyaml)
+    testImplementation(libs.swagger.request.validator.restassured)
 
     // Core Testing Framework (JUnit 5)
     testImplementation(platform(libs.junit.bom))
@@ -418,6 +420,28 @@ spotbugs {
     reportLevel.set(com.github.spotbugs.snom.Confidence.MEDIUM)
 }
 
+pitest {
+    junit5PluginVersion.set("1.2.1")
+    targetClasses.set(
+        setOf(
+            "com.aria.framework.reporting.RedactionPolicy",
+            "com.aria.framework.utils.RetryUtils",
+            "com.aria.framework.tools.OpenApiCoverageReporter"
+        )
+    )
+    targetTests.set(
+        setOf(
+            "com.aria.framework.reporting.*",
+            "com.aria.framework.utils.*",
+            "com.aria.framework.contracts.*"
+        )
+    )
+    mutators.set(setOf("STRONGER"))
+    timestampedReports.set(false)
+    outputFormats.set(setOf("XML", "HTML"))
+    mutationThreshold.set(70)
+}
+
 tasks.withType<com.github.spotbugs.snom.SpotBugsTask>().configureEach {
     reports.create("xml") {
         required.set(true)
@@ -432,6 +456,7 @@ tasks.named("check") {
         "spotlessCheck",
         "spotbugsMain",
         "spotbugsTest",
+        "pitest",
         openApiCoverageReport,
         "pactProviderVerificationTest",
         "verifyLiveSmokeTagExpression"

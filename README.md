@@ -17,7 +17,7 @@ not related to WAI-ARIA accessibility standards.
 | Evidence | Link |
 | --- | --- |
 | Live report | [Allure report](https://qa-test-automation-frameworks.github.io/aria-api-framework/) |
-| Release | [v1.0.0](https://github.com/qa-test-automation-frameworks/aria-api-framework/releases/tag/v1.0.0) |
+| Release | [v1.1.0](https://github.com/qa-test-automation-frameworks/aria-api-framework/releases/tag/v1.1.0) |
 | CI | [Workflow and badge](https://github.com/qa-test-automation-frameworks/aria-api-framework/actions/workflows/ci.yml) |
 | Repository activity | [Default-branch commits](https://github.com/qa-test-automation-frameworks/aria-api-framework/commits/main/) · [Pull requests](https://github.com/qa-test-automation-frameworks/aria-api-framework/pulls?q=is%3Apr) |
 | Docs and assets | [`docs/`](docs/) and [`docs/assets/`](docs/assets/) |
@@ -37,7 +37,7 @@ not related to WAI-ARIA accessibility standards.
 
 ## Release Summary
 
-The current published release is `v1.0.0`. Current `main` adds deterministic
+The current published release is `v1.1.0`. Current `main` adds deterministic
 execution refinements, safer diagnostics, retry-policy coverage, duration and
 portfolio metrics, security dependency remediation, documentation, and CI
 evidence. See [CHANGELOG.md](CHANGELOG.md).
@@ -56,7 +56,7 @@ evidence. See [CHANGELOG.md](CHANGELOG.md).
 | Configuration | Owner, per-environment properties |
 | Containers | Docker, Docker Compose, Testcontainers |
 | Reporting and logging | Allure 2, SLF4J, Logback |
-| CI/CD | Jenkins, GitHub Actions |
+| CI/CD | GitHub Actions primary gate, Jenkins reference pipeline |
 
 ## Prerequisites
 
