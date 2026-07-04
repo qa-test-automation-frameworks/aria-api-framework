@@ -31,8 +31,11 @@ jobs:
       - name: Re-upload Pages artifact for this deployment run
         uses: actions/upload-pages-artifact@v5
         with:
+          name: github-pages-${{ github.run_attempt }}
           path: allure-report
 
       - name: Deploy Allure report to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5
+        with:
+          artifact_name: github-pages-${{ github.run_attempt }}
