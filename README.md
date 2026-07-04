@@ -56,7 +56,7 @@ evidence. See [CHANGELOG.md](CHANGELOG.md).
 | Configuration | Owner, per-environment properties |
 | Containers | Docker, Docker Compose, Testcontainers |
 | Reporting and logging | Allure 2, SLF4J, Logback |
-| CI/CD | Jenkins, GitHub Actions |
+| CI/CD | GitHub Actions primary gate, Jenkins reference pipeline |
 
 ## Prerequisites
 

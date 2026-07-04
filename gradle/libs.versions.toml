@@ -11,12 +11,14 @@ lombokPlugin = "9.5.0"
 logback = "1.5.37"
 owner = "1.0.12"
 pact = "4.6.17"
+pitestPlugin = "1.15.0"
 restassured = "6.0.0"
 slf4j = "2.0.17"
 snakeyaml = "2.2"
 spotbugs = "4.10.2"
 spotbugsPlugin = "6.5.5"
 spotless = "6.25.0"
+swaggerRequestValidator = "2.45.1"
 testcontainers = "1.19.7"
 wiremock = "3.13.2"
 
@@ -43,6 +45,7 @@ rest-assured-json-schema-validator = { module = "io.rest-assured:json-schema-val
 slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
 snakeyaml = { module = "org.yaml:snakeyaml", version.ref = "snakeyaml" }
 spotbugs-annotations = { module = "com.github.spotbugs:spotbugs-annotations", version.ref = "spotbugs" }
+swagger-request-validator-restassured = { module = "com.atlassian.oai:swagger-request-validator-restassured", version.ref = "swaggerRequestValidator" }
 testcontainers = { module = "org.testcontainers:testcontainers", version.ref = "testcontainers" }
 testcontainers-junit-jupiter = { module = "org.testcontainers:junit-jupiter", version.ref = "testcontainers" }
 wiremock = { module = "org.wiremock:wiremock-standalone", version.ref = "wiremock" }
@@ -51,5 +54,6 @@ wiremock = { module = "org.wiremock:wiremock-standalone", version.ref = "wiremoc
 allure = { id = "io.qameta.allure", version.ref = "allurePlugin" }
 cyclonedx = { id = "org.cyclonedx.bom", version.ref = "cyclonedxPlugin" }
 lombok = { id = "io.freefair.lombok", version.ref = "lombokPlugin" }
+pitest = { id = "info.solidsoft.pitest", version.ref = "pitestPlugin" }
 spotbugs = { id = "com.github.spotbugs", version.ref = "spotbugsPlugin" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
