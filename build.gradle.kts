@@ -140,7 +140,7 @@ configurations.configureEach {
 }
 
 allure {
-    version.set("2.44.0")
+    version.set(libs.versions.allure.get())
     adapter {
         aspectjWeaver.set(false)
     }
