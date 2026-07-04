@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.lombok)
     alias(libs.plugins.allure)
     alias(libs.plugins.cyclonedx)
+    alias(libs.plugins.pitest)
     alias(libs.plugins.spotless)
     alias(libs.plugins.spotbugs)
 }
@@ -44,6 +45,7 @@ dependencies {
     // Test data generation and reporting tools
     testImplementation(libs.datafaker)
     testImplementation(libs.snakeyaml)
+    testImplementation(libs.swagger.request.validator.restassured)
 
     // Core Testing Framework (JUnit 5)
     testImplementation(platform(libs.junit.bom))
@@ -133,12 +135,27 @@ dependencyLocking {
 configurations.configureEach {
     resolutionStrategy.force(
         "org.apache.logging.log4j:log4j-api:2.25.4",
-        "org.apache.logging.log4j:log4j-core:2.25.4"
+        "org.apache.logging.log4j:log4j-core:2.25.4",
+        // GHSA-j288-q9x7-2f5v: PIT's own tool classpath pulls an old commons-lang3.
+        "org.apache.commons:commons-lang3:3.19.0",
+        // GHSA-72hv-8253-57qq / GHSA-hgj6-7826-r7m5 / GHSA-j3rv-43j4-c7qm / GHSA-rmj7-2vxq-3g9f:
+        // transitive tool classpaths (Gradle plugin resolution, Spotless) pull old Jackson.
+        "com.fasterxml.jackson.core:jackson-core:2.22.0",
+        "com.fasterxml.jackson.core:jackson-databind:2.22.0",
+        // GHSA-735f-pc8j-v9w8: old protobuf-java pulled in transitively.
+        "com.google.protobuf:protobuf-java:3.25.5",
+        // GHSA-wxr5-93ph-8wr9: old commons-beanutils pulled in transitively.
+        "commons-beanutils:commons-beanutils:1.11.0",
+        // GHSA-f58c-gq56-vjjf: old tika-core pulled in transitively.
+        "org.apache.tika:tika-core:3.2.2",
+        // GHSA-3w8q-xq97-5j7x: the constraints-based rhino pin above doesn't reach
+        // transient tool classpaths, so force it globally too.
+        "org.mozilla:rhino:1.7.14.1"
     )
 }
 
 allure {
-    version.set("2.44.0")
+    version.set(libs.versions.allure.get())
     adapter {
         aspectjWeaver.set(false)
     }
@@ -418,6 +435,28 @@ spotbugs {
     reportLevel.set(com.github.spotbugs.snom.Confidence.MEDIUM)
 }
 
+pitest {
+    junit5PluginVersion.set("1.2.1")
+    targetClasses.set(
+        setOf(
+            "com.aria.framework.reporting.RedactionPolicy",
+            "com.aria.framework.utils.RetryUtils",
+            "com.aria.framework.tools.OpenApiCoverageReporter"
+        )
+    )
+    targetTests.set(
+        setOf(
+            "com.aria.framework.reporting.*",
+            "com.aria.framework.utils.*",
+            "com.aria.framework.contracts.*"
+        )
+    )
+    mutators.set(setOf("STRONGER"))
+    timestampedReports.set(false)
+    outputFormats.set(setOf("XML", "HTML"))
+    mutationThreshold.set(70)
+}
+
 tasks.withType<com.github.spotbugs.snom.SpotBugsTask>().configureEach {
     reports.create("xml") {
         required.set(true)
@@ -432,6 +471,7 @@ tasks.named("check") {
         "spotlessCheck",
         "spotbugsMain",
         "spotbugsTest",
+        "pitest",
         openApiCoverageReport,
         "pactProviderVerificationTest",
         "verifyLiveSmokeTagExpression"

@@ -7,7 +7,7 @@
 - Added Docker, Docker Compose, environment-based configuration, tagged test execution, and generated data factories.
 - Hardened audit findings with deterministic default tests, live-test opt-in, config validation, tracked data cleanup, security tests, OpenAPI coverage reporting, enforced quality gates, and dependency review.
 
-## 1.1.0 - Unreleased
+## 1.1.0 - 2026-07-04
 
 - Replaced JavaFaker with Datafaker and refreshed Gradle dependency locks.
 - Reworked configuration and retry policy injection for easier isolated testing.
@@ -16,3 +16,5 @@
 - Replaced the README text architecture diagram with a linked SVG architecture diagram.
 - Added configuration, execution, writing-tests, debugging, dos/dont, audit-remediation, and ADR documentation.
 - Added atomic optimistic-concurrency evidence, portfolio metrics, reliability policy, failure triage, seeded-defect examples, and an application security threat model.
+- Added mutation-score publishing through PITest for redaction, retry, and OpenAPI coverage utilities.
+- Added Pact provider verification against the owned fixture and corrected the Allure plugin version pin that blocked dependency-lock regeneration.
