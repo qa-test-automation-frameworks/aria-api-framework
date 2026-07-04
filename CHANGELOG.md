@@ -17,3 +17,4 @@
 - Added configuration, execution, writing-tests, debugging, dos/dont, audit-remediation, and ADR documentation.
 - Added atomic optimistic-concurrency evidence, portfolio metrics, reliability policy, failure triage, seeded-defect examples, and an application security threat model.
 - Added mutation-score publishing through PITest for redaction, retry, and OpenAPI coverage utilities.
+- Added Pact provider verification against the owned fixture and corrected the Allure plugin version pin that blocked dependency-lock regeneration.
