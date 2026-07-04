@@ -1,0 +1,4 @@
+[[IgnoredVulns]]
+id = "CVE-2026-54515"
+ignoreUntil = 2026-08-04
+reason = "jackson-databind 2.22.0 is the current stable release available on Maven Central; revisit when a fixed 2.x release is published."
