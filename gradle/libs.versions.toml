@@ -37,6 +37,7 @@ junit-jupiter-params = { module = "org.junit.jupiter:junit-jupiter-params", vers
 logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 owner = { module = "org.aeonbits.owner:owner", version.ref = "owner" }
 pact-consumer-junit5 = { module = "au.com.dius.pact.consumer:junit5", version.ref = "pact" }
+pact-provider-junit5 = { module = "au.com.dius.pact.provider:junit5", version.ref = "pact" }
 rest-assured = { module = "io.rest-assured:rest-assured", version.ref = "restassured" }
 rest-assured-json-schema-validator = { module = "io.rest-assured:json-schema-validator", version.ref = "restassured" }
 slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }

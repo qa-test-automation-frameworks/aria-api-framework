@@ -7,8 +7,8 @@
 
 ARIA is the Automated REST Interface Assertion Framework: a Java 21 API
 engineering platform with layered services, deterministic providers, reusable
-clients, generated data, JSON-schema assertions, Pact consumer contracts,
-provider-state checks, OpenAPI endpoint coverage, security boundaries, redacted
+clients, generated data, JSON-schema assertions, Pact consumer contracts and
+provider verification, OpenAPI endpoint coverage, security boundaries, redacted
 diagnostics, and CI quality gates. The name refers to REST API assertions and is
 not related to WAI-ARIA accessibility standards.
 
@@ -30,7 +30,7 @@ not related to WAI-ARIA accessibility standards.
 | Engineering question | Implemented answer |
 | --- | --- |
 | How are API tests prevented from becoming endpoint scripts? | Clients own transport, services own business operations, and tests remain intent-focused. |
-| How is deterministic evidence produced? | WireMock, Pact consumer contracts, and owned-provider state checks cover API behavior and security boundaries without public-service dependence. |
+| How is deterministic evidence produced? | WireMock, Pact consumer contracts, Pact provider verification, and owned-provider state checks cover API behavior and security boundaries without public-service dependence. |
 | How are specifications connected to execution? | JSON-schema assertions and endpoint-to-test OpenAPI coverage make documented response and coverage gaps visible. |
 | How are failures shared safely? | Structured logs and Allure attachments redact credentials and sensitive payload fields before publication. |
 | How is supply-chain risk controlled? | Wrapper validation, dependency review, OSV scanning, SBOM generation, and a required quality gate. |
@@ -51,7 +51,7 @@ evidence. See [CHANGELOG.md](CHANGELOG.md).
 | Area | Tools |
 | --- | --- |
 | Core testing | JUnit 5, RestAssured, AssertJ |
-| Mocking and contracts | WireMock 3, Pact JVM consumer contracts, owned-provider state checks |
+| Mocking and contracts | WireMock 3, Pact JVM consumer contracts and provider verification, owned-provider state checks |
 | Data and models | Jackson, JSON Schema Validator, Datafaker, Lombok |
 | Configuration | Owner, per-environment properties |
 | Containers | Docker, Docker Compose, Testcontainers |
@@ -80,7 +80,7 @@ Run a tag:
 .\gradlew.bat smokeTest -Denv=dev
 ```
 
-Dedicated Gradle tasks are available for common deterministic suites: `smokeTest`, `regressionTest`, `contractTest`, `securityTest`, and `containerTest`. Use `test -DincludeTags=...` only when you intentionally want raw JUnit tag filtering; live tags require explicit credentials and network access.
+Dedicated Gradle tasks are available for common deterministic suites: `smokeTest`, `regressionTest`, `contractTest`, `pactProviderVerificationTest`, `securityTest`, and `containerTest`. Use `test -DincludeTags=...` only when you intentionally want raw JUnit tag filtering; live tags require explicit credentials and network access.
 
 JUnit tags are available as `smoke`, `regression`, `negative`, `known-demo-api-limitations`, `contract`, `security`, `config`, `container`, and `live`.
 
