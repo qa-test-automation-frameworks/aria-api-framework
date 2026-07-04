@@ -20,14 +20,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Provider-state style verification for the owned provider fixture used by deterministic contract tests.
  */
 @Epic("Contracts")
-@Feature("Owned provider verification")
+@Feature("Owned provider state checks")
 @Tag("contract")
 @Execution(ExecutionMode.SAME_THREAD)
-class OwnedProviderContractVerificationTest {
+class OwnedProviderStateContractTest {
 
     @Test
-    @DisplayName("Owned provider satisfies core Restful Booker consumer states")
-    @Story("Provider state contract verification")
+    @DisplayName("Owned provider satisfies core Restful Booker provider states")
+    @Story("Provider state contract checks")
     void ownedProviderSatisfiesRestfulBookerConsumerStates() {
         try (OwnedApiProvider provider = OwnedApiProvider.start()) {
             BookingApiClient client = new BookingApiClient(provider.frameworkConfig());
