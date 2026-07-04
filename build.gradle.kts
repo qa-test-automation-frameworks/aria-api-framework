@@ -60,6 +60,9 @@ dependencies {
     testImplementation(libs.pact.consumer.junit5) {
         exclude(group = "org.apache.commons", module = "commons-io")
     }
+    testImplementation(libs.pact.provider.junit5) {
+        exclude(group = "org.apache.commons", module = "commons-io")
+    }
     testImplementation(libs.commons.io)
 
     // Containerization Support
@@ -306,6 +309,17 @@ tasks.register<Test>("contractTest") {
     }
 }
 
+tasks.register<Test>("pactProviderVerificationTest") {
+    description = "Replays generated Pact consumer contracts against the owned provider."
+    group = "verification"
+    configureCommonApiTestTask()
+    useJUnitPlatform {
+        includeTags("pact-provider")
+    }
+    dependsOn("contractTest")
+    shouldRunAfter("contractTest")
+}
+
 tasks.register<Test>("securityTest") {
     description = "Runs deterministic security-tagged API tests."
     group = "verification"
@@ -419,6 +433,7 @@ tasks.named("check") {
         "spotbugsMain",
         "spotbugsTest",
         openApiCoverageReport,
+        "pactProviderVerificationTest",
         "verifyLiveSmokeTagExpression"
     )
 }

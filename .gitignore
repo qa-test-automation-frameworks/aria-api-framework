@@ -21,6 +21,9 @@ allure-report/
 pacts/
 .playwright-mcp/
 .codegraph/
+.codebase-memory/
+codebase-memory/
+.agent/index-codebase-memory.sh
 /allure-overview.png
 
 # Local sensitive configs (if any)

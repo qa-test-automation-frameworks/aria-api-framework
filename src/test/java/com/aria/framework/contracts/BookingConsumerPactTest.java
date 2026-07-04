@@ -94,7 +94,7 @@ class BookingConsumerPactTest {
                     .header("Content-Type", "application/json")
                     .body("""
                         {
-                          "bookingid": 1,
+                          "bookingid": 2,
                           "booking": %s
                         }
                         """.replace("%s", BOOKING_BODY), "application/json")))
@@ -186,7 +186,7 @@ class BookingConsumerPactTest {
 
         assertThat(response.statusCode()).isEqualTo(200);
         assertJsonContentType(response);
-        assertThat(response.jsonPath().getInt("bookingid")).isEqualTo(1);
+        assertThat(response.jsonPath().getInt("bookingid")).isEqualTo(2);
     }
 
     @Test
