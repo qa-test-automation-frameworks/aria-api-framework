@@ -110,7 +110,7 @@ dependencies {
         testImplementation("io.netty:netty-handler-proxy:4.2.15.Final") {
             because("Multiple Netty advisories affect the locked 4.1.87/4.1.91 modules")
         }
-        testImplementation("org.apache.commons:commons-compress:1.26.0") {
+        testImplementation("org.apache.commons:commons-compress:1.28.0") {
             because("Commons Compress advisories affect versions before 1.26.0")
         }
         testImplementation("org.apache.logging.log4j:log4j-core:2.25.4") {
