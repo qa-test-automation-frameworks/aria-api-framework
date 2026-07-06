@@ -89,8 +89,8 @@ dependencies {
         testImplementation("commons-beanutils:commons-beanutils:1.11.0") {
             because("CVE-2025-48734 affects commons-beanutils versions before 1.11.0")
         }
-        testImplementation("com.google.protobuf:protobuf-java:3.25.5") {
-            because("GHSA-735f-pc8j-v9w8 affects protobuf-java versions before 3.25.5")
+        testImplementation("com.google.protobuf:protobuf-java:4.35.1") {
+            because("GHSA-735f-pc8j-v9w8 affects protobuf-java versions before 4.35.1")
         }
         testImplementation("io.netty:netty-codec:4.2.15.Final") {
             because("Multiple Netty advisories affect the locked 4.1.87/4.1.91 modules")
@@ -143,7 +143,7 @@ configurations.configureEach {
         "com.fasterxml.jackson.core:jackson-core:2.22.0",
         "com.fasterxml.jackson.core:jackson-databind:2.22.0",
         // GHSA-735f-pc8j-v9w8: old protobuf-java pulled in transitively.
-        "com.google.protobuf:protobuf-java:3.25.5",
+        "com.google.protobuf:protobuf-java:4.35.1",
         // GHSA-wxr5-93ph-8wr9: old commons-beanutils pulled in transitively.
         "commons-beanutils:commons-beanutils:1.11.0",
         // GHSA-f58c-gq56-vjjf: old tika-core pulled in transitively.
