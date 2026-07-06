@@ -116,8 +116,8 @@ dependencies {
         testImplementation("org.apache.logging.log4j:log4j-core:2.25.4") {
             because("Multiple Log4j Core advisories affect the locked 2.22.0 version")
         }
-        testImplementation("org.apache.tika:tika-core:3.2.2") {
-            because("GHSA-f58c-gq56-vjjf affects tika-core versions before 3.2.2")
+        testImplementation("org.apache.tika:tika-core:3.3.1") {
+            because("GHSA-f58c-gq56-vjjf affects tika-core versions before 3.3.1")
         }
         testImplementation("org.json:json:20231013") {
             because("GHSA-4jq9-2xhw-jpx7 affects org.json versions before 20231013")
@@ -147,7 +147,7 @@ configurations.configureEach {
         // GHSA-wxr5-93ph-8wr9: old commons-beanutils pulled in transitively.
         "commons-beanutils:commons-beanutils:1.11.0",
         // GHSA-f58c-gq56-vjjf: old tika-core pulled in transitively.
-        "org.apache.tika:tika-core:3.2.2",
+        "org.apache.tika:tika-core:3.3.1",
         // GHSA-3w8q-xq97-5j7x: the constraints-based rhino pin above doesn't reach
         // transient tool classpaths, so force it globally too.
         "org.mozilla:rhino:1.7.14.1"
