@@ -4,7 +4,7 @@ This guide is a short evidence-based path through the repository. Claims below l
 
 ## Recommended Review Order
 
-1. Read the [architecture](ARCHITECTURE.md) and [ADR index](Adr/README.md).
+1. Read the [architecture](ARCHITECTURE.md) and [ADR index](adr/README.md).
 2. Inspect [`BaseApiClient`](../src/main/java/com/aria/framework/clients/BaseApiClient.java), services, and typed request/response models.
 3. Review [`RedactionPolicy`](../src/main/java/com/aria/framework/reporting/RedactionPolicy.java) and the [threat model](security/aria-api-framework-threat-model.md).
 4. Read the owned fixture and atomic concurrency test under [`src/test`](../src/test/java/com/aria/framework/).

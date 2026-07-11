@@ -12,6 +12,11 @@ provider verification, OpenAPI endpoint coverage, security boundaries, redacted
 diagnostics, and CI quality gates. The name refers to REST API assertions and is
 not related to WAI-ARIA accessibility standards.
 
+The core engineering problem this framework answers: how do you get real Pact
+provider verification without depending on someone else's service? See
+[ADR-005](docs/adr/ADR-005-owned-provider-http-server.md) for the owned-provider
+answer, and the tech stack and project structure below for how it fits together.
+
 ## Reviewer Proof
 
 | Evidence | Link |
@@ -67,6 +72,10 @@ evidence. See [CHANGELOG.md](CHANGELOG.md).
 
 ## Run Locally
 
+```bash
+./gradlew clean test -Denv=dev
+```
+
 ```powershell
 .\gradlew.bat clean test -Denv=dev
 ```
@@ -75,9 +84,9 @@ The default `test` task is deterministic. It excludes tests tagged `live` and ru
 
 Run a tag:
 
-```powershell
-.\gradlew.bat test -Denv=dev --tests "*AuthTests"
-.\gradlew.bat smokeTest -Denv=dev
+```bash
+./gradlew test -Denv=dev --tests "*AuthTests"
+./gradlew smokeTest -Denv=dev
 ```
 
 Dedicated Gradle tasks are available for common deterministic suites: `smokeTest`, `regressionTest`, `contractTest`, `pactProviderVerificationTest`, `securityTest`, and `containerTest`. Use `test -DincludeTags=...` only when you intentionally want raw JUnit tag filtering; live tags require explicit credentials and network access.
@@ -85,6 +94,12 @@ Dedicated Gradle tasks are available for common deterministic suites: `smokeTest
 JUnit tags are available as `smoke`, `regression`, `negative`, `known-demo-api-limitations`, `contract`, `security`, `config`, `container`, and `live`.
 
 Run live public API tests only when credentials and network access are intentionally available:
+
+```bash
+export BOOKER_USERNAME="<restful-booker-user>"
+export BOOKER_PASSWORD="<restful-booker-password>"
+./gradlew liveTest -Denv=dev
+```
 
 ```powershell
 $env:BOOKER_USERNAME="<restful-booker-user>"
@@ -96,27 +111,27 @@ Scheduled CI runs `liveSmokeTest` weekly (Sunday 00:00 UTC) against the configur
 
 Run the full quality gate used by CI:
 
-```powershell
-.\gradlew.bat clean check securityScan allureReport -Denv=dev
+```bash
+./gradlew clean check securityScan allureReport -Denv=dev
 ```
 
 Generate OpenAPI endpoint coverage:
 
-```powershell
-.\gradlew.bat openApiCoverageReport
+```bash
+./gradlew openApiCoverageReport
 ```
 
 Generate Allure:
 
-```powershell
-.\gradlew.bat allureReport
+```bash
+./gradlew allureReport
 ```
 
 Run with Docker:
 
-```powershell
-$env:ENV="dev"
-$env:GITHUB_TOKEN="<token>"
+```bash
+export ENV=dev
+export GITHUB_TOKEN="<token>"
 docker compose up --build
 ```
 
@@ -177,14 +192,14 @@ The metrics contract reports zero test-level retries by design. See the [reliabi
 
 Generate a local SBOM plus OSV scan instructions:
 
-```powershell
-.\gradlew.bat securityScan
+```bash
+./gradlew securityScan
 ```
 
 If `osv-scanner` is installed, `securityScan` runs it against `build/reports/cyclonedx/bom.json` and fails on reported vulnerabilities. To fail when the scanner is missing, run:
 
-```powershell
-.\gradlew.bat securityScan -PrequireOsvScanner=true
+```bash
+./gradlew securityScan -PrequireOsvScanner=true
 ```
 
 ## Project Structure
@@ -236,21 +251,21 @@ Do not distribute `.gradle/`, `.idea/`, or `build/` as part of the portfolio sou
 
 ## Documentation
 
-- [Portfolio Review Guide](docs/Portfolio_Review_Guide.md)
+- [Portfolio Review Guide](docs/portfolio-review-guide.md)
 - [Current verification record](docs/evidence/latest-verification.md)
 - [Enterprise adaptation](docs/enterprise-adaptation.md)
-- [Configuration Guide](docs/Configuration_Guide.md)
-- [Execution Guide](docs/Execution_Guide.md)
-- [Writing Tests](docs/Writing_Tests.md)
-- [Debugging Test Failures](docs/Debugging_Test_Failures.md)
-- [Dos and Don'ts](docs/Dos_And_Dont.md)
+- [Configuration Guide](docs/configuration-guide.md)
+- [Execution Guide](docs/execution-guide.md)
+- [Writing Tests](docs/writing-tests.md)
+- [Debugging Test Failures](docs/debugging-test-failures.md)
+- [Dos and Don'ts](docs/dos-and-dont.md)
 - [Security Test Strategy](docs/SECURITY_TEST_STRATEGY.md)
 - [Threat Model](docs/security/aria-api-framework-threat-model.md)
 - [Reliability and Quarantine Policy](docs/RELIABILITY_POLICY.md)
 - [Failure Example and Triage](docs/failure-example.md)
 - [Seeded Defect Examples](docs/seeded-defects.md)
 - [Architecture](docs/ARCHITECTURE.md)
-- [Architecture Decision Records](docs/Adr/README.md)
+- [Architecture Decision Records](docs/adr/README.md)
 
 ## Repository Governance
 
