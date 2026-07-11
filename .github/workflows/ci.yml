@@ -50,7 +50,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       ENV: ${{ inputs.env || 'dev' }}
-      GITHUB_TOKEN: ${{ secrets.ARIA_GITHUB_TOKEN }}
       pact_do_not_track: true
     steps:
       - name: Checkout
