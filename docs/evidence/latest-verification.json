@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "repository": "aria-api-framework",
+  "evidenceState": "evidence-stale",
+  "evidenceClass": ["controlled", "scheduled-live"],
+  "verifiedRef": "main",
+  "verifiedSha": null,
+  "workflow": {"name": "ci.yml", "runId": null, "runUrl": null, "branch": "main", "event": null, "conclusion": null, "completedAt": null},
+  "target": {"name": "owned/container-backed provider", "environment": "controlled"},
+  "results": [],
+  "reportUrl": "https://qa-test-automation-frameworks.github.io/aria-api-framework/",
+  "artifactRetention": "CI retention plus published Allure history",
+  "limitationsUrl": "https://github.com/qa-test-automation-frameworks/aria-api-framework/blob/main/docs/known-issues.md",
+  "generatedAt": "2026-07-11T00:00:00Z"
+}
