@@ -10,7 +10,7 @@
 | Evidence class | Controlled and scheduled-live |
 | Result counts | 66 tests, 66 passed, 0 failed, 0 errors, 0 skipped (13.695s), from JUnit XML |
 | Report | [Allure report](https://qa-test-automation-frameworks.github.io/aria-api-framework/) |
-| Known limitations | [Known issues](../known-issues.md) and [review guide](../Portfolio_Review_Guide.md) |
+| Known limitations | [Known issues](../known-issues.md) and [review guide](../portfolio-review-guide.md) |
 
 The machine-readable record with the exact SHA, run ID/URL, conclusion, and result
 counts is published at [`latest-verification.json`](latest-verification.json). This
