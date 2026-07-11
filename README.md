@@ -56,7 +56,7 @@ evidence. See [CHANGELOG.md](CHANGELOG.md).
 | Configuration | Owner, per-environment properties |
 | Containers | Docker, Docker Compose, Testcontainers |
 | Reporting and logging | Allure 2, SLF4J, Logback |
-| CI/CD | Jenkins, GitHub Actions |
+| CI/CD | GitHub Actions primary gate, Jenkins reference pipeline |
 
 ## Prerequisites
 
@@ -92,7 +92,7 @@ $env:BOOKER_PASSWORD="<restful-booker-password>"
 .\gradlew.bat liveTest -Denv=dev
 ```
 
-Scheduled CI runs `liveSmokeTest` weekly against the configured live environment; keep broader live regression runs manual unless the target APIs are controlled. `liveSmokeTest` uses a strict `live & smoke` tag expression, so regression-only live tests are excluded from the scheduled smoke path.
+Scheduled CI runs `liveSmokeTest` weekly (Sunday 00:00 UTC) against the configured live environment; keep broader live regression runs manual unless the target APIs are controlled. `liveSmokeTest` uses a strict `live & smoke` tag expression, so regression-only live tests are excluded from the scheduled smoke path.
 
 Run the full quality gate used by CI:
 
@@ -162,7 +162,7 @@ Response-time SLA thresholds are environment-configurable through `sla.responseT
 - CycloneDX SBOM generation in CI
 - Secret-sanitized failure diagnostics and structured test logs under `build/logs`
 
-GitHub Actions also runs dependency review, OSV scanning, Gradle wrapper validation, Docker-backed container tests, scheduled live smoke tests, and uploads Allure, SpotBugs, test-result, log, SBOM, and OpenAPI coverage artifacts.
+GitHub Actions also runs dependency review, OSV scanning, Gradle wrapper validation, Docker-backed container tests, scheduled live smoke tests, and uploads Allure, SpotBugs, PIT mutation, test-result, log, SBOM, and OpenAPI coverage artifacts. Failure-only logs and test-result bundles are clearly labeled as failure diagnostics.
 
 ## Runtime Metrics and CI Shape
 
@@ -237,6 +237,8 @@ Do not distribute `.gradle/`, `.idea/`, or `build/` as part of the portfolio sou
 ## Documentation
 
 - [Portfolio Review Guide](docs/Portfolio_Review_Guide.md)
+- [Current verification record](docs/evidence/latest-verification.md)
+- [Enterprise adaptation](docs/enterprise-adaptation.md)
 - [Configuration Guide](docs/Configuration_Guide.md)
 - [Execution Guide](docs/Execution_Guide.md)
 - [Writing Tests](docs/Writing_Tests.md)

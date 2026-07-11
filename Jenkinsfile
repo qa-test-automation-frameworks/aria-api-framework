@@ -1,8 +1,8 @@
 pipeline {
     agent any
 
-    // GitHub Actions is the primary CI quality gate. This Jenkinsfile is a parity-oriented
-    // starter for teams that need Jenkins-hosted execution.
+    // GitHub Actions is the primary CI quality gate. This Jenkinsfile is a reference
+    // pipeline for teams that need Jenkins-hosted execution.
 
     parameters {
         choice(name: 'ENV', choices: ['dev', 'staging', 'prod'], description: 'Target test environment')

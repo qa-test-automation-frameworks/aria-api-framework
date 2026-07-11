@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "repository": "aria-api-framework",
+  "evidenceState": "review-ready",
+  "evidenceClass": ["controlled", "scheduled-live"],
+  "verifiedRef": "main",
+  "verifiedSha": "ab00c637e820d952ab756f3926255d311485e851",
+  "workflow": {"name": "ci.yml", "runId": 29138314002, "runUrl": "https://github.com/qa-test-automation-frameworks/aria-api-framework/actions/runs/29138314002", "branch": "main", "event": "push", "conclusion": "success", "completedAt": "2026-07-11T03:40:32Z"},
+  "target": {"name": "owned/container-backed provider", "environment": "controlled"},
+  "results": [
+    {"command": "test (JUnit XML)", "total": 66, "passed": 66, "failed": 0, "errors": 0, "skipped": 0, "durationSeconds": 13.695}
+  ],
+  "reportUrl": "https://qa-test-automation-frameworks.github.io/aria-api-framework/",
+  "artifactRetention": "CI retention plus published Allure history",
+  "limitationsUrl": "https://github.com/qa-test-automation-frameworks/aria-api-framework/blob/main/docs/known-issues.md",
+  "generatedAt": "2026-07-11T04:20:00Z"
+}

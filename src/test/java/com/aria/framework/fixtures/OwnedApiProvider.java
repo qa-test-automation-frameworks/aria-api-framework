@@ -315,8 +315,8 @@ public final class OwnedApiProvider implements AutoCloseable {
         booking.put("totalprice", payload.getOrDefault("totalprice", 111));
         booking.put("depositpaid", payload.getOrDefault("depositpaid", true));
         booking.put("bookingdates", payload.getOrDefault("bookingdates", Map.of(
-            "checkin", "2026-05-25",
-            "checkout", "2026-05-30"
+            "checkin", "2026-05-24",
+            "checkout", "2026-05-31"
         )));
         booking.put("additionalneeds", payload.getOrDefault("additionalneeds", "Breakfast"));
         return booking;
@@ -329,8 +329,8 @@ public final class OwnedApiProvider implements AutoCloseable {
             "totalprice", 111,
             "depositpaid", true,
             "bookingdates", Map.of(
-                "checkin", "2026-05-25",
-                "checkout", "2026-05-30"
+                "checkin", "2026-05-24",
+                "checkout", "2026-05-31"
             ),
             "additionalneeds", "Breakfast"
         ));
@@ -402,8 +402,8 @@ public final class OwnedApiProvider implements AutoCloseable {
     }
 
     private static void sendText(HttpExchange exchange, int status, String body) throws IOException {
-        exchange.getResponseHeaders().set("Content-Type", "text/plain");
-        sendBytes(exchange, status, body.getBytes(StandardCharsets.UTF_8));
+        exchange.getResponseHeaders().set("Content-Type", "text/plain; charset=ISO-8859-1");
+        sendBytes(exchange, status, body.getBytes(StandardCharsets.ISO_8859_1));
     }
 
     private static void sendBytes(HttpExchange exchange, int status, byte[] bytes) throws IOException {

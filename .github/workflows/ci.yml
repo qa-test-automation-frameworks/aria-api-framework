@@ -5,7 +5,7 @@ on:
     branches: [main]
   pull_request:
   schedule:
-    - cron: '0 0 1 1,7 *'
+    - cron: '0 0 * * 0'
   workflow_dispatch:
     inputs:
       env:
@@ -27,7 +27,7 @@ jobs:
       actions: read
       contents: read
       security-events: write
-    uses: google/osv-scanner-action/.github/workflows/osv-scanner-reusable.yml@v2.3.8
+    uses: google/osv-scanner-action/.github/workflows/osv-scanner-reusable.yml@9a498708959aeaef5ef730655706c5a1df1edbc2 # v2.3.8
     with:
       scan-args: |-
         --recursive
@@ -41,43 +41,42 @@ jobs:
       pull-requests: read
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
 
       - name: Dependency vulnerability review
-        uses: actions/dependency-review-action@v5
+        uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5
 
   test:
     runs-on: ubuntu-latest
     env:
       ENV: ${{ inputs.env || 'dev' }}
-      GITHUB_TOKEN: ${{ secrets.ARIA_GITHUB_TOKEN }}
       pact_do_not_track: true
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
 
       - name: Set up Java 21
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@0f481fcb613427c0f801b606911222b5b6f3083a # v5
         with:
           distribution: temurin
           java-version: '21'
           cache: gradle
 
       - name: Validate Gradle wrapper
-        uses: gradle/actions/wrapper-validation@v6
+        uses: gradle/actions/wrapper-validation@90ddb51e90a5fd9ba75f40cf85156b7b41bf76a3 # v6
 
       - name: Run Gradle quality gate
         run: ./gradlew clean check securityScan allureReport -Denv=${ENV} --parallel
 
       - name: Upload SBOM
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: cyclonedx-sbom
           path: build/reports/cyclonedx/**
 
       - name: Upload failure artifacts
         if: failure()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: aria-test-artifacts
           path: |
@@ -90,13 +89,13 @@ jobs:
             build/reports/cyclonedx
 
       - name: Upload OpenAPI coverage
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: openapi-coverage
           path: build/reports/openapi-coverage.md
 
       - name: Upload quality reports
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: quality-reports
           path: |
@@ -105,15 +104,16 @@ jobs:
             build/reports/test-duration-report.md
             build/reports/portfolio-metrics-v1.json
             build/reports/spotbugs/**
+            build/reports/pitest/**
 
       - name: Upload Pact contracts
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: pact-contracts
           path: build/pacts/**
 
       - name: Upload Allure report artifact
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: allure-report
           path: build/reports/allure-report/allureReport
@@ -125,10 +125,10 @@ jobs:
       pact_do_not_track: true
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
 
       - name: Set up Java 21
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@0f481fcb613427c0f801b606911222b5b6f3083a # v5
         with:
           distribution: temurin
           java-version: '21'
@@ -192,10 +192,10 @@ jobs:
       pact_do_not_track: true
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
 
       - name: Set up Java 21
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@0f481fcb613427c0f801b606911222b5b6f3083a # v5
         with:
           distribution: temurin
           java-version: '21'
