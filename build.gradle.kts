@@ -140,8 +140,8 @@ configurations.configureEach {
         "org.apache.commons:commons-lang3:3.19.0",
         // GHSA-72hv-8253-57qq / GHSA-hgj6-7826-r7m5 / GHSA-j3rv-43j4-c7qm / GHSA-rmj7-2vxq-3g9f:
         // transitive tool classpaths (Gradle plugin resolution, Spotless) pull old Jackson.
-        "com.fasterxml.jackson.core:jackson-core:2.22.0",
-        "com.fasterxml.jackson.core:jackson-databind:2.22.0",
+        "com.fasterxml.jackson.core:jackson-core:2.22.1",
+        "com.fasterxml.jackson.core:jackson-databind:2.22.1",
         // GHSA-735f-pc8j-v9w8: old protobuf-java pulled in transitively.
         "com.google.protobuf:protobuf-java:3.25.5",
         // GHSA-wxr5-93ph-8wr9: old commons-beanutils pulled in transitively.
