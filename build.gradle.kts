@@ -68,7 +68,7 @@ dependencies {
     testImplementation(libs.commons.io)
 
     // Containerization Support
-    testImplementation(platform("io.netty:netty-bom:4.2.15.Final"))
+    testImplementation(platform("io.netty:netty-bom:4.2.16.Final"))
     testImplementation(libs.testcontainers)
     testImplementation(libs.testcontainers.junit.jupiter)
 
@@ -92,22 +92,22 @@ dependencies {
         testImplementation("com.google.protobuf:protobuf-java:3.25.5") {
             because("GHSA-735f-pc8j-v9w8 affects protobuf-java versions before 3.25.5")
         }
-        testImplementation("io.netty:netty-codec:4.2.15.Final") {
+        testImplementation("io.netty:netty-codec:4.2.16.Final") {
             because("Multiple Netty advisories affect the locked 4.1.87/4.1.91 modules")
         }
-        testImplementation("io.netty:netty-codec-http:4.2.15.Final") {
+        testImplementation("io.netty:netty-codec-http:4.2.16.Final") {
             because("Multiple Netty advisories affect the locked 4.1.87/4.1.91 modules")
         }
-        testImplementation("io.netty:netty-codec-http2:4.2.15.Final") {
+        testImplementation("io.netty:netty-codec-http2:4.2.16.Final") {
             because("Multiple Netty advisories affect the locked 4.1.87/4.1.91 modules")
         }
-        testImplementation("io.netty:netty-common:4.2.15.Final") {
+        testImplementation("io.netty:netty-common:4.2.16.Final") {
             because("Multiple Netty advisories affect the locked 4.1.87/4.1.91 modules")
         }
-        testImplementation("io.netty:netty-handler:4.2.15.Final") {
+        testImplementation("io.netty:netty-handler:4.2.16.Final") {
             because("Multiple Netty advisories affect the locked 4.1.87/4.1.91 modules")
         }
-        testImplementation("io.netty:netty-handler-proxy:4.2.15.Final") {
+        testImplementation("io.netty:netty-handler-proxy:4.2.16.Final") {
             because("Multiple Netty advisories affect the locked 4.1.87/4.1.91 modules")
         }
         testImplementation("org.apache.commons:commons-compress:1.26.0") {
