@@ -80,7 +80,7 @@ dependencies {
         implementation("org.apache.commons:commons-lang3:3.18.0") {
             because("CVE-2025-48924 affects commons-lang3 versions before 3.18.0")
         }
-        implementation("org.mozilla:rhino:1.7.14.1") {
+        implementation("org.mozilla:rhino:1.9.1") {
             because("GHSA-3w8q-xq97-5j7x affects Rhino versions before 1.7.14.1")
         }
         testImplementation("commons-fileupload:commons-fileupload:1.6.0") {
@@ -122,7 +122,7 @@ dependencies {
         testImplementation("org.json:json:20231013") {
             because("GHSA-4jq9-2xhw-jpx7 affects org.json versions before 20231013")
         }
-        testImplementation("org.mozilla:rhino:1.7.14.1") {
+        testImplementation("org.mozilla:rhino:1.9.1") {
             because("GHSA-3w8q-xq97-5j7x affects Rhino versions before 1.7.14.1")
         }
     }
@@ -150,7 +150,7 @@ configurations.configureEach {
         "org.apache.tika:tika-core:3.2.2",
         // GHSA-3w8q-xq97-5j7x: the constraints-based rhino pin above doesn't reach
         // transient tool classpaths, so force it globally too.
-        "org.mozilla:rhino:1.7.14.1"
+        "org.mozilla:rhino:1.9.1"
     )
 }
 
