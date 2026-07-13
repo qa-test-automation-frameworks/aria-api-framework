@@ -18,7 +18,7 @@ snakeyaml = "2.2"
 spotbugs = "4.10.2"
 spotbugsPlugin = "6.5.5"
 spotless = "6.25.0"
-swaggerRequestValidator = "2.45.1"
+swaggerRequestValidator = "3.0.0"
 testcontainers = "1.19.7"
 wiremock = "3.13.2"
 
