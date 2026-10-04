@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "controls": {
+    "command": "bash scripts/test-ci-gates.sh",
+    "exitCode": 0,
+    "cases": 68
+  },
+  "workflowLint": {
+    "tool": "actionlint",
+    "version": "1.7.7",
+    "exitCode": 0,
+    "publisherArchiveSha256": "023070a287cd8cccd71515fedc843f1985bf96c436b7effaecce67290e7e0757",
+    "externalShellcheckAndPyflakes": false
+  },
+  "sourceSha256": {
+    ".github/workflows/ci.yml": "4e6164c7b9ea096335353f689f164ac569e55a0dd020fa121b1d7741a64a62ba",
+    "scripts/verify-ci-gates.sh": "2c402e534f466c3c6627f5f47b976b9dd2401998b69a4855879af4da5b944fd0",
+    "scripts/test-ci-gates.sh": "9402873205035935e1c7613afd0d101ba66b639007ce440119cef154d5044d56"
+  },
+  "liveExecution": "pending"
+}

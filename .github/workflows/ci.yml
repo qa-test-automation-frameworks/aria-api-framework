@@ -8,6 +8,10 @@ on:
     - cron: '0 0 * * 0'
   workflow_dispatch:
     inputs:
+      run_live_smoke:
+        description: Run bounded public-demo smoke with existing Booker test credentials
+        type: boolean
+        default: false
       env:
         description: Target environment
         required: true
@@ -64,6 +68,9 @@ jobs:
 
       - name: Validate Gradle wrapper
         uses: gradle/actions/wrapper-validation@90ddb51e90a5fd9ba75f40cf85156b7b41bf76a3 # v6
+
+      - name: Verify CI gate policy controls
+        run: bash scripts/test-ci-gates.sh
 
       - name: Run Gradle quality gate
         run: ./gradlew clean check securityScan allureReport -Denv=${ENV} --parallel
@@ -144,35 +151,24 @@ jobs:
       - osv-scan
       - container-test
       - dependency-review
+      - live-smoke
     runs-on: ubuntu-latest
     env:
       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
     steps:
+      - name: Checkout gate policy
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+
       - name: Verify required quality gates
-        run: |
-          set -euo pipefail
-          test_result='${{ needs.test.result }}'
-          osv_result='${{ needs.osv-scan.result }}'
-          container_result='${{ needs.container-test.result }}'
-          dependency_review_result='${{ needs.dependency-review.result }}'
-
-          echo "test=${test_result}"
-          echo "osv-scan=${osv_result}"
-          echo "container-test=${container_result}"
-          echo "dependency-review=${dependency_review_result}"
-
-          if [ "${test_result}" != "success" ]; then
-            exit 1
-          fi
-          if [ "${osv_result}" != "success" ]; then
-            exit 1
-          fi
-          if [ "${container_result}" != "success" ]; then
-            exit 1
-          fi
-          if [ "${dependency_review_result}" != "success" ] && [ "${dependency_review_result}" != "skipped" ]; then
-            exit 1
-          fi
+        env:
+          CI_EVENT: ${{ github.event_name }}
+          RUN_LIVE_SMOKE: ${{ inputs.run_live_smoke || false }}
+          TEST_RESULT: ${{ needs.test.result }}
+          OSV_RESULT: ${{ needs.osv-scan.result }}
+          CONTAINER_RESULT: ${{ needs.container-test.result }}
+          DEPENDENCY_REVIEW_RESULT: ${{ needs.dependency-review.result }}
+          LIVE_RESULT: ${{ needs.live-smoke.result }}
+        run: bash scripts/verify-ci-gates.sh
 
       - name: Notify Slack on failure
         if: failure() && env.SLACK_WEBHOOK_URL != ''
@@ -182,11 +178,11 @@ jobs:
             "${SLACK_WEBHOOK_URL}"
 
   live-smoke:
-    if: github.event_name == 'schedule'
+    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.run_live_smoke)
     runs-on: ubuntu-latest
     env:
       ENV: dev
-      GITHUB_TOKEN: ${{ secrets.ARIA_GITHUB_TOKEN }}
+      GITHUB_TOKEN: ${{ github.token }}
       BOOKER_USERNAME: ${{ secrets.BOOKER_USERNAME }}
       BOOKER_PASSWORD: ${{ secrets.BOOKER_PASSWORD }}
       pact_do_not_track: true
@@ -204,8 +200,21 @@ jobs:
       - name: Validate live smoke credentials
         run: |
           set -euo pipefail
-          test -n "${BOOKER_USERNAME}"
-          test -n "${BOOKER_PASSWORD}"
+          test -n "${GITHUB_TOKEN}" || { echo 'GitHub job token is required' >&2; exit 1; }
+          test -n "${BOOKER_USERNAME}" || { echo 'BOOKER_USERNAME is required for requested public-demo smoke' >&2; exit 1; }
+          test -n "${BOOKER_PASSWORD}" || { echo 'BOOKER_PASSWORD is required for requested public-demo smoke' >&2; exit 1; }
 
-      - name: Run scheduled live smoke tests
+      - name: Run requested live smoke tests
         run: ./gradlew liveSmokeTest -Denv=${ENV}
+
+      - name: Upload live smoke evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: live-smoke-evidence
+          path: |
+            build/test-results/liveSmokeTest/**
+            build/reports/tests/liveSmokeTest/**
+            build/allure-results/**
+            build/logs/**
+          retention-days: 30
