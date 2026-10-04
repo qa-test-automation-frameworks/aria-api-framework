@@ -46,3 +46,7 @@ Remote source scanning and Docker execution at the delivered revision remain
 separate required evidence. The prior run's Java/Docker success belongs to its
 old SHA and does not replace post-change CI. Scheduled live authentication is a
 separate F07 repair. Other repositories' R02/G01 work remains required.
+
+## Subsequent executed verification
+
+The delivered repair now has [current remote CI proof](../verification/2026-10-04-remote-ci.md). Earlier pending/failure descriptions above remain historical for their stated revision.

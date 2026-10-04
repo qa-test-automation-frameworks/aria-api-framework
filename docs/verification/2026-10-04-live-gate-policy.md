@@ -44,3 +44,7 @@ Remaining exit: dispatch the delivered branch with live smoke requested; inspect
 the actual native cases, source SHA, token-backed public results and retained
 artifact. A successful deterministic PR run with skipped live smoke does not
 satisfy that exit. Security remediation and other portfolio work remain separate.
+
+## Subsequent executed verification
+
+The delivered repair now has [current remote CI proof](2026-10-04-remote-ci.md). Earlier pending/failure descriptions above remain historical for their stated revision.

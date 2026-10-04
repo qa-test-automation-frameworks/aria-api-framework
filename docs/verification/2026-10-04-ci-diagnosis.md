@@ -49,3 +49,7 @@ threshold relaxation or continue-on-error was added.
 The September audit remains historical. These retrieved job logs narrow its
 previously unavailable causes; they do not retroactively turn those failed runs
 into successes or prove either remediation complete.
+
+## Subsequent executed verification
+
+The delivered repair now has [current remote CI proof](2026-10-04-remote-ci.md). Earlier pending/failure descriptions above remain historical for their stated revision.
