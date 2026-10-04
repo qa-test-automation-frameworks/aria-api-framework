@@ -161,6 +161,11 @@ allure {
     }
 }
 
+// Re-rendering the same native results must work without deleting the entire build.
+tasks.withType<io.qameta.allure.gradle.report.tasks.AllureReport>().configureEach {
+    clean.set(true)
+}
+
 fun Test.configureCommonApiTestTask() {
     useJUnitPlatform {
         val requestedTags = System.getProperty("includeTags", "")
