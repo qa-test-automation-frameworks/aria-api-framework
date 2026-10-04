@@ -1,0 +1,5 @@
+Scanning dir .
+Starting filesystem walk for root: /
+Scanned /home/vyaspc/Documents/Repo/aria-api-framework/gradle.lockfile file and found 295 packages
+End status: 309 dirs visited, 926 inodes visited, 1 Extract calls, 45.818879ms elapsed, 45.819163ms wall time
+Loaded filter from: /home/vyaspc/Documents/Repo/aria-api-framework/osv-scanner.toml

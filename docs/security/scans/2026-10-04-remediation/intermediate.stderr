@@ -1,0 +1,7 @@
+Scanning dir .
+Starting filesystem walk for root: /
+Scanned /home/vyaspc/Documents/Repo/aria-api-framework/gradle.lockfile file and found 299 packages
+End status: 309 dirs visited, 925 inodes visited, 1 Extract calls, 258.34178ms elapsed, 258.342643ms wall time
+Loaded filter from: /home/vyaspc/Documents/Repo/aria-api-framework/osv-scanner.toml
+/home/vyaspc/Documents/Repo/aria-api-framework/osv-scanner.toml has unused ignores:
+ - CVE-2026-54515

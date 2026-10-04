@@ -68,7 +68,7 @@ dependencies {
     testImplementation(libs.commons.io)
 
     // Containerization Support
-    testImplementation(platform("io.netty:netty-bom:4.2.15.Final"))
+    testImplementation(platform("io.netty:netty-bom:4.2.17.Final"))
     testImplementation(libs.testcontainers)
     testImplementation(libs.testcontainers.junit.jupiter)
 
@@ -80,8 +80,23 @@ dependencies {
         implementation("org.apache.commons:commons-lang3:3.18.0") {
             because("CVE-2025-48924 affects commons-lang3 versions before 3.18.0")
         }
+        implementation("org.freemarker:freemarker:2.3.35") {
+            because("GHSA-27j2-h3m2-8237 is fixed in FreeMarker 2.3.35")
+        }
         implementation("org.mozilla:rhino:1.7.14.1") {
             because("GHSA-3w8q-xq97-5j7x affects Rhino versions before 1.7.14.1")
+        }
+        testImplementation("org.apache.httpcomponents.client5:httpclient5:5.6.3") {
+            because("GHSA-hjcp-jmpx-g3qm is fixed in HttpClient 5.6.3")
+        }
+        testImplementation("org.apache.httpcomponents.client5:httpclient5-fluent:5.6.3") {
+            because("Keep the fluent API aligned with its patched HttpClient implementation")
+        }
+        testImplementation("org.apache.httpcomponents.core5:httpcore5:5.4.3") {
+            because("GHSA-hf6x-8p5f-cgmf is fixed in HttpCore 5.4.3")
+        }
+        testImplementation("org.apache.httpcomponents.core5:httpcore5-h2:5.4.3") {
+            because("GHSA-v3jc-474w-2wm6 is fixed in HttpCore H2 5.4.3")
         }
         testImplementation("commons-fileupload:commons-fileupload:1.6.0") {
             because("CVE-2025-48976 affects commons-fileupload versions before 1.6.0")
@@ -92,29 +107,29 @@ dependencies {
         testImplementation("com.google.protobuf:protobuf-java:3.25.5") {
             because("GHSA-735f-pc8j-v9w8 affects protobuf-java versions before 3.25.5")
         }
-        testImplementation("io.netty:netty-codec:4.2.15.Final") {
-            because("Multiple Netty advisories affect the locked 4.1.87/4.1.91 modules")
+        testImplementation("io.netty:netty-codec:4.2.17.Final") {
+            because("Current OSV Netty findings require aligned 4.2.17.Final modules")
         }
-        testImplementation("io.netty:netty-codec-http:4.2.15.Final") {
-            because("Multiple Netty advisories affect the locked 4.1.87/4.1.91 modules")
+        testImplementation("io.netty:netty-codec-http:4.2.17.Final") {
+            because("Current OSV Netty findings require aligned 4.2.17.Final modules")
         }
-        testImplementation("io.netty:netty-codec-http2:4.2.15.Final") {
-            because("Multiple Netty advisories affect the locked 4.1.87/4.1.91 modules")
+        testImplementation("io.netty:netty-codec-http2:4.2.17.Final") {
+            because("Current OSV Netty findings require aligned 4.2.17.Final modules")
         }
-        testImplementation("io.netty:netty-common:4.2.15.Final") {
-            because("Multiple Netty advisories affect the locked 4.1.87/4.1.91 modules")
+        testImplementation("io.netty:netty-common:4.2.17.Final") {
+            because("Current OSV Netty findings require aligned 4.2.17.Final modules")
         }
-        testImplementation("io.netty:netty-handler:4.2.15.Final") {
-            because("Multiple Netty advisories affect the locked 4.1.87/4.1.91 modules")
+        testImplementation("io.netty:netty-handler:4.2.17.Final") {
+            because("Current OSV Netty findings require aligned 4.2.17.Final modules")
         }
-        testImplementation("io.netty:netty-handler-proxy:4.2.15.Final") {
-            because("Multiple Netty advisories affect the locked 4.1.87/4.1.91 modules")
+        testImplementation("io.netty:netty-handler-proxy:4.2.17.Final") {
+            because("Current OSV Netty findings require aligned 4.2.17.Final modules")
         }
         testImplementation("org.apache.commons:commons-compress:1.26.0") {
             because("Commons Compress advisories affect versions before 1.26.0")
         }
-        testImplementation("org.apache.logging.log4j:log4j-core:2.25.4") {
-            because("Multiple Log4j Core advisories affect the locked 2.22.0 version")
+        testImplementation("org.apache.logging.log4j:log4j-core:2.25.5") {
+            because("Align Log4j Core with the patched API version used by tool classpaths")
         }
         testImplementation("org.apache.tika:tika-core:3.2.2") {
             because("GHSA-f58c-gq56-vjjf affects tika-core versions before 3.2.2")
@@ -134,14 +149,20 @@ dependencyLocking {
 
 configurations.configureEach {
     resolutionStrategy.force(
-        "org.apache.logging.log4j:log4j-api:2.25.4",
-        "org.apache.logging.log4j:log4j-core:2.25.4",
+        "org.apache.logging.log4j:log4j-api:2.25.5",
+        "org.apache.logging.log4j:log4j-core:2.25.5",
+        // Allure creates tmpTestImplementation without the test dependency constraints.
+        // Keep every locked HTTP 5 configuration at the patched, compatible pair.
+        "org.apache.httpcomponents.client5:httpclient5:5.6.3",
+        "org.apache.httpcomponents.client5:httpclient5-fluent:5.6.3",
+        "org.apache.httpcomponents.core5:httpcore5:5.4.3",
+        "org.apache.httpcomponents.core5:httpcore5-h2:5.4.3",
         // GHSA-j288-q9x7-2f5v: PIT's own tool classpath pulls an old commons-lang3.
         "org.apache.commons:commons-lang3:3.19.0",
         // GHSA-72hv-8253-57qq / GHSA-hgj6-7826-r7m5 / GHSA-j3rv-43j4-c7qm / GHSA-rmj7-2vxq-3g9f:
         // transitive tool classpaths (Gradle plugin resolution, Spotless) pull old Jackson.
-        "com.fasterxml.jackson.core:jackson-core:2.22.0",
-        "com.fasterxml.jackson.core:jackson-databind:2.22.0",
+        "com.fasterxml.jackson.core:jackson-core:2.22.3",
+        "com.fasterxml.jackson.core:jackson-databind:2.22.3",
         // GHSA-735f-pc8j-v9w8: old protobuf-java pulled in transitively.
         "com.google.protobuf:protobuf-java:3.25.5",
         // GHSA-wxr5-93ph-8wr9: old commons-beanutils pulled in transitively.
@@ -523,7 +544,7 @@ tasks.register("securityScan") {
                 Install `osv-scanner` and run:
 
                 ```powershell
-                osv-scanner --sbom build/reports/cyclonedx/bom.json
+                osv-scanner scan source --sbom build/reports/cyclonedx/bom.json
                 ```
 
                 CI runs the official OSV scanner action. To require a local scanner for this task, run:
@@ -541,7 +562,7 @@ tasks.register("securityScan") {
 
         val scanOutput = providers.exec {
             isIgnoreExitValue = true
-            commandLine(scannerPath, "--sbom", sbomFile.absolutePath)
+            commandLine(scannerPath, "scan", "source", "--sbom", sbomFile.absolutePath)
         }
         val scanResult = scanOutput.result.get()
         val scanText = buildString {
@@ -554,7 +575,7 @@ tasks.register("securityScan") {
 
             SBOM: `build/reports/cyclonedx/bom.json`
 
-            Command: `$scannerPath --sbom ${sbomFile.absolutePath}`
+            Command: `$scannerPath scan source --sbom ${sbomFile.absolutePath}`
 
             Exit code: `${scanResult.exitValue}`
 
