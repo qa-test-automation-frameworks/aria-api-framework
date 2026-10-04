@@ -4,6 +4,7 @@ import com.aria.framework.config.ConfigManager;
 import com.aria.framework.config.FrameworkConfig;
 import com.aria.framework.reporting.FailureDiagnosticFilter;
 import com.aria.framework.reporting.SanitizedAllureRestAssured;
+import com.aria.framework.utils.RetryDeadline;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.config.HttpClientConfig;
 import io.restassured.config.LogConfig;
@@ -14,6 +15,7 @@ import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,9 +53,14 @@ public abstract class BaseApiClient {
      * @return RequestSpecification fully constructed spec
      */
     protected RequestSpecification getRequestSpec(String baseUri) {
-        int timeoutMs = config.timeoutSeconds() * 1000;
+        int timeoutMs = RetryDeadline.requestTimeoutMs(config.timeoutSeconds());
         RestAssuredConfig config = RestAssuredConfig.config()
             .httpClient(HttpClientConfig.httpClientConfig()
+                .httpClientFactory(() -> {
+                    DefaultHttpClient client = new DefaultHttpClient();
+                    RetryDeadline.registerClient(client);
+                    return client;
+                })
                 .setParam("http.connection.timeout", timeoutMs)
                 .setParam("http.socket.timeout", timeoutMs))
             .logConfig(LogConfig.logConfig().enableLoggingOfRequestAndResponseIfValidationFails(LogDetail.ALL));
@@ -74,6 +81,7 @@ public abstract class BaseApiClient {
             builder.addFilter(filter);
         }
 
+        builder.addFilter(new DeadlineTimeoutFilter(this.config.timeoutSeconds()));
         return builder.build();
     }
 

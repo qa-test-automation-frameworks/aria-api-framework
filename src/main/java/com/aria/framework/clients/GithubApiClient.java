@@ -93,7 +93,7 @@ public class GithubApiClient extends BaseApiClient {
      * POST /repos/{owner}/{repo}/issues - Create a new repository issue.
      */
     public Response createIssue(String owner, String repo, GithubIssueRequest issuePayload) {
-        return RetryUtils.executeWithoutRetry(() -> RestAssured.given()
+        return RetryUtils.executeWithoutRetry(config, () -> RestAssured.given()
             .spec(getAuthorizedSpec())
             .pathParam("owner", owner)
             .pathParam("repo", repo)

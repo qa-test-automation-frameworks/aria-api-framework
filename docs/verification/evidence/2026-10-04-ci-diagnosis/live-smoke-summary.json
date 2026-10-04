@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "sourceRunUrl": "https://github.com/qa-test-automation-frameworks/aria-api-framework/actions/runs/35489588149",
+  "jobId": 106022104562,
+  "headSha": "8965530b64b8447ffba87c8e5cf3d4ff8835e11b",
+  "task": "liveSmokeTest",
+  "observedCounts": {
+    "tests": 7,
+    "passed": 4,
+    "failed": 3
+  },
+  "failedChecks": [
+    {
+      "class": "PaginationTests",
+      "endpoint": "GET https://api.github.com/rate_limit",
+      "status": 401
+    },
+    {
+      "class": "RepoApiTests",
+      "endpoint": "GET https://api.github.com/repos/octocat/Hello-World",
+      "status": 401
+    },
+    {
+      "class": "UserApiTests",
+      "endpoint": "GET https://api.github.com/users/octocat",
+      "status": 401
+    }
+  ],
+  "passedClasses": [
+    "AuthTests",
+    "CreateBookingTests",
+    "GetBookingTests",
+    "HealthCheckTests"
+  ],
+  "interpretation": "Public GitHub calls were unauthorized; Booker authentication and smoke checks passed. Logs do not establish whether the supplied GitHub credential was expired, revoked, malformed, or otherwise rejected."
+}

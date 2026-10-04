@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "baselineRun": "https://github.com/qa-test-automation-frameworks/aria-api-framework/actions/runs/37184801810",
+  "baselineSha": "098ab77b8583da3294762976d515c50f02e99ce0",
+  "before": {
+    "advisoryRecords": 28,
+    "affectedPackages": 11
+  },
+  "intermediate": {
+    "exitCode": 1,
+    "advisoryRecords": 3,
+    "affectedPackages": 3,
+    "cause": "HTTP 5 versions remained in Allure tmpTestImplementation; test constraints did not propagate"
+  },
+  "finalSourceScan": {
+    "command": "osv-scanner scan source -r . --format json",
+    "exitCode": 0,
+    "extractedPackages": 295,
+    "findings": 0,
+    "activeExclusions": 0
+  },
+  "scanner": {
+    "version": "2.3.8",
+    "binarySha256": "bc98e15319ed0d515e3f9235287ba53cdc5535d576d24fd573978ecfe9ab92dc",
+    "publisherChecksumVerified": true
+  },
+  "testedDependencyInputs": {
+    "build.gradle.kts": "0e75f6248b2ae7ba25747893d93f39f264fa9f784c588b325a3ba1ab9b5ea862",
+    "gradle.lockfile": "a2bedf163ff7360db86696d7afda76e65c3ff41fc856ec925209c57604d89009",
+    "gradle/libs.versions.toml": "f529c0f6e31592d0b52dd577d4b1fdf7a97e5e2af01072a41a1148e1b6984ab8",
+    "osv-scanner.toml": "63a09d2015a75ff5210619fbdfc6d2882c0f7d7cb623364ae3fb647d69dbbd12"
+  },
+  "quality": {
+    "command": "PATH=<pinned tools> ./gradlew spotlessApply check securityScan allureReport -PrequireOsvScanner=true --no-daemon --max-workers=2",
+    "exitCode": 0,
+    "mainTestCounts": {
+      "tests": 90,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 1
+    },
+    "mutationStatuses": {
+      "KILLED": 107,
+      "SURVIVED": 24,
+      "NO_COVERAGE": 9,
+      "TIMED_OUT": 2
+    },
+    "sbomScanExitCode": 0,
+    "docker": "unavailable locally; remote dedicated job required"
+  },
+  "nativeQualityLogSha256": "29f1dfef24851185e8d100fcf70154e634fff0c9b845fed00d2b27e2be3c95ae"
+}

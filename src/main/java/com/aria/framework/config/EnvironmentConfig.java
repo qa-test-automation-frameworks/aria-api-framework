@@ -58,4 +58,8 @@ public interface EnvironmentConfig extends Config {
     @Key("retry.jitterMs")
     @DefaultValue("250")
     long retryJitterMs();
+
+    @Key("retry.totalTimeoutMs")
+    @DefaultValue("30000")
+    long retryTotalTimeoutMs();
 }

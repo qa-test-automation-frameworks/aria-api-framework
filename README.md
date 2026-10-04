@@ -68,7 +68,7 @@ evidence. See [CHANGELOG.md](CHANGELOG.md).
 - Java 21
 - Docker Desktop
 - Gradle wrapper included in the repository
-- Optional GitHub PAT in `GITHUB_TOKEN` for authenticated GitHub tests
+- Optional GitHub PAT in `GITHUB_TOKEN` for local authenticated GitHub tests. Public CI smoke uses the short-lived Actions job token with `contents: read`; it does not require `ARIA_GITHUB_TOKEN`.
 
 ## Run Locally
 
@@ -148,6 +148,7 @@ retry.maxAttempts=3
 retry.baseDelayMs=1000
 retry.maxDelayMs=8000
 retry.jitterMs=250
+retry.totalTimeoutMs=30000
 sla.responseTimeMs=3000
 ```
 
@@ -160,7 +161,7 @@ Sensitive values should be supplied through environment variables or system prop
 - `BOOKER_PASSWORD`
 - `github.owner` and `github.repo` for GitHub issue write tests
 - `TIMEOUT_SECONDS`
-- `RETRY_MAX_ATTEMPTS`, `RETRY_BASE_DELAY_MS`, `RETRY_MAX_DELAY_MS`, and `RETRY_JITTER_MS`
+- `RETRY_MAX_ATTEMPTS`, `RETRY_BASE_DELAY_MS`, `RETRY_MAX_DELAY_MS`, `RETRY_JITTER_MS`, and `RETRY_TOTAL_TIMEOUT_MS`
 - `RESPONSE_TIME_SLA_MS`
 
 Configuration is validated at startup. Environment names must be one of `dev`, `staging`, or `prod`; base URLs must be absolute HTTP(S) URLs; timeout and retry values must be positive.
@@ -177,7 +178,9 @@ Response-time SLA thresholds are environment-configurable through `sla.responseT
 - CycloneDX SBOM generation in CI
 - Secret-sanitized failure diagnostics and structured test logs under `build/logs`
 
-GitHub Actions also runs dependency review, OSV scanning, Gradle wrapper validation, Docker-backed container tests, scheduled live smoke tests, and uploads Allure, SpotBugs, PIT mutation, test-result, log, SBOM, and OpenAPI coverage artifacts. Failure-only logs and test-result bundles are clearly labeled as failure diagnostics.
+GitHub Actions also runs dependency review, OSV scanning, Gradle wrapper validation, Docker-backed container tests, scheduled live smoke tests, and uploads Allure, SpotBugs, PIT mutation, test-result, log, SBOM, and OpenAPI coverage artifacts. Failure-only logs and test-result bundles are clearly labeled as failure diagnostics. Scheduled smoke is required by its aggregate gate. A manual CI dispatch can opt in with `run_live_smoke=true`; the default remains deterministic. Live JUnit/Allure diagnostics are retained even when that job fails. Existing Booker test credentials are required; a credential preflight is not a successful live test run.
+
+The aggregate policy is exercised by `bash scripts/test-ci-gates.sh`. Local vulnerability verification requires OSV v2 on PATH: `./gradlew securityScan -PrequireOsvScanner=true`. The tested scanner version is 2.3.8; the task scans its generated SBOM with `osv-scanner scan source --sbom`.
 
 ## Runtime Metrics and CI Shape
 

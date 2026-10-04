@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "baselineSha": "b3ad23349a6842bbc2f0adfebd31cb592d2865a7",
+  "testedSource": "working-tree snapshot before commit; hashes identify implementation inputs",
+  "runtime": {
+    "java": "Temurin 21.0.12.1+1",
+    "gradle": "8.7",
+    "platform": "Linux"
+  },
+  "focused": {
+    "tests": 45,
+    "failed": 0,
+    "skipped": 0,
+    "exitCode": 0
+  },
+  "negativeControl": {
+    "change": "Removed transport shutdown only from timeout catch; future cancellation remains",
+    "tests": 1,
+    "failed": 1,
+    "exitCode": 1,
+    "intendedFailure": "peerClosed latch remained false after caller deadline; warm-up and deadline exception assertions passed"
+  },
+  "sourceSha256": {
+    "src/main/java/com/aria/framework/utils/RetryUtils.java": "30eea09f5cfc1e639d1ae89ed96f11fa73913ffcc1ad35115549cd9161dd8b66",
+    "src/main/java/com/aria/framework/utils/RetryDeadline.java": "dadc9074c6c2195a099f49699ff116909e84d620c83e999ca729a2354a7ff672",
+    "src/main/java/com/aria/framework/clients/BaseApiClient.java": "103b9ae45a96d3b60ee48e1afd4cfd749b1eb1f6e3a962126cca1986f54545d7",
+    "src/main/java/com/aria/framework/clients/DeadlineTimeoutFilter.java": "e7b4eb57ed44184b25bc3f00367dd889bd462c7e0c883cfeedc04f0789f81275",
+    "src/test/java/com/aria/framework/utils/RetryDeadlineTest.java": "04426ca6938d5b56a6eead78bba50cb981a2889093f112394abf9399958079a0",
+    "src/test/java/com/aria/framework/utils/RetryTransportDeadlineTest.java": "64712a2e5da4723606b59347002a6a6db0d7505470b4aa8c66cb98b7cf22694b"
+  },
+  "finalQuality": {
+    "command": "./gradlew spotlessApply check securityScan allureReport --no-daemon --max-workers=2",
+    "exitCode": 0,
+    "mainTestCounts": {
+      "tests": 90,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 1
+    },
+    "mutationStatuses": {
+      "KILLED": 106,
+      "SURVIVED": 25,
+      "NO_COVERAGE": 9,
+      "TIMED_OUT": 2
+    },
+    "mutatedClasses": [
+      "com.aria.framework.reporting.RedactionPolicy",
+      "com.aria.framework.utils.RetryUtils"
+    ],
+    "localScanner": "SBOM only; OSV not installed",
+    "localDocker": "one dependent test skipped; dedicated CI is separate"
+  },
+  "finalSourceSha256": {
+    "src/main/java/com/aria/framework/utils/RetryUtils.java": "9def50d79eba4efcce68fb26061f882cb34514029cbf71887eaf7b93a3e91869",
+    "src/main/java/com/aria/framework/utils/RetryDeadline.java": "054dde31ea6a1cbf9382749308ebd06dbea8c575b01fab3c9d437fcfe2ae7913",
+    "src/main/java/com/aria/framework/clients/BaseApiClient.java": "8abd2c3f9562b6573823763f4f9a6d609241eb2683c51e2c35335394bc84d514",
+    "src/main/java/com/aria/framework/clients/DeadlineTimeoutFilter.java": "e7b4eb57ed44184b25bc3f00367dd889bd462c7e0c883cfeedc04f0789f81275",
+    "src/test/java/com/aria/framework/utils/RetryDeadlineTest.java": "04426ca6938d5b56a6eead78bba50cb981a2889093f112394abf9399958079a0",
+    "src/test/java/com/aria/framework/utils/RetryTransportDeadlineTest.java": "64712a2e5da4723606b59347002a6a6db0d7505470b4aa8c66cb98b7cf22694b",
+    "build.gradle.kts": "bf675da7656c54d0a05f70c9564d638ed3e68c96ee3801ad8f1dd384f8286b70",
+    "src/main/java/com/aria/framework/config/FrameworkConfig.java": "7aa19f55fb2252c4e54ddc67c7ac2ad0d5404223e86eb234e3ef1b8129aa6b31",
+    "src/main/java/com/aria/framework/config/ConfigManager.java": "0611b4ecd5247fd8f95713f6395f55059d1a3c16ac3242548eaa8c6adac8a691"
+  },
+  "repeatRenderer": {
+    "command": "./gradlew allureReport --rerun-tasks --no-daemon --max-workers=2",
+    "exitCode": 0,
+    "generatedReportWithExistingOutputDirectory": true
+  },
+  "nativeArtifacts": {
+    "focused.log.gz": {
+      "uncompressedSha256": "cbdffa8a2fcdfd95ed2b579a9b4a395b0f2ea0bdcdbaea5fb41039c2928538ba",
+      "format": "gzip of unchanged native output"
+    },
+    "quality-final.log.gz": {
+      "uncompressedSha256": "e3f149c78dafe488f44df3a23c0d242918dbdf1388be3de1f47085355752af5b",
+      "format": "gzip of unchanged native output"
+    },
+    "report-repeat.log.gz": {
+      "uncompressedSha256": "e044b363f7280fb3c762e51df74e6b546efc6dd71318f4212f79929562b60a67",
+      "format": "gzip of unchanged native output"
+    },
+    "future-only-cancellation-negative.xml.gz": {
+      "uncompressedSha256": "c3875dc4325edb2cf8fb1ea73afcb68d69aa4cdd524d8956cac30d1385ab1eae",
+      "format": "gzip of unchanged native output"
+    }
+  }
+}

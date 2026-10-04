@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "testedCommitSha": "7e813531e71a026b97bab451f7c22a347f3ca871",
+  "manualRun": {
+    "id": 37186033572,
+    "url": "https://github.com/qa-test-automation-frameworks/aria-api-framework/actions/runs/37186033572",
+    "event": "workflow_dispatch",
+    "runLiveSmoke": true,
+    "conclusion": "success",
+    "liveJobId": 111388010554,
+    "scannerJobId": 111388010629,
+    "containerJobId": 111388010431,
+    "aggregateJobId": 111388611103
+  },
+  "prRun": {
+    "id": 37186036495,
+    "url": "https://github.com/qa-test-automation-frameworks/aria-api-framework/actions/runs/37186036495",
+    "conclusion": "success",
+    "live": "skipped as unrequested",
+    "dependencyReview": "success"
+  },
+  "liveCounts": {
+    "tests": 7,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "liveClasses": [
+    "com.aria.framework.github.PaginationTests",
+    "com.aria.framework.github.RepoApiTests",
+    "com.aria.framework.github.UserApiTests",
+    "com.aria.framework.restfulbooker.AuthTests",
+    "com.aria.framework.restfulbooker.CreateBookingTests",
+    "com.aria.framework.restfulbooker.GetBookingTests",
+    "com.aria.framework.restfulbooker.HealthCheckTests"
+  ],
+  "sourceScanner": {
+    "extractedPackages": 295,
+    "findings": 0,
+    "reporter": "No issues found"
+  },
+  "dockerEvidence": "Real Docker connection and wiremock/wiremock:3.5.4 startup; ContainerizedWireMockBookingTest passed",
+  "artifact": {
+    "id": 11296279348,
+    "name": "live-smoke-evidence",
+    "digest": "sha256:f0ecf5c7345eaf4e02f6730b7e30e2fcf68cd1547e6cb4184d8bab6a82666d20",
+    "expires_at": "2026-11-03T07:32:53Z",
+    "expired": false
+  },
+  "nativeUncompressedSha256": {
+    "TEST-com.aria.framework.restfulbooker.HealthCheckTests.xml.gz": "8d6fd72a9c537e3bb3de2d88c6d972369c3aaadad661aa85d24cc2db69d2cbe0",
+    "TEST-com.aria.framework.github.UserApiTests.xml.gz": "3f70bba14f7197a1efdc0493cfd2625e35e4e3b6d3a63544bf54584c4756996c",
+    "TEST-com.aria.framework.github.PaginationTests.xml.gz": "8972fcd06be5da597e857de92c9503f6374737f4d90c317a660cb1cb4af207bf",
+    "TEST-com.aria.framework.restfulbooker.GetBookingTests.xml.gz": "28e9b508f539dad21bf7c97ed32e960ced923c7fdf0d794d7765d2fe5630a6c5",
+    "TEST-com.aria.framework.restfulbooker.AuthTests.xml.gz": "0fb70c6ab16ba4bfc29ba1812b1f68a707d52d031701a40cd784b8d3ab6eed44",
+    "TEST-com.aria.framework.restfulbooker.CreateBookingTests.xml.gz": "d8aa72df0cbbe106a0e64366dffbc7b7b4696d23864ad8b79173410259209385",
+    "TEST-com.aria.framework.github.RepoApiTests.xml.gz": "65e5b4ff8803a79d917504694bbb4d0503ad6d500824ffe1077c79ed5fa13b01",
+    "live-job.log.gz": "87b257fef468333f3e16790329b19b4ad4c723570f5a634330a405eafd52f7af",
+    "osv-job.log.gz": "2c59f95cd68a5f67d6bcafe5cd3b3071499aced2ae3d2825e1f9a5772aa811ac",
+    "container-job.log.gz": "0d09c4f92975ca945b55a0e6806522b1ccc02c40de730d104c35405544dcbfe2"
+  }
+}
