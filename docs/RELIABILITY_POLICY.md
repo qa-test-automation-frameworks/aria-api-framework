@@ -11,6 +11,15 @@
 - Mutations may retry only when the caller supplies an idempotency guarantee.
 - Authentication, schema, assertion, and non-rate-limit 4xx failures are not retried.
 - Scheduled live smoke failures are investigated separately from deterministic gate failures.
+- `Retry-After` accepts nonnegative delta-seconds and the three HTTP-date formats.
+  Past dates add no wait. Malformed/negative values use bounded local backoff;
+  oversized valid values do not overflow or become an early retry.
+- The configured delay cap includes jitter. If a server-requested delay exceeds
+  that cap, the original rate-limit response is returned rather than retrying
+  before the server permits it. Existing callers can assert/handle that response.
+- Attempt and delay bounds are not a total operation deadline. A slow request
+  supplier can still exceed them; end-to-end transport/deadline enforcement is
+  pending roadmap F05 work. Do not claim it from the delay repair alone.
 
 ## Quarantine Rules
 

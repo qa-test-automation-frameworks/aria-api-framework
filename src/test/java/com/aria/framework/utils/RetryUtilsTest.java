@@ -99,11 +99,11 @@ class RetryUtilsTest {
     }
 
     @Test
-    void usesRetryAfterHeaderDelayCappedAtMaxDelay() {
+    void doesNotRetryEarlierThanRetryAfterWhenServerDelayExceedsPolicyCap() {
         List<Long> sleeps = new ArrayList<>();
         AtomicInteger calls = new AtomicInteger();
 
-        RetryUtils.executeWithRetry(
+        Response response = RetryUtils.executeWithRetry(
             "GET",
             () -> calls.incrementAndGet() == 1 ? response(429, "5") : response(200, null),
             new RetryUtils.RetryPolicy(2, 1, 2_000, 0),
@@ -111,7 +111,9 @@ class RetryUtilsTest {
             true
         );
 
-        assertThat(sleeps).containsExactly(2_000L);
+        assertThat(response.statusCode()).isEqualTo(429);
+        assertThat(calls).hasValue(1);
+        assertThat(sleeps).isEmpty();
     }
 
     @Test

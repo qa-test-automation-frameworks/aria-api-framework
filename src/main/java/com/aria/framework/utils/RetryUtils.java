@@ -10,7 +10,19 @@ import org.slf4j.LoggerFactory;
 import java.net.ConnectException;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.time.Clock;
 import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.ResolverStyle;
+import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoField;
+import java.util.Locale;
+import java.util.OptionalLong;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Supplier;
 
@@ -86,6 +98,17 @@ public final class RetryUtils {
         Sleeper sleeper,
         boolean retryTransientExceptions
     ) {
+        return executeWithRetry(method, requestSupplier, policy, sleeper, retryTransientExceptions, Clock.systemUTC());
+    }
+
+    public static Response executeWithRetry(
+        String method,
+        Supplier<Response> requestSupplier,
+        RetryPolicy policy,
+        Sleeper sleeper,
+        boolean retryTransientExceptions,
+        Clock clock
+    ) {
         int attempt = 1;
 
         while (true) {
@@ -94,7 +117,7 @@ public final class RetryUtils {
                 response = requestSupplier.get();
             } catch (RuntimeException exception) {
                 if (retryTransientExceptions && isTransientNetworkException(exception) && attempt < policy.maxAttempts()) {
-                    sleepBeforeRetry(method, "transient exception " + exception.getClass().getSimpleName(), attempt, policy, sleeper, null);
+                    sleepBeforeRetry(method, "transient exception " + exception.getClass().getSimpleName(), attempt, policy, sleeper, null, clock);
                     attempt++;
                     continue;
                 }
@@ -103,7 +126,9 @@ public final class RetryUtils {
             int statusCode = response.getStatusCode();
 
             if (isRetryableRateLimit(response) && attempt < policy.maxAttempts()) {
-                sleepBeforeRetry(method, "HTTP " + statusCode, attempt, policy, sleeper, response);
+                if (!sleepBeforeRetry(method, "HTTP " + statusCode, attempt, policy, sleeper, response, clock)) {
+                    return response;
+                }
                 attempt++;
             } else {
                 return response;
@@ -127,37 +152,78 @@ public final class RetryUtils {
         return "0".equals(remaining == null ? null : remaining.trim());
     }
 
-    private static long calculateDelayMs(Response response, int attempt, RetryPolicy policy) {
-        String retryAfter = response.header("Retry-After");
-        if (retryAfter != null && !retryAfter.isBlank()) {
+    private static OptionalLong retryAfterDelayMs(Response response, Clock clock) {
+        String header = response.header("Retry-After");
+        if (header == null || header.isBlank()) return OptionalLong.empty();
+        String value = header.trim();
+        if (value.matches("[0-9]+")) {
             try {
-                return Math.min(Duration.ofSeconds(Long.parseLong(retryAfter.trim())).toMillis(), policy.maxDelayMs());
+                long seconds = Long.parseLong(value);
+                return OptionalLong.of(seconds > Long.MAX_VALUE / 1_000 ? Long.MAX_VALUE : seconds * 1_000);
             } catch (NumberFormatException ignored) {
-                log.debug("Ignoring non-numeric Retry-After header: {}", retryAfter);
+                // A syntactically valid, huge positive delay must not become an early retry.
+                return OptionalLong.of(Long.MAX_VALUE);
             }
         }
-
-        long exponentialDelay = policy.baseDelayMs() * (1L << Math.max(0, attempt - 1));
-        long boundedDelay = Math.min(exponentialDelay, policy.maxDelayMs());
-        return boundedDelay + ThreadLocalRandom.current().nextLong(policy.jitterMs() + 1L);
+        try {
+            Duration delay = Duration.between(clock.instant(), parseHttpDate(value, clock));
+            if (delay.isNegative() || delay.isZero()) return OptionalLong.of(0);
+            long extraMs = (delay.getNano() + 999_999L) / 1_000_000;
+            long seconds = delay.getSeconds();
+            return OptionalLong.of(seconds > (Long.MAX_VALUE - extraMs) / 1_000
+                ? Long.MAX_VALUE : seconds * 1_000 + extraMs);
+        } catch (DateTimeParseException ignored) {
+            // Do not log arbitrary header text; malformed/negative values use local backoff.
+            return OptionalLong.empty();
+        }
     }
 
-    private static void sleepBeforeRetry(
+    private static Instant parseHttpDate(String value, Clock clock) {
+        try {
+            return ZonedDateTime.parse(value, DateTimeFormatter.RFC_1123_DATE_TIME).toInstant();
+        } catch (DateTimeParseException ignored) {
+            // RFC 9110 recipients also accept obsolete RFC850 and asctime dates.
+        }
+        if (value.matches("(?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday), .*")) {
+            int baseYear = clock.instant().atZone(ZoneOffset.UTC).getYear() - 49;
+            DateTimeFormatter formatter = new DateTimeFormatterBuilder()
+                .appendPattern("dd-MMM-").appendValueReduced(ChronoField.YEAR, 2, 2, baseYear)
+                .appendPattern(" HH:mm:ss 'GMT'").toFormatter(Locale.US)
+                .withResolverStyle(ResolverStyle.STRICT);
+            LocalDateTime date = LocalDateTime.parse(value.substring(value.indexOf(',') + 1).trim(), formatter);
+            if (date.toInstant(ZoneOffset.UTC).isAfter(clock.instant().atZone(ZoneOffset.UTC).plusYears(50).toInstant())) {
+                date = date.minusYears(100);
+            }
+            return date.toInstant(ZoneOffset.UTC);
+        }
+        return LocalDateTime.parse(value.replaceAll(" +", " "),
+            DateTimeFormatter.ofPattern("EEE MMM d HH:mm:ss uuuu", Locale.US)
+                .withResolverStyle(ResolverStyle.STRICT)).toInstant(ZoneOffset.UTC);
+    }
+
+    private static boolean sleepBeforeRetry(
         String method,
         String reason,
         int attempt,
         RetryPolicy policy,
         Sleeper sleeper,
-        Response response
+        Response response,
+        Clock clock
     ) {
-        long retryDelayMs = response == null
-            ? calculateDelayMsWithoutResponse(attempt, policy)
-            : calculateDelayMs(response, attempt, policy);
+        OptionalLong serverDelay = response == null ? OptionalLong.empty() : retryAfterDelayMs(response, clock);
+        if (serverDelay.isPresent() && serverDelay.getAsLong() > policy.maxDelayMs()) {
+            log.warn("{} retry stopped: server delay exceeds the {}ms policy limit; not retrying early",
+                method, policy.maxDelayMs());
+            return false;
+        }
+        long retryDelayMs = serverDelay.isPresent()
+            ? serverDelay.getAsLong() : calculateDelayMsWithoutResponse(attempt, policy);
         log.warn("{} retry triggered by {}. Retrying attempt {}/{} in {}ms...",
             method, reason, attempt + 1, policy.maxAttempts(), retryDelayMs);
 
         try {
             sleeper.sleep(retryDelayMs);
+            return true;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new RetryInterruptedException("Retry thread sleep was interrupted", e);
@@ -165,9 +231,15 @@ public final class RetryUtils {
     }
 
     private static long calculateDelayMsWithoutResponse(int attempt, RetryPolicy policy) {
-        long exponentialDelay = policy.baseDelayMs() * (1L << Math.max(0, attempt - 1));
-        long boundedDelay = Math.min(exponentialDelay, policy.maxDelayMs());
-        return boundedDelay + ThreadLocalRandom.current().nextLong(policy.jitterMs() + 1L);
+        long delay = policy.baseDelayMs();
+        // Saturation bounds this loop to at most 63 doublings even for huge attempt counts.
+        for (int doubling = 1; doubling < attempt && delay < policy.maxDelayMs(); doubling++) {
+            delay = delay > policy.maxDelayMs() / 2 ? policy.maxDelayMs()
+                : Math.min(delay * 2, policy.maxDelayMs());
+        }
+        long jitterLimit = Math.min(policy.jitterMs(), policy.maxDelayMs() - delay);
+        // baseDelayMs is positive, so jitterLimit + 1 cannot overflow even at Long.MAX_VALUE.
+        return delay + ThreadLocalRandom.current().nextLong(jitterLimit + 1);
     }
 
     private static boolean isTransientNetworkException(Throwable exception) {
@@ -184,6 +256,12 @@ public final class RetryUtils {
     }
 
     public record RetryPolicy(int maxAttempts, long baseDelayMs, long maxDelayMs, long jitterMs) {
+        public RetryPolicy {
+            if (maxAttempts <= 0 || baseDelayMs <= 0 || maxDelayMs < baseDelayMs || jitterMs < 0) {
+                throw new IllegalArgumentException("Retry policy requires positive attempts/base delay, max >= base, and nonnegative jitter");
+            }
+        }
+
         public static RetryPolicy from(FrameworkConfig config) {
             return new RetryPolicy(
                 config.retryMaxAttempts(),

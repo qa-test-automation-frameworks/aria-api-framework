@@ -16,6 +16,7 @@ import org.junit.jupiter.api.parallel.ExecutionMode;
 
 import java.net.SocketException;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
@@ -151,6 +152,7 @@ class WireMockBookingTest {
                     .withBody("[{\"bookingid\":1}]")));
         });
         AtomicInteger calls = new AtomicInteger();
+        AtomicLong requestedSleep = new AtomicLong(-1);
 
         Response response = step("Call GET /booking through retry utility", () -> RetryUtils.executeWithRetry(
             "GET",
@@ -161,8 +163,8 @@ class WireMockBookingTest {
                     .accept("application/json")
                     .get("/booking");
             },
-            new RetryUtils.RetryPolicy(2, 1, 10, 0),
-            ignored -> { },
+            new RetryUtils.RetryPolicy(2, 1, 1_000, 0),
+            requestedSleep::set,
             true
         ));
         log("Retry scenario returned {} after {} calls", response.statusCode(), calls.get());
@@ -171,6 +173,7 @@ class WireMockBookingTest {
         assertJsonContentType(response);
         assertThat(response.jsonPath().getInt("[0].bookingid")).isEqualTo(1);
         assertThat(calls).hasValue(2);
+        assertThat(requestedSleep).hasValue(1_000);
     }
 
     /**
