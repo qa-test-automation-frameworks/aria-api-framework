@@ -17,9 +17,28 @@
 - The configured delay cap includes jitter. If a server-requested delay exceeds
   that cap, the original rate-limit response is returned rather than retrying
   before the server permits it. Existing callers can assert/handle that response.
-- Attempt and delay bounds are not a total operation deadline. A slow request
-  supplier can still exceed them; end-to-end transport/deadline enforcement is
-  pending roadmap F05 work. Do not claim it from the delay repair alone.
+- `retry.totalTimeoutMs` / `RETRY_TOTAL_TIMEOUT_MS` bounds one public operation
+  (default 30,000ms), including request execution, body buffering, attempts and
+  sleeps. It uses monotonic elapsed time; HTTP dates use a wall clock separately.
+  Nested wrappers retain the outer budget. Existing four-argument retry policies
+  and twelve-argument runtime configs retain the 30-second default.
+- A rate-limit response is returned unchanged if its delay cannot fit the remaining
+  budget; the framework does not retry early. An exhausted operation or an
+  infeasible transient-exception backoff raises `RetryDeadlineExceededException`.
+  Per-request transport failures can still surface before the operation deadline.
+- Managed `BaseApiClient` requests receive the remaining connect/socket/pool
+  timeout at dispatch, including prebuilt specifications. Response bodies are
+  buffered inside the operation. Deadline/interruption cancellation shuts down
+  their registered Apache HTTP connections; normal attempts close transports too.
+- Operations run on fresh daemon workers with copied MDC and inherited Allure
+  context. At most 32 unfinished operations can occupy slots per JVM; excess
+  calls fail before starting a supplier. A cancelled supplier that ignores
+  interruption keeps its slot until it actually exits. The framework cannot
+  forcibly stop arbitrary user code or close transports it does not own; do not
+  interpret the caller deadline as universal background cancellation.
+- Single-attempt writes and authentication use the same configured operation
+  budget without gaining retries. Caller interruption is preserved and starts no
+  request when already set. No JUnit test retries were introduced.
 
 ## Quarantine Rules
 

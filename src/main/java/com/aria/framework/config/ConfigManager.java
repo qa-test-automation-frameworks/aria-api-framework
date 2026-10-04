@@ -51,6 +51,10 @@ public final class ConfigManager {
         requirePositive("retry.baseDelayMs", getRetryBaseDelayMs());
         requirePositive("retry.maxDelayMs", getRetryMaxDelayMs());
         requireNonNegative("retry.jitterMs", getRetryJitterMs());
+        requirePositive("retry.totalTimeoutMs", getRetryTotalTimeoutMs());
+        if (getRetryTotalTimeoutMs() > Long.MAX_VALUE / 1_000_000) {
+            throw new IllegalArgumentException("retry.totalTimeoutMs must fit monotonic nanoseconds");
+        }
         if (getRetryMaxDelayMs() < getRetryBaseDelayMs()) {
             throw new IllegalArgumentException("retry.maxDelayMs must be greater than or equal to retry.baseDelayMs");
         }
@@ -107,6 +111,10 @@ public final class ConfigManager {
         return frameworkConfig.retryJitterMs();
     }
 
+    public long getRetryTotalTimeoutMs() {
+        return frameworkConfig.retryTotalTimeoutMs();
+    }
+
     private static FrameworkConfig resolveFrameworkConfig(EnvironmentConfig config, String environment) {
         return new FrameworkConfig(
             environment,
@@ -132,7 +140,8 @@ public final class ConfigManager {
             intFromOverride("RETRY_MAX_ATTEMPTS", "retry.maxAttempts", config.retryMaxAttempts()),
             longFromOverride("RETRY_BASE_DELAY_MS", "retry.baseDelayMs", config.retryBaseDelayMs()),
             longFromOverride("RETRY_MAX_DELAY_MS", "retry.maxDelayMs", config.retryMaxDelayMs()),
-            longFromOverride("RETRY_JITTER_MS", "retry.jitterMs", config.retryJitterMs())
+            longFromOverride("RETRY_JITTER_MS", "retry.jitterMs", config.retryJitterMs()),
+            longFromOverride("RETRY_TOTAL_TIMEOUT_MS", "retry.totalTimeoutMs", config.retryTotalTimeoutMs())
         );
     }
 

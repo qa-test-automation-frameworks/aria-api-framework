@@ -35,7 +35,7 @@ public class AuthApiClient extends BaseApiClient {
      * @return Response raw API Response
      */
     public Response authenticate(AuthRequest request) {
-        return RetryUtils.executeWithoutRetry(() -> RestAssured.given()
+        return RetryUtils.executeWithoutRetry(config, () -> RestAssured.given()
             .spec(getRequestSpec(baseUrl))
             .body(JsonUtils.serialize(request))
             .post("/auth"));

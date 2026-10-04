@@ -148,6 +148,7 @@ retry.maxAttempts=3
 retry.baseDelayMs=1000
 retry.maxDelayMs=8000
 retry.jitterMs=250
+retry.totalTimeoutMs=30000
 sla.responseTimeMs=3000
 ```
 
@@ -160,7 +161,7 @@ Sensitive values should be supplied through environment variables or system prop
 - `BOOKER_PASSWORD`
 - `github.owner` and `github.repo` for GitHub issue write tests
 - `TIMEOUT_SECONDS`
-- `RETRY_MAX_ATTEMPTS`, `RETRY_BASE_DELAY_MS`, `RETRY_MAX_DELAY_MS`, and `RETRY_JITTER_MS`
+- `RETRY_MAX_ATTEMPTS`, `RETRY_BASE_DELAY_MS`, `RETRY_MAX_DELAY_MS`, `RETRY_JITTER_MS`, and `RETRY_TOTAL_TIMEOUT_MS`
 - `RESPONSE_TIME_SLA_MS`
 
 Configuration is validated at startup. Environment names must be one of `dev`, `staging`, or `prod`; base URLs must be absolute HTTP(S) URLs; timeout and retry values must be positive.

@@ -2,6 +2,7 @@ package com.aria.framework.utils;
 
 import com.aria.framework.config.ConfigManager;
 import com.aria.framework.config.FrameworkConfig;
+import com.aria.framework.exceptions.RetryDeadlineExceededException;
 import com.aria.framework.exceptions.RetryInterruptedException;
 import io.restassured.response.Response;
 import org.slf4j.Logger;
@@ -21,7 +22,10 @@ import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.ResolverStyle;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoField;
+import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.Locale;
+import java.util.Set;
 import java.util.OptionalLong;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Supplier;
@@ -56,7 +60,11 @@ public final class RetryUtils {
     }
 
     public static Response executeWithoutRetry(Supplier<Response> requestSupplier) {
-        return requestSupplier.get();
+        return executeWithoutRetry(ConfigManager.defaults().getFrameworkConfig(), requestSupplier);
+    }
+
+    public static Response executeWithoutRetry(FrameworkConfig config, Supplier<Response> requestSupplier) {
+        return RetryDeadline.run(config.retryTotalTimeoutMs(), requestSupplier);
     }
 
     public static Response executeMutationWithRetry(
@@ -77,7 +85,7 @@ public final class RetryUtils {
         Supplier<Response> requestSupplier
     ) {
         if (!idempotencyControlled) {
-            return executeWithoutRetry(requestSupplier);
+            return executeWithoutRetry(config, requestSupplier);
         }
         return executeWithPolicy(method, true, requestSupplier, RetryPolicy.from(config));
     }
@@ -109,9 +117,16 @@ public final class RetryUtils {
         boolean retryTransientExceptions,
         Clock clock
     ) {
+        return RetryDeadline.run(policy.totalTimeoutMs(),
+            () -> executeAttempts(method, requestSupplier, policy, sleeper, retryTransientExceptions, clock));
+    }
+
+    private static Response executeAttempts(String method, Supplier<Response> requestSupplier,
+        RetryPolicy policy, Sleeper sleeper, boolean retryTransientExceptions, Clock clock) {
         int attempt = 1;
 
         while (true) {
+            RetryDeadline.remainingMillis();
             Response response;
             try {
                 response = requestSupplier.get();
@@ -218,6 +233,13 @@ public final class RetryUtils {
         }
         long retryDelayMs = serverDelay.isPresent()
             ? serverDelay.getAsLong() : calculateDelayMsWithoutResponse(attempt, policy);
+        if (retryDelayMs >= RetryDeadline.remainingMillis()) {
+            if (response != null) {
+                log.warn("{} retry stopped: delay does not fit remaining operation budget", method);
+                return false;
+            }
+            throw new RetryDeadlineExceededException("Transient retry delay exceeds remaining operation budget");
+        }
         log.warn("{} retry triggered by {}. Retrying attempt {}/{} in {}ms...",
             method, reason, attempt + 1, policy.maxAttempts(), retryDelayMs);
 
@@ -230,7 +252,7 @@ public final class RetryUtils {
         }
     }
 
-    private static long calculateDelayMsWithoutResponse(int attempt, RetryPolicy policy) {
+    static long calculateDelayMsWithoutResponse(int attempt, RetryPolicy policy) {
         long delay = policy.baseDelayMs();
         // Saturation bounds this loop to at most 63 doublings even for huge attempt counts.
         for (int doubling = 1; doubling < attempt && delay < policy.maxDelayMs(); doubling++) {
@@ -244,7 +266,8 @@ public final class RetryUtils {
 
     private static boolean isTransientNetworkException(Throwable exception) {
         Throwable current = exception;
-        while (current != null) {
+        Set<Throwable> seen = Collections.newSetFromMap(new IdentityHashMap<>());
+        while (current != null && seen.add(current)) {
             if (current instanceof SocketTimeoutException
                 || current instanceof SocketException
                 || current instanceof ConnectException) {
@@ -255,8 +278,14 @@ public final class RetryUtils {
         return false;
     }
 
-    public record RetryPolicy(int maxAttempts, long baseDelayMs, long maxDelayMs, long jitterMs) {
+    public record RetryPolicy(int maxAttempts, long baseDelayMs, long maxDelayMs, long jitterMs, long totalTimeoutMs) {
+        public RetryPolicy(int maxAttempts, long baseDelayMs, long maxDelayMs, long jitterMs) {
+            this(maxAttempts, baseDelayMs, maxDelayMs, jitterMs, RetryDeadline.DEFAULT_TIMEOUT_MS);
+        }
         public RetryPolicy {
+            if (totalTimeoutMs <= 0 || totalTimeoutMs > Long.MAX_VALUE / 1_000_000) {
+                throw new IllegalArgumentException("Operation timeout must be positive and fit monotonic nanoseconds");
+            }
             if (maxAttempts <= 0 || baseDelayMs <= 0 || maxDelayMs < baseDelayMs || jitterMs < 0) {
                 throw new IllegalArgumentException("Retry policy requires positive attempts/base delay, max >= base, and nonnegative jitter");
             }
@@ -267,7 +296,8 @@ public final class RetryUtils {
                 config.retryMaxAttempts(),
                 config.retryBaseDelayMs(),
                 config.retryMaxDelayMs(),
-                config.retryJitterMs()
+                config.retryJitterMs(),
+                config.retryTotalTimeoutMs()
             );
         }
     }

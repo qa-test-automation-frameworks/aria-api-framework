@@ -30,7 +30,8 @@ class EnvironmentPropertiesTest {
         "retry.maxAttempts",
         "retry.baseDelayMs",
         "retry.maxDelayMs",
-        "retry.jitterMs"
+        "retry.jitterMs",
+        "retry.totalTimeoutMs"
     );
 
     @Test
@@ -90,7 +91,8 @@ class EnvironmentPropertiesTest {
             Map.entry("retry.maxAttempts", "4"),
             Map.entry("retry.baseDelayMs", "25"),
             Map.entry("retry.maxDelayMs", "250"),
-            Map.entry("retry.jitterMs", "5")
+            Map.entry("retry.jitterMs", "5"),
+            Map.entry("retry.totalTimeoutMs", "1700")
         );
         Map<String, String> previousValues = snapshotSystemProperties(overrides.keySet());
 
@@ -110,6 +112,7 @@ class EnvironmentPropertiesTest {
             assertThat(config.retryBaseDelayMs()).isEqualTo(25);
             assertThat(config.retryMaxDelayMs()).isEqualTo(250);
             assertThat(config.retryJitterMs()).isEqualTo(5);
+            assertThat(config.retryTotalTimeoutMs()).isEqualTo(1700);
         } finally {
             restoreSystemProperties(previousValues);
         }

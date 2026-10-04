@@ -86,13 +86,13 @@ class RetryDelaySafetyTest {
 
     @Test
     void exponentialMultiplicationSaturatesWithoutNegativeDelay() {
-        AtomicInteger calls = new AtomicInteger();
-        List<Long> sleeps = new ArrayList<>();
         long base = Long.MAX_VALUE / 2 + 1;
-        RetryUtils.executeWithRetry("GET",
-            () -> calls.incrementAndGet() < 4 ? rateLimit(null) : ok(),
-            new RetryUtils.RetryPolicy(4, base, Long.MAX_VALUE, 0), sleeps::add, true);
-        assertThat(sleeps).containsExactly(base, Long.MAX_VALUE, Long.MAX_VALUE);
+        RetryUtils.RetryPolicy policy = new RetryUtils.RetryPolicy(4, base, Long.MAX_VALUE, 0);
+        assertThat(List.of(
+            RetryUtils.calculateDelayMsWithoutResponse(1, policy),
+            RetryUtils.calculateDelayMsWithoutResponse(2, policy),
+            RetryUtils.calculateDelayMsWithoutResponse(3, policy)))
+            .containsExactly(base, Long.MAX_VALUE, Long.MAX_VALUE);
     }
 
     @Test

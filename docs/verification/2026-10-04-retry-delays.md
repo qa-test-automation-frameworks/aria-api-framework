@@ -68,3 +68,7 @@ can still exceed a sleep/attempt budget. The next phase must bound request time
 and sleeps together, preserve safe mutation semantics, handle deadline exhaustion
 and interruption, and verify real transport behavior before claiming end-to-end
 bounds. Remote current-source CI and Docker/OSV results remain separate evidence.
+
+## Subsequent deadline work
+
+Phase B is documented in [the operation deadline verification](2026-10-04-operation-deadline.md). The phase A counts and limitations above remain evidence for that earlier implementation.

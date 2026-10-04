@@ -64,14 +64,14 @@ public class BookingApiClient extends BaseApiClient {
      * POST /booking - Create a new booking.
      */
     public Response createBooking(BookingRequest request) {
-        return RetryUtils.executeWithoutRetry(() -> RestAssured.given()
+        return RetryUtils.executeWithoutRetry(config, () -> RestAssured.given()
             .spec(getRequestSpec(baseUrl))
             .body(JsonUtils.serialize(request))
             .post("/booking"));
     }
 
     public Response createBookingPayload(Object request) {
-        return RetryUtils.executeWithoutRetry(() -> RestAssured.given()
+        return RetryUtils.executeWithoutRetry(config, () -> RestAssured.given()
             .spec(getRequestSpec(baseUrl))
             .body(JsonUtils.serialize(request))
             .post("/booking"));
@@ -103,7 +103,7 @@ public class BookingApiClient extends BaseApiClient {
     }
 
     public Response updateBookingWithoutAuth(int bookingId, BookingRequest request) {
-        return RetryUtils.executeWithoutRetry(() -> RestAssured.given()
+        return RetryUtils.executeWithoutRetry(config, () -> RestAssured.given()
             .spec(bookingSpec(bookingId))
             .body(JsonUtils.serialize(request))
             .put("/booking/{id}"));
@@ -120,7 +120,7 @@ public class BookingApiClient extends BaseApiClient {
     }
 
     public Response partialUpdateBookingWithoutAuth(int bookingId, Map<String, Object> fields) {
-        return RetryUtils.executeWithoutRetry(() -> RestAssured.given()
+        return RetryUtils.executeWithoutRetry(config, () -> RestAssured.given()
             .spec(bookingSpec(bookingId))
             .body(fields)
             .patch("/booking/{id}"));
@@ -130,13 +130,13 @@ public class BookingApiClient extends BaseApiClient {
      * DELETE /booking/{id} - Delete an existing booking.
      */
     public Response deleteBooking(int bookingId, String token) {
-        return RetryUtils.executeWithoutRetry(() -> RestAssured.given()
+        return RetryUtils.executeWithoutRetry(config, () -> RestAssured.given()
             .spec(authenticatedBookingSpec(bookingId, token))
             .delete("/booking/{id}"));
     }
 
     public Response deleteBookingWithoutAuth(int bookingId) {
-        return RetryUtils.executeWithoutRetry(() -> RestAssured.given()
+        return RetryUtils.executeWithoutRetry(config, () -> RestAssured.given()
             .spec(bookingSpec(bookingId))
             .delete("/booking/{id}"));
     }
@@ -153,7 +153,7 @@ public class BookingApiClient extends BaseApiClient {
     }
 
     public Response optionsBooking() {
-        return RetryUtils.executeWithoutRetry(() -> RestAssured.given()
+        return RetryUtils.executeWithoutRetry(config, () -> RestAssured.given()
             .spec(getRequestSpec(baseUrl))
             .options("/booking"));
     }
