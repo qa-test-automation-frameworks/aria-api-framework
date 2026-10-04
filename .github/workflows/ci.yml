@@ -59,6 +59,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
 
+      - name: Set up Node for evidence contract validation
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
+        with:
+          node-version-file: .nvmrc
+
+      - name: Record deterministic suite start
+        run: echo "EVIDENCE_STARTED_AT=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_ENV"
+
       - name: Set up Java 21
         uses: actions/setup-java@0f481fcb613427c0f801b606911222b5b6f3083a # v5
         with:
@@ -72,8 +80,30 @@ jobs:
       - name: Verify CI gate policy controls
         run: bash scripts/test-ci-gates.sh
 
+      - name: Test native JUnit evidence adapter
+        run: python3 scripts/test_emit_junit_evidence.py -v
+
       - name: Run Gradle quality gate
         run: ./gradlew clean check securityScan allureReport -Denv=${ENV} --parallel
+
+      - name: Collect deterministic JUnit evidence
+        if: always()
+        run: python3 scripts/emit_junit_evidence.py --reports build/test-results/test --output build/evidence/deterministic.json --scope aria.deterministic
+
+      - name: Validate deterministic evidence
+        if: always()
+        run: node scripts/validate-evidence.mjs build/evidence/deterministic.json
+
+      - name: Upload deterministic evidence and native reports
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: evidence-aria-deterministic
+          path: |
+            build/evidence/deterministic.json
+            build/test-results/test/TEST-*.xml
+          if-no-files-found: error
+          retention-days: 30
 
       - name: Upload SBOM
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
@@ -134,6 +164,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
 
+      - name: Set up Node for evidence contract validation
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
+        with:
+          node-version-file: .nvmrc
+
+      - name: Record container suite start
+        run: echo "EVIDENCE_STARTED_AT=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_ENV"
+
       - name: Set up Java 21
         uses: actions/setup-java@0f481fcb613427c0f801b606911222b5b6f3083a # v5
         with:
@@ -144,14 +182,90 @@ jobs:
       - name: Run Docker-backed container tests
         run: ./gradlew containerTest -Denv=${ENV}
 
+      - name: Collect container JUnit evidence
+        if: always()
+        run: python3 scripts/emit_junit_evidence.py --reports build/test-results/containerTest --output build/evidence/container.json --scope aria.container
+
+      - name: Validate container evidence
+        if: always()
+        run: node scripts/validate-evidence.mjs build/evidence/container.json
+
+      - name: Upload container evidence and native reports
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: evidence-aria-container
+          path: |
+            build/evidence/container.json
+            build/test-results/containerTest/TEST-*.xml
+          if-no-files-found: error
+          retention-days: 30
+
+  evidence-failure-control:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+
+      - name: Set up Node for evidence contract validation
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
+        with:
+          node-version-file: .nvmrc
+
+      - name: Set up Java 21
+        uses: actions/setup-java@0f481fcb613427c0f801b606911222b5b6f3083a # v5
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: gradle
+
+      - name: Record failure-control start
+        run: echo "EVIDENCE_STARTED_AT=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_ENV"
+
+      - name: Run isolated intentional failure
+        id: control
+        continue-on-error: true
+        run: ./gradlew evidenceFailureControlTest
+
+      - name: Require the native control to fail
+        if: always()
+        env:
+          NATIVE_CONTROL_OUTCOME: ${{ steps.control.outcome }}
+        run: test "$NATIVE_CONTROL_OUTCOME" = failure
+
+      - name: Collect failure-control evidence
+        if: always()
+        run: python3 scripts/emit_junit_evidence.py --reports build/test-results/evidenceFailureControlTest --output build/evidence/failure-control.json --scope aria.evidence-failure-control
+
+      - name: Validate failure-control schema
+        if: always()
+        run: node scripts/validate-evidence.mjs build/evidence/failure-control.json
+
+      - name: Verify exactly one native failed case
+        if: always()
+        run: PYTHONPATH=scripts python3 scripts/verify_failed_evidence.py build/evidence/failure-control.json --reports build/test-results/evidenceFailureControlTest --source "$GITHUB_SHA" --run-id "$GITHUB_RUN_ID"
+
+      - name: Upload failure-control evidence and native report
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: evidence-aria-failure-control
+          path: |
+            build/evidence/failure-control.json
+            build/test-results/evidenceFailureControlTest/TEST-*.xml
+          if-no-files-found: error
+          retention-days: 30
+
   quality-gate:
     if: always()
     needs:
       - test
       - osv-scan
       - container-test
+      - evidence-failure-control
       - dependency-review
       - live-smoke
+      - live-smoke-not-requested
     runs-on: ubuntu-latest
     env:
       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
@@ -168,6 +282,8 @@ jobs:
           CONTAINER_RESULT: ${{ needs.container-test.result }}
           DEPENDENCY_REVIEW_RESULT: ${{ needs.dependency-review.result }}
           LIVE_RESULT: ${{ needs.live-smoke.result }}
+          CONTROL_RESULT: ${{ needs.evidence-failure-control.result }}
+          SKIP_EVIDENCE_RESULT: ${{ needs.live-smoke-not-requested.result }}
         run: bash scripts/verify-ci-gates.sh
 
       - name: Notify Slack on failure
@@ -190,6 +306,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
 
+      - name: Set up Node for evidence contract validation
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
+        with:
+          node-version-file: .nvmrc
+
+      - name: Record live smoke start
+        run: echo "EVIDENCE_STARTED_AT=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_ENV"
+
       - name: Set up Java 21
         uses: actions/setup-java@0f481fcb613427c0f801b606911222b5b6f3083a # v5
         with:
@@ -207,14 +331,49 @@ jobs:
       - name: Run requested live smoke tests
         run: ./gradlew liveSmokeTest -Denv=${ENV}
 
+      - name: Collect live smoke JUnit evidence
+        if: always()
+        run: python3 scripts/emit_junit_evidence.py --reports build/test-results/liveSmokeTest --output build/evidence/live-smoke.json --scope aria.live-smoke
+
+      - name: Validate live smoke evidence
+        if: always()
+        run: node scripts/validate-evidence.mjs build/evidence/live-smoke.json
+
       - name: Upload live smoke evidence
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: live-smoke-evidence
           path: |
+            build/evidence/live-smoke.json
             build/test-results/liveSmokeTest/**
             build/reports/tests/liveSmokeTest/**
             build/allure-results/**
             build/logs/**
+          retention-days: 30
+
+  live-smoke-not-requested:
+    if: github.event_name != 'schedule' && !(github.event_name == 'workflow_dispatch' && inputs.run_live_smoke)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+
+      - name: Set up Node for evidence contract validation
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
+        with:
+          node-version-file: .nvmrc
+
+      - name: Emit explicit not-requested record
+        run: python3 scripts/emit_junit_evidence.py --reports build/test-results/liveSmokeTest --output build/evidence/live-smoke-skipped.json --scope aria.live-smoke --reason 'Live smoke was not requested for this workflow event.'
+
+      - name: Validate skipped evidence
+        run: node scripts/validate-evidence.mjs build/evidence/live-smoke-skipped.json
+
+      - name: Upload skipped evidence
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: evidence-aria-live-smoke-skipped
+          path: build/evidence/live-smoke-skipped.json
+          if-no-files-found: error
           retention-days: 30

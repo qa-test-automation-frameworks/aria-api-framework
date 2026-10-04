@@ -19,6 +19,7 @@ require_success() {
 require_success test "${TEST_RESULT:-missing}"
 require_success osv-scan "${OSV_RESULT:-missing}"
 require_success container-test "${CONTAINER_RESULT:-missing}"
+require_success evidence-failure-control "${CONTROL_RESULT:-missing}"
 
 if [ "$CI_EVENT" = pull_request ]; then
   require_success dependency-review "${DEPENDENCY_REVIEW_RESULT:-missing}"
@@ -32,8 +33,10 @@ if [ "$CI_EVENT" = schedule ] || { [ "$CI_EVENT" = workflow_dispatch ] && [ "${R
 fi
 if [ "$live_required" = true ]; then
   require_success live-smoke "${LIVE_RESULT:-missing}"
+  [ "${SKIP_EVIDENCE_RESULT:-missing}" = skipped ] || fail 'Not-requested evidence job must be skipped when live smoke is required'
 else
   [ "${LIVE_RESULT:-missing}" = skipped ] || fail 'Unrequested live-smoke must be skipped'
+  require_success 'not-requested evidence' "${SKIP_EVIDENCE_RESULT:-missing}"
 fi
 
 echo "Required quality gates passed (event=$CI_EVENT, live-required=$live_required)"

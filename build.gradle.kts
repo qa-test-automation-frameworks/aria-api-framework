@@ -231,8 +231,18 @@ tasks.test {
         if (requestedTags.isBlank()) {
             excludeTags("live")
         }
+        excludeTags("evidence-control")
     }
     finalizedBy("testDurationReport", "portfolioMetrics")
+}
+
+tasks.register<Test>("evidenceFailureControlTest") {
+    description = "Runs the isolated intentional-failure control for evidence collection."
+    group = "verification"
+    configureCommonApiTestTask()
+    useJUnitPlatform {
+        includeTags("evidence-control")
+    }
 }
 
 tasks.register("testDurationReport") {

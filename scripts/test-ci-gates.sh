@@ -20,24 +20,28 @@ check() {
 for event in push pull_request schedule workflow_dispatch; do
   dependency=skipped
   live=skipped
+  skip_evidence=success
   [ "$event" != pull_request ] || dependency=success
   [ "$event" != schedule ] || live=success
-  base=(CI_EVENT="$event" RUN_LIVE_SMOKE=false TEST_RESULT=success OSV_RESULT=success CONTAINER_RESULT=success DEPENDENCY_REVIEW_RESULT="$dependency" LIVE_RESULT="$live")
+  [ "$event" != schedule ] || skip_evidence=skipped
+  base=(CI_EVENT="$event" RUN_LIVE_SMOKE=false TEST_RESULT=success OSV_RESULT=success CONTAINER_RESULT=success CONTROL_RESULT=success SKIP_EVIDENCE_RESULT="$skip_evidence" DEPENDENCY_REVIEW_RESULT="$dependency" LIVE_RESULT="$live")
   check pass '' "${base[@]}"
   for disposition in failure cancelled skipped ''; do
     check fail 'test must succeed' "${base[@]}" TEST_RESULT="$disposition"
     check fail 'osv-scan must succeed' "${base[@]}" OSV_RESULT="$disposition"
     check fail 'container-test must succeed' "${base[@]}" CONTAINER_RESULT="$disposition"
+    check fail 'evidence-failure-control must succeed' "${base[@]}" CONTROL_RESULT="$disposition"
   done
 done
 
-base=(CI_EVENT=workflow_dispatch RUN_LIVE_SMOKE=true TEST_RESULT=success OSV_RESULT=success CONTAINER_RESULT=success DEPENDENCY_REVIEW_RESULT=skipped LIVE_RESULT=success)
+base=(CI_EVENT=workflow_dispatch RUN_LIVE_SMOKE=true TEST_RESULT=success OSV_RESULT=success CONTAINER_RESULT=success CONTROL_RESULT=success SKIP_EVIDENCE_RESULT=skipped DEPENDENCY_REVIEW_RESULT=skipped LIVE_RESULT=success)
 check pass '' "${base[@]}"
 for event in schedule workflow_dispatch; do
   for disposition in failure cancelled skipped ''; do
     check fail 'live-smoke must succeed' "${base[@]}" CI_EVENT="$event" LIVE_RESULT="$disposition"
   done
 done
+check fail 'Not-requested evidence job must be skipped' "${base[@]}" SKIP_EVIDENCE_RESULT=success
 for disposition in failure cancelled skipped ''; do
   check fail 'dependency-review must succeed' "${base[@]}" CI_EVENT=pull_request RUN_LIVE_SMOKE=false LIVE_RESULT=skipped DEPENDENCY_REVIEW_RESULT="$disposition"
 done
