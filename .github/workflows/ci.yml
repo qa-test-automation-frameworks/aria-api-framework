@@ -105,6 +105,38 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
+      - name: Collect separate contract and provider evidence
+        if: always()
+        run: |
+          status=0
+          for suite in contractTest pactProviderVerificationTest; do
+            case "$suite" in
+              contractTest) scope=aria.contract; output=build/evidence/contract.json ;;
+              pactProviderVerificationTest) scope=aria.pact-provider; output=build/evidence/pact-provider.json ;;
+            esac
+            if ! python3 scripts/emit_junit_evidence.py --reports "build/test-results/$suite" --output "$output" --scope "$scope"; then
+              status=1
+            fi
+          done
+          exit "$status"
+
+      - name: Validate contract and provider evidence
+        if: always()
+        run: node scripts/validate-evidence.mjs build/evidence/contract.json build/evidence/pact-provider.json
+
+      - name: Upload contract/provider evidence and native reports
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: evidence-aria-contracts
+          path: |
+            build/evidence/contract.json
+            build/evidence/pact-provider.json
+            build/test-results/contractTest/TEST-*.xml
+            build/test-results/pactProviderVerificationTest/TEST-*.xml
+          if-no-files-found: error
+          retention-days: 30
+
       - name: Upload SBOM
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:

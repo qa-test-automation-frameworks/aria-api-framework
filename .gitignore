@@ -32,3 +32,4 @@ codebase-memory/
 !.env.example
 *.local.properties
 *.log
+/work/

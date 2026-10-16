@@ -2,10 +2,12 @@
 
 The CI workflow emits schema-v3 evidence directly from Gradle's native JUnit
 XML. `aria.deterministic` reads only `build/test-results/test`,
-`aria.container` reads only `build/test-results/containerTest`, and
-`aria.live-smoke` reads only `build/test-results/liveSmokeTest`. The CI `check`
-task also runs Pact and other gates; its overall status is not presented as a
-single combined test population.
+`aria.contract` reads only `build/test-results/contractTest`,
+`aria.pact-provider` reads only
+`build/test-results/pactProviderVerificationTest`, `aria.container` reads only
+`build/test-results/containerTest`, and `aria.live-smoke` reads only
+`build/test-results/liveSmokeTest`. These are distinct scopes; the CI `check`
+task's overall status is not presented as one combined test population.
 
 The adapter reconciles suite totals against testcase children, hashes the
 sorted native XML inputs, and omits testcase names, parameter values, failure
