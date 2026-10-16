@@ -4,12 +4,18 @@
   "type": "object",
   "oneOf": [
     {
-      "required": ["bookingid", "booking"],
+      "required": [
+        "bookingid",
+        "booking"
+      ],
       "properties": {
-        "bookingid": { "type": "integer" },
-        "booking": { "$ref": "#/$defs/booking" }
-      },
-      "additionalProperties": false
+        "bookingid": {
+          "type": "integer"
+        },
+        "booking": {
+          "$ref": "#/$defs/booking"
+        }
+      }
     },
     {
       "$ref": "#/$defs/booking"
@@ -18,24 +24,51 @@
   "$defs": {
     "booking": {
       "type": "object",
-      "required": ["firstname", "lastname", "totalprice", "depositpaid", "bookingdates", "additionalneeds"],
+      "required": [
+        "firstname",
+        "lastname",
+        "totalprice",
+        "depositpaid",
+        "bookingdates",
+        "additionalneeds"
+      ],
       "properties": {
-        "firstname": { "type": "string", "minLength": 1 },
-        "lastname": { "type": "string", "minLength": 1 },
-        "totalprice": { "type": "integer", "minimum": 0 },
-        "depositpaid": { "type": "boolean" },
+        "firstname": {
+          "type": "string",
+          "minLength": 1
+        },
+        "lastname": {
+          "type": "string",
+          "minLength": 1
+        },
+        "totalprice": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "depositpaid": {
+          "type": "boolean"
+        },
         "bookingdates": {
           "type": "object",
-          "required": ["checkin", "checkout"],
+          "required": [
+            "checkin",
+            "checkout"
+          ],
           "properties": {
-            "checkin": { "type": "string", "format": "date" },
-            "checkout": { "type": "string", "format": "date" }
-          },
-          "additionalProperties": false
+            "checkin": {
+              "type": "string",
+              "format": "date"
+            },
+            "checkout": {
+              "type": "string",
+              "format": "date"
+            }
+          }
         },
-        "additionalneeds": { "type": "string" }
-      },
-      "additionalProperties": false
+        "additionalneeds": {
+          "type": "string"
+        }
+      }
     }
   }
 }

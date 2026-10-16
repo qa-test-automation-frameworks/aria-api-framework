@@ -26,6 +26,7 @@ answer, and the tech stack and project structure below for how it fits together.
 | CI | [Workflow and badge](https://github.com/qa-test-automation-frameworks/aria-api-framework/actions/workflows/ci.yml) |
 | Repository activity | [Default-branch commits](https://github.com/qa-test-automation-frameworks/aria-api-framework/commits/main/) · [Pull requests](https://github.com/qa-test-automation-frameworks/aria-api-framework/pulls?q=is%3Apr) |
 | Docs and assets | [`docs/`](docs/) and [`docs/assets/`](docs/assets/) |
+| Compatibility experiment | [Additive and breaking provider changes](docs/compatibility-experiment.md) |
 | Best screenshot | [Sanitized Allure diagnostic](docs/assets/allure/allure-diagnostic-attachment.png) |
 
 ![Sanitized Allure diagnostic attachment](docs/assets/allure/allure-diagnostic-attachment.png)

@@ -24,6 +24,12 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public final class OwnedApiProvider implements AutoCloseable {
 
+    public enum BookingContractVariant {
+        CURRENT,
+        COMPATIBLE_ADDITIVE,
+        BREAKING_REQUIRED_FIELD
+    }
+
     private static final ObjectMapper MAPPER = new ObjectMapper();
     private static final String BOOKER_TOKEN = "mock-token";
     private static final String GITHUB_TOKEN = "mock-github-token";
@@ -33,13 +39,19 @@ public final class OwnedApiProvider implements AutoCloseable {
 
     private final HttpServer server;
     private final ExecutorService executorService;
+    private final BookingContractVariant bookingContractVariant;
     private final Map<Integer, Map<String, Object>> bookings = new LinkedHashMap<>();
     private final Map<Integer, String> bookingOwners = new HashMap<>();
     private final AtomicInteger nextBookingId = new AtomicInteger(2);
 
-    private OwnedApiProvider(HttpServer server, ExecutorService executorService) {
+    private OwnedApiProvider(
+        HttpServer server,
+        ExecutorService executorService,
+        BookingContractVariant bookingContractVariant
+    ) {
         this.server = server;
         this.executorService = executorService;
+        this.bookingContractVariant = bookingContractVariant;
         resetState();
     }
 
@@ -52,10 +64,14 @@ public final class OwnedApiProvider implements AutoCloseable {
     }
 
     public static OwnedApiProvider start() {
+        return start(BookingContractVariant.CURRENT);
+    }
+
+    public static OwnedApiProvider start(BookingContractVariant bookingContractVariant) {
         try {
             HttpServer server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
             ExecutorService executorService = Executors.newCachedThreadPool();
-            OwnedApiProvider provider = new OwnedApiProvider(server, executorService);
+            OwnedApiProvider provider = new OwnedApiProvider(server, executorService, bookingContractVariant);
             server.createContext("/", provider::handle);
             server.setExecutor(executorService);
             server.start();
@@ -208,7 +224,13 @@ public final class OwnedApiProvider implements AutoCloseable {
                 sendText(exchange, 404, "Not Found");
                 return;
             }
-            sendJson(exchange, 200, booking);
+            Map<String, Object> response = new LinkedHashMap<>(booking);
+            if (bookingContractVariant == BookingContractVariant.COMPATIBLE_ADDITIVE) {
+                response.put("contractrevision", "fixture-v2-additive");
+            } else if (bookingContractVariant == BookingContractVariant.BREAKING_REQUIRED_FIELD) {
+                response.remove("bookingdates");
+            }
+            sendJson(exchange, 200, response);
             return;
         }
         if ("PUT".equals(method)) {
