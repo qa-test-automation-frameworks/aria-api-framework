@@ -13,6 +13,17 @@ SPEC.loader.exec_module(EMITTER)
 
 
 class JunitEvidenceTests(unittest.TestCase):
+    def test_attempted_records_require_actual_java_and_gradle_versions(self):
+        self.assertEqual(
+            EMITTER.tool_versions({"JAVA_VERSION": "21.0.8", "GRADLE_VERSION": "8.7"}, True),
+            {"java": "21.0.8", "gradle": "8.7"},
+        )
+        with self.assertRaisesRegex(EMITTER.EvidenceError, "actual Java/Gradle"):
+            EMITTER.tool_versions({"JAVA_VERSION": "21.0.8", "GRADLE_VERSION": "unknown"}, True)
+        self.assertEqual(
+            EMITTER.tool_versions({}, False), {"java": "unknown", "gradle": "unknown"}
+        )
+
     def write(self, root, contents):
         root.mkdir(parents=True, exist_ok=True)
         (root / "TEST-suite.xml").write_text(contents, encoding="utf-8")

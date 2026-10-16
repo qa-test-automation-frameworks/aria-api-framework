@@ -74,6 +74,9 @@ jobs:
           java-version: '21'
           cache: gradle
 
+      - name: Capture actual Java and Gradle versions
+        run: bash scripts/capture-build-versions.sh
+
       - name: Validate Gradle wrapper
         uses: gradle/actions/wrapper-validation@90ddb51e90a5fd9ba75f40cf85156b7b41bf76a3 # v6
 
@@ -211,6 +214,9 @@ jobs:
           java-version: '21'
           cache: gradle
 
+      - name: Capture actual Java and Gradle versions
+        run: bash scripts/capture-build-versions.sh
+
       - name: Run Docker-backed container tests
         run: ./gradlew containerTest -Denv=${ENV}
 
@@ -250,6 +256,9 @@ jobs:
           distribution: temurin
           java-version: '21'
           cache: gradle
+
+      - name: Capture actual Java and Gradle versions
+        run: bash scripts/capture-build-versions.sh
 
       - name: Record failure-control start
         run: echo "EVIDENCE_STARTED_AT=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_ENV"
@@ -352,6 +361,9 @@ jobs:
           distribution: temurin
           java-version: '21'
           cache: gradle
+
+      - name: Capture actual Java and Gradle versions
+        run: bash scripts/capture-build-versions.sh
 
       - name: Validate live smoke credentials
         run: |

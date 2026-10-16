@@ -19,6 +19,16 @@ class EvidenceError(Exception):
     pass
 
 
+def tool_versions(env, attempted: bool):
+    versions = {
+        "java": env.get("JAVA_VERSION", "unknown").strip(),
+        "gradle": env.get("GRADLE_VERSION", "unknown").strip(),
+    }
+    if attempted and any(not value or value == "unknown" for value in versions.values()):
+        raise EvidenceError("Attempted execution is missing actual Java/Gradle version metadata")
+    return versions
+
+
 def parse_reports(directory: Path):
     paths = sorted(directory.glob("TEST-*.xml"))
     if not paths:
@@ -85,6 +95,7 @@ def main():
         raise EvidenceError("GitHub run/source identity is missing or invalid")
     if repo != "qa-test-automation-frameworks/aria-api-framework":
         raise EvidenceError("Unexpected repository identity")
+    versions = tool_versions(env, attempted=False)
     now = dt.datetime.now(dt.timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
     record = {
         "schemaVersion": 3, "repository": repo, "sourceSha": source,
@@ -99,7 +110,7 @@ def main():
                   "required": args.scope != "aria.live-smoke", "freshnessPolicy": "daily_gate_v1" if args.scope != "aria.live-smoke" else "quarterly_experiment_v1"},
         "target": {"identity": "aria-owned-provider", "revision": None, "fixtureVersion": None,
                    "environment": env.get("ENV", "dev"), "profile": None,
-                   "tools": {"java": env.get("JAVA_VERSION", "unknown"), "gradle": env.get("GRADLE_VERSION", "unknown")}},
+                   "tools": versions},
         "execution": {"disposition": "skipped" if args.reason else "unavailable", "reason": args.reason or "Evidence collection failed",
                       "startedAt": None, "completedAt": None, "integrity": "unavailable",
                       "counts": {"unit": "parameter_case", "selected": None, "executed": None, "passed": None, "failed": None, "skipped": None, "retried": None,
@@ -109,6 +120,7 @@ def main():
         "generator": {"name": "aria-gradle-junit-evidence", "version": "1.0.0"}}
     if args.reason is None:
         try:
+            tool_versions(env, attempted=True)
             counts, xml_digest = parse_reports(args.reports)
             if not started:
                 raise EvidenceError("Attempted execution has no recorded start timestamp")
