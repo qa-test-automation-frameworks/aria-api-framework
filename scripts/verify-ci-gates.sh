@@ -16,6 +16,7 @@ require_success() {
   [ "$2" = success ] || fail "$1 must succeed; actual=$2"
 }
 
+require_success java-runtime-policy "${JAVA_POLICY_RESULT:-missing}"
 require_success test "${TEST_RESULT:-missing}"
 require_success osv-scan "${OSV_RESULT:-missing}"
 require_success container-test "${CONTAINER_RESULT:-missing}"

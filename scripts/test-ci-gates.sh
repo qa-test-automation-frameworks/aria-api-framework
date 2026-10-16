@@ -24,9 +24,10 @@ for event in push pull_request schedule workflow_dispatch; do
   [ "$event" != pull_request ] || dependency=success
   [ "$event" != schedule ] || live=success
   [ "$event" != schedule ] || skip_evidence=skipped
-  base=(CI_EVENT="$event" RUN_LIVE_SMOKE=false TEST_RESULT=success OSV_RESULT=success CONTAINER_RESULT=success CONTROL_RESULT=success SKIP_EVIDENCE_RESULT="$skip_evidence" DEPENDENCY_REVIEW_RESULT="$dependency" LIVE_RESULT="$live")
+  base=(CI_EVENT="$event" RUN_LIVE_SMOKE=false JAVA_POLICY_RESULT=success TEST_RESULT=success OSV_RESULT=success CONTAINER_RESULT=success CONTROL_RESULT=success SKIP_EVIDENCE_RESULT="$skip_evidence" DEPENDENCY_REVIEW_RESULT="$dependency" LIVE_RESULT="$live")
   check pass '' "${base[@]}"
   for disposition in failure cancelled skipped ''; do
+    check fail 'java-runtime-policy must succeed' "${base[@]}" JAVA_POLICY_RESULT="$disposition"
     check fail 'test must succeed' "${base[@]}" TEST_RESULT="$disposition"
     check fail 'osv-scan must succeed' "${base[@]}" OSV_RESULT="$disposition"
     check fail 'container-test must succeed' "${base[@]}" CONTAINER_RESULT="$disposition"
@@ -34,7 +35,7 @@ for event in push pull_request schedule workflow_dispatch; do
   done
 done
 
-base=(CI_EVENT=workflow_dispatch RUN_LIVE_SMOKE=true TEST_RESULT=success OSV_RESULT=success CONTAINER_RESULT=success CONTROL_RESULT=success SKIP_EVIDENCE_RESULT=skipped DEPENDENCY_REVIEW_RESULT=skipped LIVE_RESULT=success)
+base=(CI_EVENT=workflow_dispatch RUN_LIVE_SMOKE=true JAVA_POLICY_RESULT=success TEST_RESULT=success OSV_RESULT=success CONTAINER_RESULT=success CONTROL_RESULT=success SKIP_EVIDENCE_RESULT=skipped DEPENDENCY_REVIEW_RESULT=skipped LIVE_RESULT=success)
 check pass '' "${base[@]}"
 for event in schedule workflow_dispatch; do
   for disposition in failure cancelled skipped ''; do

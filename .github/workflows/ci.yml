@@ -26,6 +26,28 @@ permissions:
   contents: read
 
 jobs:
+  unsupported-java-runtime:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+
+      - name: Set up unsupported JDK 17 for the rejection control
+        uses: actions/setup-java@0f481fcb613427c0f801b606911222b5b6f3083a # v5
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Require an actionable JDK 21 rejection
+        shell: bash
+        run: |
+          if output=$(./gradlew --no-daemon help 2>&1); then
+            echo 'Gradle unexpectedly accepted unsupported JDK 17.'
+            exit 1
+          fi
+          printf '%s\n' "$output"
+          grep -F 'ARIA requires JDK 21 to run Gradle; detected Java 17.' <<< "$output"
+
   osv-scan:
     permissions:
       actions: read
@@ -303,6 +325,7 @@ jobs:
   quality-gate:
     if: always()
     needs:
+      - unsupported-java-runtime
       - test
       - osv-scan
       - container-test
@@ -320,6 +343,7 @@ jobs:
       - name: Verify required quality gates
         env:
           CI_EVENT: ${{ github.event_name }}
+          JAVA_POLICY_RESULT: ${{ needs.unsupported-java-runtime.result }}
           RUN_LIVE_SMOKE: ${{ inputs.run_live_smoke || false }}
           TEST_RESULT: ${{ needs.test.result }}
           OSV_RESULT: ${{ needs.osv-scan.result }}
