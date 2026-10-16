@@ -86,6 +86,9 @@ jobs:
       - name: Test native JUnit evidence adapter
         run: python3 scripts/test_emit_junit_evidence.py -v
 
+      - name: Test actual build version capture
+        run: python3 scripts/test_capture_build_versions.py -v
+
       - name: Run Gradle quality gate
         run: ./gradlew clean check securityScan allureReport -Denv=${ENV} --parallel
 
