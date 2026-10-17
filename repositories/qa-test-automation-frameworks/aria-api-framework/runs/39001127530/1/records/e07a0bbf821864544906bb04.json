@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 3,
+  "repository": "qa-test-automation-frameworks/aria-api-framework",
+  "sourceSha": "b49b33ebd5b981f7e8812a78b1f014857d94fc3c",
+  "limitations": [
+    "JUnit testcase names, parameters, failure text and environment values are omitted.",
+    "Retries are counted only when native flakyFailure/flakyError elements are present.",
+    "Native JUnit report bundle SHA-256: e8469e380fbf8c7df69ad9db9420e952ae0a6bd85cda7e84449a04962145bfb8."
+  ],
+  "kind": "execution",
+  "workflow": {
+    "id": "qa-test-automation-frameworks/aria-api-framework/.github/workflows/ci.yml@refs/heads/main",
+    "name": "ARIA API Framework CI",
+    "runId": "39001127530",
+    "attempt": 1,
+    "url": "https://github.com/qa-test-automation-frameworks/aria-api-framework/actions/runs/39001127530",
+    "trigger": "push",
+    "branch": "main"
+  },
+  "scope": {
+    "id": "aria.container",
+    "evidenceClass": "controlled",
+    "required": true,
+    "freshnessPolicy": "daily_gate_v1"
+  },
+  "target": {
+    "identity": "aria-owned-provider",
+    "revision": null,
+    "fixtureVersion": null,
+    "environment": "dev",
+    "profile": null,
+    "tools": {
+      "java": "21.0.12.1",
+      "gradle": "8.7"
+    }
+  },
+  "execution": {
+    "disposition": "passed",
+    "reason": null,
+    "startedAt": "2026-10-17T04:03:38Z",
+    "completedAt": "2026-10-17T04:04:18Z",
+    "integrity": "complete",
+    "counts": {
+      "selected": 1,
+      "executed": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "retried": 0,
+      "unit": "parameter_case",
+      "semantics": "JUnit XML testcase invocations; selected includes skips; errors are combined with failures."
+    },
+    "measurements": [],
+    "shards": {
+      "expected": [
+        "aria.container"
+      ],
+      "received": [
+        "aria.container"
+      ]
+    }
+  },
+  "publication": {
+    "disposition": "pending",
+    "reason": null,
+    "publishedAt": null,
+    "reportUrl": null,
+    "artifacts": []
+  },
+  "generator": {
+    "name": "aria-gradle-junit-evidence",
+    "version": "1.0.0"
+  }
+}

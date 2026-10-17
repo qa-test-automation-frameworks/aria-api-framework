@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "repository": "qa-test-automation-frameworks/aria-api-framework",
+  "scopes": {
+    "aria.container": {
+      "runId": "39014102385",
+      "attempt": 1,
+      "completedAt": "2026-10-17T07:38:07.000Z",
+      "sourceSha": "f8aeefdd5eb9249b5ca24139d80142312bb24c15",
+      "execution": "passed",
+      "workflowConclusion": "success",
+      "bundle": "repositories/qa-test-automation-frameworks/aria-api-framework/runs/39014102385/1",
+      "manifestSha256": "ffbc15d43d47891c9c3828708aef404772633e315e65a4f24dd3efd573647157"
+    },
+    "aria.contract": {
+      "runId": "39014102385",
+      "attempt": 1,
+      "completedAt": "2026-10-17T07:38:07.000Z",
+      "sourceSha": "f8aeefdd5eb9249b5ca24139d80142312bb24c15",
+      "execution": "passed",
+      "workflowConclusion": "success",
+      "bundle": "repositories/qa-test-automation-frameworks/aria-api-framework/runs/39014102385/1",
+      "manifestSha256": "ffbc15d43d47891c9c3828708aef404772633e315e65a4f24dd3efd573647157"
+    },
+    "aria.pact-provider": {
+      "runId": "39014102385",
+      "attempt": 1,
+      "completedAt": "2026-10-17T07:38:07.000Z",
+      "sourceSha": "f8aeefdd5eb9249b5ca24139d80142312bb24c15",
+      "execution": "passed",
+      "workflowConclusion": "success",
+      "bundle": "repositories/qa-test-automation-frameworks/aria-api-framework/runs/39014102385/1",
+      "manifestSha256": "ffbc15d43d47891c9c3828708aef404772633e315e65a4f24dd3efd573647157"
+    },
+    "aria.deterministic": {
+      "runId": "39014102385",
+      "attempt": 1,
+      "completedAt": "2026-10-17T07:38:07.000Z",
+      "sourceSha": "f8aeefdd5eb9249b5ca24139d80142312bb24c15",
+      "execution": "passed",
+      "workflowConclusion": "success",
+      "bundle": "repositories/qa-test-automation-frameworks/aria-api-framework/runs/39014102385/1",
+      "manifestSha256": "ffbc15d43d47891c9c3828708aef404772633e315e65a4f24dd3efd573647157"
+    },
+    "aria.evidence-failure-control": {
+      "runId": "39014102385",
+      "attempt": 1,
+      "completedAt": "2026-10-17T07:38:07.000Z",
+      "sourceSha": "f8aeefdd5eb9249b5ca24139d80142312bb24c15",
+      "execution": "failed",
+      "workflowConclusion": "success",
+      "bundle": "repositories/qa-test-automation-frameworks/aria-api-framework/runs/39014102385/1",
+      "manifestSha256": "ffbc15d43d47891c9c3828708aef404772633e315e65a4f24dd3efd573647157"
+    },
+    "aria.live-smoke": {
+      "runId": "39014102385",
+      "attempt": 1,
+      "completedAt": "2026-10-17T07:38:07.000Z",
+      "sourceSha": "f8aeefdd5eb9249b5ca24139d80142312bb24c15",
+      "execution": "skipped",
+      "workflowConclusion": "success",
+      "bundle": "repositories/qa-test-automation-frameworks/aria-api-framework/runs/39014102385/1",
+      "manifestSha256": "ffbc15d43d47891c9c3828708aef404772633e315e65a4f24dd3efd573647157"
+    },
+    "aria.shared-app": {
+      "runId": "39014102385",
+      "attempt": 1,
+      "completedAt": "2026-10-17T07:38:07.000Z",
+      "sourceSha": "f8aeefdd5eb9249b5ca24139d80142312bb24c15",
+      "execution": "passed",
+      "workflowConclusion": "success",
+      "bundle": "repositories/qa-test-automation-frameworks/aria-api-framework/runs/39014102385/1",
+      "manifestSha256": "ffbc15d43d47891c9c3828708aef404772633e315e65a4f24dd3efd573647157"
+    }
+  }
+}
