@@ -256,7 +256,7 @@ Do not distribute `.gradle/`, `.idea/`, or `build/` as part of the portfolio sou
 ## Documentation
 
 - [Portfolio Review Guide](docs/portfolio-review-guide.md)
-- [Current verification record](docs/evidence/latest-verification.md)
+- [Latest run link and retained historical verification](docs/evidence/latest-verification.md)
 - [Enterprise adaptation](docs/enterprise-adaptation.md)
 - [Configuration Guide](docs/configuration-guide.md)
 - [Execution Guide](docs/execution-guide.md)
