@@ -12,7 +12,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class OpenApiResponseValidatorFixtureTest {
 
     private static final OpenApiResponseValidator VALIDATOR =
-        OpenApiResponseValidator.fromClasspath("openapi/required-response-contract.yaml");
+        OpenApiResponseValidator.fromClasspath("fixtures/required-response-contract.yaml");
 
     @Test
     void acceptsResponseReferenceAndNormalizedJsonContentType() {
