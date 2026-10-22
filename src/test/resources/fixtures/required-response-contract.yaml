@@ -1,0 +1,76 @@
+openapi: 3.0.3
+info:
+  title: Required response content fixture
+  version: 1.0.0
+paths:
+  /auth:
+    post:
+      responses:
+        '200':
+          $ref: '#/components/responses/AuthSuccess'
+        '400':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /ping:
+    get:
+      responses:
+        '201':
+          description: Service is reachable
+          content:
+            text/plain:
+              schema:
+                type: string
+  /booking:
+    options:
+      responses:
+        '204':
+          description: Supported methods
+  /bad-booking:
+    options:
+      responses:
+        '204':
+          description: Invalid contract with content on a bodyless response
+          content:
+            application/json:
+              schema:
+                type: object
+  /head:
+    head:
+      responses:
+        '200':
+          description: Invalid contract with content on HEAD
+          content:
+            text/plain:
+              schema:
+                type: string
+  /post-304:
+    post:
+      responses:
+        '304':
+          description: Invalid use of 304
+components:
+  responses:
+    AuthSuccess:
+      description: Token issued
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Auth'
+  schemas:
+    Auth:
+      type: object
+      required:
+        - token
+      properties:
+        token:
+          type: string
+    Error:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
