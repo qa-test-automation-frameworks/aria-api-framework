@@ -331,13 +331,7 @@ jobs:
       - name: Start pinned APP and run ARIA shared-target suite
         run: bash scripts/with-reference-application.sh ./gradlew --no-daemon --max-workers=1 sharedReferenceAppTest sharedReferencePactVerificationTest
 
-      - name: Check Pact against hosted-only breaking and additive candidates
-        run: bash scripts/verify-reference-pact-mutations.sh reference-app
-
-      - name: Check claims exploration against controlled provider regressions
-        run: bash scripts/verify-claim-model-mutations.sh reference-app
-
-      - name: Emit shared target execution evidence
+      - name: Emit clean shared target execution evidence
         if: always()
         env:
           EVIDENCE_TARGET_IDENTITY: quality-reference-application
@@ -345,6 +339,12 @@ jobs:
           EVIDENCE_FIXTURE_VERSION: ${{ env.APP_FIXTURE_VERSION }}
           EVIDENCE_TARGET_ENVIRONMENT: isolated-github-actions
         run: python3 scripts/emit_junit_evidence.py --reports build/test-results/sharedReferenceAppTest --output build/evidence/shared-app.json --scope aria.shared-app
+
+      - name: Check Pact against hosted-only breaking and additive candidates
+        run: bash scripts/verify-reference-pact-mutations.sh reference-app
+
+      - name: Check claims exploration against controlled provider regressions
+        run: bash scripts/verify-claim-model-mutations.sh reference-app
 
       - name: Validate shared target evidence
         if: always()
@@ -492,13 +492,7 @@ jobs:
       - name: Run ARIA shared-target tests against the candidate
         run: bash scripts/with-reference-application.sh ./gradlew --no-daemon --max-workers=1 sharedReferenceAppTest sharedReferencePactVerificationTest
 
-      - name: Check Pact against hosted-only breaking and additive candidates
-        run: bash scripts/verify-reference-pact-mutations.sh reference-app
-
-      - name: Check claims exploration against controlled provider regressions
-        run: bash scripts/verify-claim-model-mutations.sh reference-app
-
-      - name: Emit candidate shared-target execution evidence
+      - name: Emit clean candidate shared-target execution evidence
         if: always() && steps.release.outcome == 'success'
         env:
           EVIDENCE_TARGET_IDENTITY: quality-reference-application
@@ -506,6 +500,12 @@ jobs:
           EVIDENCE_FIXTURE_VERSION: ${{ steps.release.outputs.fixture_version }}
           EVIDENCE_TARGET_ENVIRONMENT: isolated-github-actions
         run: python3 scripts/emit_junit_evidence.py --reports build/test-results/sharedReferenceAppTest --output build/evidence/shared-app.json --scope aria.shared-app
+
+      - name: Check Pact against hosted-only breaking and additive candidates
+        run: bash scripts/verify-reference-pact-mutations.sh reference-app
+
+      - name: Check claims exploration against controlled provider regressions
+        run: bash scripts/verify-claim-model-mutations.sh reference-app
 
       - name: Validate candidate shared-target evidence
         if: always() && steps.release.outcome == 'success'
