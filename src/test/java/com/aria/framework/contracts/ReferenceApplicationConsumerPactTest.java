@@ -42,7 +42,7 @@ class ReferenceApplicationConsumerPactTest {
             .method("GET")
             .willRespondWith()
             .status(401)
-            .header("Content-Type", JSON_CONTENT_TYPE)
+            .headers(Map.of("Content-Type", JSON_CONTENT_TYPE))
             .body(new PactDslJsonBody().object("error").stringValue("code", "AUTHENTICATION_REQUIRED").closeObject())
             .toPact(V4Pact.class);
     }
@@ -54,11 +54,11 @@ class ReferenceApplicationConsumerPactTest {
             .uponReceiving("an authenticated v2 policy list")
             .path("/api/v2/policies")
             .method("GET")
-            .header("Accept", "application/json")
+            .headers(Map.of("Accept", "application/json"))
             .headerFromProviderState("Authorization", TOKEN_EXPRESSION, "Bearer " + EXAMPLE_TOKEN)
             .willRespondWith()
             .status(200)
-            .header("Content-Type", JSON_CONTENT_TYPE)
+            .headers(Map.of("Content-Type", JSON_CONTENT_TYPE))
             .body(policyListBody())
             .toPact(V4Pact.class);
     }
@@ -70,9 +70,8 @@ class ReferenceApplicationConsumerPactTest {
             .uponReceiving("a successful v2 claim creation")
             .path("/api/v2/claims")
             .method("POST")
-            .header("Accept", "application/json")
+            .headers(Map.of("Accept", "application/json", "Content-Type", "application/json"))
             .headerFromProviderState("Authorization", TOKEN_EXPRESSION, "Bearer " + EXAMPLE_TOKEN)
-            .header("Content-Type", "application/json")
             .body(new PactDslJsonBody()
                 .valueFromProviderState("policyId", POLICY_ID_EXPRESSION, POLICY_ID)
                 .numberValue("amountMinor", 250_000)
@@ -80,7 +79,7 @@ class ReferenceApplicationConsumerPactTest {
                 .stringValue("category", "auto"))
             .willRespondWith()
             .status(201)
-            .header("Content-Type", JSON_CONTENT_TYPE)
+            .headers(Map.of("Content-Type", JSON_CONTENT_TYPE))
             .body(claimResponseBody(250_000))
             .toPact(V4Pact.class);
     }
@@ -92,11 +91,11 @@ class ReferenceApplicationConsumerPactTest {
             .uponReceiving("the initial event for a v2 claim")
             .pathFromProviderState(CLAIM_ID_EXPRESSION, "/api/v2/claims/cccccccc-cccc-4ccc-8ccc-cccccccccccc/events")
             .method("GET")
-            .header("Accept", "application/json")
+            .headers(Map.of("Accept", "application/json"))
             .headerFromProviderState("Authorization", TOKEN_EXPRESSION, "Bearer " + EXAMPLE_TOKEN)
             .willRespondWith()
             .status(200)
-            .header("Content-Type", JSON_CONTENT_TYPE)
+            .headers(Map.of("Content-Type", JSON_CONTENT_TYPE))
             .body(new PactDslJsonBody()
                 .minMaxArrayLike("items", 1, 1)
                 .nullValue("fromStatus")
@@ -117,9 +116,8 @@ class ReferenceApplicationConsumerPactTest {
             .uponReceiving("a v1 claim at the one million minor-unit limit")
             .path("/api/v1/claims")
             .method("POST")
-            .header("Accept", "application/json")
+            .headers(Map.of("Accept", "application/json", "Content-Type", "application/json"))
             .headerFromProviderState("Authorization", TOKEN_EXPRESSION, "Bearer " + EXAMPLE_TOKEN)
-            .header("Content-Type", "application/json")
             .body(new PactDslJsonBody()
                 .valueFromProviderState("policyId", POLICY_ID_EXPRESSION, POLICY_ID)
                 .numberValue("amountMinor", 1_000_000)
@@ -127,7 +125,7 @@ class ReferenceApplicationConsumerPactTest {
                 .stringValue("category", "auto"))
             .willRespondWith()
             .status(201)
-            .header("Content-Type", JSON_CONTENT_TYPE)
+            .headers(Map.of("Content-Type", JSON_CONTENT_TYPE))
             .body(claimResponseBody(1_000_000))
             .toPact(V4Pact.class);
     }
