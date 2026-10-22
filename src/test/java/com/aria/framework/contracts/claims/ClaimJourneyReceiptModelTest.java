@@ -62,7 +62,7 @@ class ClaimJourneyReceiptModelTest {
     }
 
     @Test
-    void replayRejectsUnknownCommandsAndUnexpectedFields() {
+    void replayRejectsUnknownCommandsAndUnexpectedFields() throws IOException {
         String valid = sampleJson();
         String unknownCommand = valid.replace("\"type\" : \"CREATE\"", "\"type\" : \"EXPLODE\"");
         assertThatThrownBy(() -> ClaimJourneyReceiptCodec.parse(unknownCommand))
@@ -77,7 +77,7 @@ class ClaimJourneyReceiptModelTest {
     }
 
     @Test
-    void replayRejectsUnsupportedSchemaAndUnknownActorAliases() {
+    void replayRejectsUnsupportedSchemaAndUnknownActorAliases() throws IOException {
         String valid = sampleJson();
         assertThatThrownBy(() -> ClaimJourneyReceiptCodec.parse(valid.replace("\"schemaVersion\" : 1", "\"schemaVersion\" : 2")))
             .isInstanceOf(IOException.class);
