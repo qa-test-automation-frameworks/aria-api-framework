@@ -1,0 +1,9 @@
+diff --git a/src/server.js b/src/server.js
+--- a/src/server.js
++++ b/src/server.js
+@@ -212,2 +212,4 @@
+-      apiVersion === '2' ? { ...policy, claimAmountLimitMinor: API_V2_CLAIM_LIMIT_MINOR } : policy
++      apiVersion === '2'
++        ? { ...policy, claimAmountLimitMinor: API_V2_CLAIM_LIMIT_MINOR, contractControlNote: 'harmless additive field' }
++        : policy
+     ));

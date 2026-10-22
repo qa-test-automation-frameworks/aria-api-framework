@@ -1,0 +1,9 @@
+diff --git a/src/domain.js b/src/domain.js
+--- a/src/domain.js
++++ b/src/domain.js
+@@ -1,4 +1,4 @@
+ export const CLAIM_CATEGORIES = Object.freeze(['auto', 'property_damage', 'theft']);
+ export const CLAIM_STATES = Object.freeze(['submitted', 'under_review', 'approved', 'rejected']);
+-export const API_V1_CLAIM_LIMIT_MINOR = 1_000_000;
++export const API_V1_CLAIM_LIMIT_MINOR = 500_000;
+ export const API_V2_CLAIM_LIMIT_MINOR = 500_000;

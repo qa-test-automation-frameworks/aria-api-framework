@@ -309,7 +309,10 @@ jobs:
         run: docker build --build-arg "APP_SOURCE_SHA=${APP_SOURCE_REVISION}" --tag "${APP_IMAGE}" reference-app
 
       - name: Start pinned APP and run ARIA shared-target suite
-        run: bash scripts/with-reference-application.sh ./gradlew --no-daemon sharedReferenceAppTest sharedReferencePactVerificationTest
+        run: bash scripts/with-reference-application.sh ./gradlew --no-daemon --max-workers=1 sharedReferenceAppTest sharedReferencePactVerificationTest
+
+      - name: Check Pact against hosted-only breaking and additive candidates
+        run: bash scripts/verify-reference-pact-mutations.sh reference-app
 
       - name: Emit shared target execution evidence
         if: always()
@@ -333,6 +336,7 @@ jobs:
             build/evidence/shared-app.json
             build/test-results/sharedReferenceAppTest/TEST-*.xml
             build/test-results/sharedReferencePactVerificationTest/TEST-*.xml
+            work/audit-2026-10-21/A3/controls/**
           if-no-files-found: error
           retention-days: 30
 

@@ -1,12 +1,15 @@
 package com.aria.framework.contracts;
 
 import au.com.dius.pact.consumer.MockServer;
+import au.com.dius.pact.consumer.dsl.DslPart;
 import au.com.dius.pact.consumer.dsl.PactBuilder;
+import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
 import au.com.dius.pact.consumer.junit5.PactConsumerTestExt;
 import au.com.dius.pact.consumer.junit5.PactTestFor;
 import au.com.dius.pact.core.model.V4Pact;
 import au.com.dius.pact.core.model.annotations.Pact;
 import io.restassured.RestAssured;
+import io.restassured.response.Response;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -14,12 +17,22 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 
+import java.util.Map;
+import java.util.UUID;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
-/** Consumer-owned contract for the shared reference application's unauthenticated boundary. */
+/** Consumer-owned contracts for the shared reference application's supported API behavior. */
 @ExtendWith(PactConsumerTestExt.class)
 @Execution(ExecutionMode.SAME_THREAD)
 class ReferenceApplicationConsumerPactTest {
+
+    static final String POLICY_ID = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";
+    static final String EXAMPLE_TOKEN = "consumer-example-token";
+    static final String TOKEN_EXPRESSION = "Bearer ${token}";
+    static final String POLICY_ID_EXPRESSION = "${policyId}";
+    static final String CLAIM_ID_EXPRESSION = "/api/v2/claims/${claimId}/events";
+    private static final String JSON_CONTENT_TYPE = "application/json; charset=utf-8";
 
     @Pact(consumer = "aria-api-framework", provider = "quality-reference-application")
     V4Pact unauthenticatedPolicyListPact(PactBuilder builder) {
@@ -30,10 +43,99 @@ class ReferenceApplicationConsumerPactTest {
                     .path("/api/v1/policies"))
                 .willRespondWith(response -> response
                     .status(401)
-                    .header("Content-Type", "application/json; charset=utf-8")
+                    .header("Content-Type", JSON_CONTENT_TYPE)
                     .body("""
                         {"error":{"code":"AUTHENTICATION_REQUIRED"}}
-                        """, "application/json; charset=utf-8")))
+                        """, JSON_CONTENT_TYPE)))
+            .toPact();
+    }
+
+    @Pact(consumer = "aria-api-framework", provider = "quality-reference-application")
+    V4Pact v2PolicyListPact(PactBuilder builder) {
+        return builder
+            .given("a member can list version 2 policies")
+            .expectsToReceiveHttpInteraction("an authenticated v2 policy list", interaction -> interaction
+                .withRequest(request -> request
+                    .method("GET")
+                    .path("/api/v2/policies")
+                    .header("Accept", "application/json")
+                    .headerFromProviderState("Authorization", TOKEN_EXPRESSION, "Bearer " + EXAMPLE_TOKEN))
+                .willRespondWith(response -> response
+                    .status(200)
+                    .header("Content-Type", JSON_CONTENT_TYPE)
+                    .body(policyListBody())))
+            .toPact();
+    }
+
+    @Pact(consumer = "aria-api-framework", provider = "quality-reference-application")
+    V4Pact createV2ClaimPact(PactBuilder builder) {
+        return builder
+            .given("a member and policy exist for a version 2 claim")
+            .expectsToReceiveHttpInteraction("a successful v2 claim creation", interaction -> interaction
+                .withRequest(request -> request
+                    .method("POST")
+                    .path("/api/v2/claims")
+                    .header("Accept", "application/json")
+                    .headerFromProviderState("Authorization", TOKEN_EXPRESSION, "Bearer " + EXAMPLE_TOKEN)
+                    .header("Content-Type", "application/json")
+                    .body(new PactDslJsonBody()
+                        .valueFromProviderState("policyId", POLICY_ID_EXPRESSION, POLICY_ID)
+                        .numberValue("amountMinor", 250_000)
+                        .stringValue("currency", "USD")
+                        .stringValue("category", "auto")))
+                .willRespondWith(response -> response
+                    .status(201)
+                    .header("Content-Type", JSON_CONTENT_TYPE)
+                    .body(claimResponseBody(250_000))))
+            .toPact();
+    }
+
+    @Pact(consumer = "aria-api-framework", provider = "quality-reference-application")
+    V4Pact initialV2ClaimEventPact(PactBuilder builder) {
+        return builder
+            .given("a member owns a submitted version 2 claim")
+            .expectsToReceiveHttpInteraction("the initial event for a v2 claim", interaction -> interaction
+                .withRequest(request -> request
+                    .method("GET")
+                    .pathFromProviderState(CLAIM_ID_EXPRESSION, "/api/v2/claims/cccccccc-cccc-4ccc-8ccc-cccccccccccc/events")
+                    .header("Accept", "application/json")
+                    .headerFromProviderState("Authorization", TOKEN_EXPRESSION, "Bearer " + EXAMPLE_TOKEN))
+                .willRespondWith(response -> response
+                    .status(200)
+                    .header("Content-Type", JSON_CONTENT_TYPE)
+                    .body(new PactDslJsonBody()
+                        .minMaxArrayLike("items", 1, 1)
+                        .nullValue("fromStatus")
+                        .stringValue("toStatus", "submitted")
+                        .numberValue("claimVersion", 1)
+                        .stringType("createdAt")
+                        .stringValue("actorDisplayName", "Synthetic Member A")
+                        .stringValue("actorRole", "member")
+                        .closeObject()
+                        .closeArray())))
+            .toPact();
+    }
+
+    @Pact(consumer = "aria-api-framework", provider = "quality-reference-application")
+    V4Pact v1BoundaryClaimPact(PactBuilder builder) {
+        return builder
+            .given("a member and policy exist for a version 1 boundary claim")
+            .expectsToReceiveHttpInteraction("a v1 claim at the one million minor-unit limit", interaction -> interaction
+                .withRequest(request -> request
+                    .method("POST")
+                    .path("/api/v1/claims")
+                    .header("Accept", "application/json")
+                    .headerFromProviderState("Authorization", TOKEN_EXPRESSION, "Bearer " + EXAMPLE_TOKEN)
+                    .header("Content-Type", "application/json")
+                    .body(new PactDslJsonBody()
+                        .valueFromProviderState("policyId", POLICY_ID_EXPRESSION, POLICY_ID)
+                        .numberValue("amountMinor", 1_000_000)
+                        .stringValue("currency", "USD")
+                        .stringValue("category", "auto")))
+                .willRespondWith(response -> response
+                    .status(201)
+                    .header("Content-Type", JSON_CONTENT_TYPE)
+                    .body(claimResponseBody(1_000_000))))
             .toPact();
     }
 
@@ -49,5 +151,103 @@ class ReferenceApplicationConsumerPactTest {
 
         assertThat(response.statusCode()).isEqualTo(401);
         assertThat(response.jsonPath().getString("error.code")).isEqualTo("AUTHENTICATION_REQUIRED");
+    }
+
+    @Test
+    @Tag("contract")
+    @DisplayName("Version 2 policy listing returns its integer claim limit")
+    @PactTestFor(pactMethod = "v2PolicyListPact")
+    void v2PolicyListMatchesContract(MockServer mockServer) {
+        Response response = authorizedRequest(mockServer, EXAMPLE_TOKEN)
+            .get("/api/v2/policies");
+
+        assertThat(response.statusCode()).isEqualTo(200);
+        assertThat(response.jsonPath().getList("items")).hasSize(1);
+        assertThat(response.jsonPath().getString("items[0].id")).isEqualTo(POLICY_ID);
+        assertThat(response.jsonPath().getString("items[0].policyNumber")).isEqualTo("POL-SYN-A-001");
+        assertThat(response.jsonPath().getInt("items[0].claimAmountLimitMinor")).isEqualTo(500_000);
+    }
+
+    @Test
+    @Tag("contract")
+    @DisplayName("Version 2 claim creation returns its persisted fields")
+    @PactTestFor(pactMethod = "createV2ClaimPact")
+    void createV2ClaimMatchesContract(MockServer mockServer) {
+        Response response = authorizedRequest(mockServer, EXAMPLE_TOKEN)
+            .contentType("application/json")
+            .body(Map.of("policyId", POLICY_ID, "amountMinor", 250_000, "currency", "USD", "category", "auto"))
+            .post("/api/v2/claims");
+
+        assertThat(response.statusCode()).isEqualTo(201);
+        String claimId = response.jsonPath().getString("claim.id");
+        assertThat(UUID.fromString(claimId)).isNotNull();
+        assertThat(response.jsonPath().getString("claim.policyId")).isEqualTo(POLICY_ID);
+        assertThat(response.jsonPath().getString("claim.status")).isEqualTo("submitted");
+        assertThat(response.jsonPath().getInt("claim.amountMinor")).isEqualTo(250_000);
+        assertThat(response.jsonPath().getInt("claim.version")).isEqualTo(1);
+    }
+
+    @Test
+    @Tag("contract")
+    @DisplayName("The created version 2 claim exposes its initial submitted event")
+    @PactTestFor(pactMethod = "initialV2ClaimEventPact")
+    void initialV2ClaimEventMatchesContract(MockServer mockServer) {
+        Response response = authorizedRequest(mockServer, EXAMPLE_TOKEN)
+            .get("/api/v2/claims/cccccccc-cccc-4ccc-8ccc-cccccccccccc/events");
+
+        assertThat(response.statusCode()).isEqualTo(200);
+        assertThat(response.jsonPath().getList("items")).hasSize(1);
+        assertThat(response.jsonPath().get("items[0].fromStatus")).isNull();
+        assertThat(response.jsonPath().getString("items[0].toStatus")).isEqualTo("submitted");
+        assertThat(response.jsonPath().getInt("items[0].claimVersion")).isEqualTo(1);
+    }
+
+    @Test
+    @Tag("contract")
+    @DisplayName("Version 1 still accepts the one million minor-unit boundary")
+    @PactTestFor(pactMethod = "v1BoundaryClaimPact")
+    void v1BoundaryClaimMatchesContract(MockServer mockServer) {
+        Response response = authorizedRequest(mockServer, EXAMPLE_TOKEN)
+            .contentType("application/json")
+            .body(Map.of("policyId", POLICY_ID, "amountMinor", 1_000_000, "currency", "USD", "category", "auto"))
+            .post("/api/v1/claims");
+
+        assertThat(response.statusCode()).isEqualTo(201);
+        assertThat(response.jsonPath().getInt("claim.amountMinor")).isEqualTo(1_000_000);
+        assertThat(response.jsonPath().getString("claim.status")).isEqualTo("submitted");
+        assertThat(response.jsonPath().getInt("claim.version")).isEqualTo(1);
+    }
+
+    private static DslPart policyListBody() {
+        return new PactDslJsonBody()
+            .minMaxArrayLike("items", 1, 1)
+            .valueFromProviderState("id", POLICY_ID_EXPRESSION, POLICY_ID)
+            .stringValue("policyNumber", "POL-SYN-A-001")
+            .stringValue("seedVersion", "v0.1.0")
+            .numberValue("claimAmountLimitMinor", 500_000)
+            .closeObject()
+            .closeArray();
+    }
+
+    private static DslPart claimResponseBody(int amountMinor) {
+        return new PactDslJsonBody()
+            .object("claim")
+            .uuid("id", "cccccccc-cccc-4ccc-8ccc-cccccccccccc")
+            .valueFromProviderState("policyId", POLICY_ID_EXPRESSION, POLICY_ID)
+            .stringValue("status", "submitted")
+            .numberValue("amountMinor", amountMinor)
+            .stringValue("currency", "USD")
+            .stringValue("category", "auto")
+            .numberValue("version", 1)
+            .stringType("createdAt")
+            .stringType("updatedAt")
+            .closeObject();
+    }
+
+    private static io.restassured.specification.RequestSpecification authorizedRequest(MockServer mockServer, String token) {
+        return RestAssured.given()
+            .baseUri(mockServer.getUrl())
+            .accept("application/json")
+            .auth().oauth2(token);
     }
 }
