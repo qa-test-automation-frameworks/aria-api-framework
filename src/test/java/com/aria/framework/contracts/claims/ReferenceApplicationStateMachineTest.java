@@ -260,7 +260,11 @@ class ReferenceApplicationStateMachineTest {
                 .append(" | `").append(receipt.coverage().errorCodes()).append("` |\n");
         }
         Path path = Path.of("work/audit-2026-10-21/F2/summary.md");
-        Files.createDirectories(path.getParent());
+        Path parent = path.getParent();
+        if (parent == null) {
+            throw new IOException("The F2 summary path must have a parent directory.");
+        }
+        Files.createDirectories(parent);
         Files.writeString(path, summary);
     }
 

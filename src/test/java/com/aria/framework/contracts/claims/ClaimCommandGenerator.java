@@ -7,7 +7,7 @@ import java.util.Random;
 /** Bounded command generation. The committed seed and java.util.Random define replay order. */
 public final class ClaimCommandGenerator {
 
-    public static final long[] SEEDS = {0x51DE7L, 0xC1A1L};
+    static final long[] SEEDS = {0x51DE7L, 0xC1A1L};
     public static final int COMMANDS_PER_SEQUENCE = 30;
     public static final int MAX_GENERATED_CLAIMS = 4;
     public static final String ALGORITHM = "java.util.Random / Java 21";

@@ -53,9 +53,16 @@ public final class ClaimJourneyReceiptCodec {
 
     public static String write(ClaimJourneyReceipt receipt, Path destination) throws IOException {
         validate(receipt);
+        if (destination == null) {
+            throw new IOException("Replay receipt destination is required.");
+        }
         Path absolute = destination.toAbsolutePath();
-        Files.createDirectories(absolute.getParent());
-        Path temporary = Files.createTempFile(absolute.getParent(), ".f2-receipt-", ".tmp");
+        Path parent = absolute.getParent();
+        if (parent == null) {
+            throw new IOException("Replay receipt destination must have a parent directory.");
+        }
+        Files.createDirectories(parent);
+        Path temporary = Files.createTempFile(parent, ".f2-receipt-", ".tmp");
         try {
             String json = serialize(receipt) + System.lineSeparator();
             Files.writeString(temporary, json);

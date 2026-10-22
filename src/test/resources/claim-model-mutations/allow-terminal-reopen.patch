@@ -2,7 +2,7 @@ diff --git a/src/domain.js b/src/domain.js
 index 1a1f1f1..a9a9a9a 100644
 --- a/src/domain.js
 +++ b/src/domain.js
-@@ -7,7 +7,7 @@ const transitions = new Map([
+@@ -7,6 +7,6 @@ const transitions = new Map([
    ['submitted', new Set(['under_review'])],
    ['under_review', new Set(['approved', 'rejected'])],
 -  ['approved', new Set()],
