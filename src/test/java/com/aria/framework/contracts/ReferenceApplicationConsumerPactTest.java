@@ -18,6 +18,7 @@ import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -43,7 +44,9 @@ class ReferenceApplicationConsumerPactTest {
             .willRespondWith()
             .status(401)
             .headers(Map.of("Content-Type", JSON_CONTENT_TYPE))
-            .body(new PactDslJsonBody().object("error").stringValue("code", "AUTHENTICATION_REQUIRED").closeObject())
+            .body(Objects.requireNonNull(
+                new PactDslJsonBody().object("error").stringValue("code", "AUTHENTICATION_REQUIRED").closeObject(),
+                "The authentication error body must close into a Pact DSL part"))
             .toPact(V4Pact.class);
     }
 
@@ -86,6 +89,18 @@ class ReferenceApplicationConsumerPactTest {
 
     @Pact(consumer = "aria-api-framework", provider = "quality-reference-application")
     V4Pact initialV2ClaimEventPact(PactDslWithProvider builder) {
+        DslPart eventItems = new PactDslJsonBody()
+            .minMaxArrayLike("items", 1, 1)
+            .nullValue("fromStatus")
+            .stringValue("toStatus", "submitted")
+            .numberValue("claimVersion", 1)
+            .stringType("createdAt")
+            .stringValue("actorDisplayName", "Synthetic Member A")
+            .stringValue("actorRole", "member")
+            .closeObject();
+        DslPart eventBody = Objects.requireNonNull(
+            eventItems, "The claim event array must close into its parent object").closeArray();
+
         return builder
             .given("a member owns a submitted version 2 claim")
             .uponReceiving("the initial event for a v2 claim")
@@ -96,16 +111,7 @@ class ReferenceApplicationConsumerPactTest {
             .willRespondWith()
             .status(200)
             .headers(Map.of("Content-Type", JSON_CONTENT_TYPE))
-            .body(new PactDslJsonBody()
-                .minMaxArrayLike("items", 1, 1)
-                .nullValue("fromStatus")
-                .stringValue("toStatus", "submitted")
-                .numberValue("claimVersion", 1)
-                .stringType("createdAt")
-                .stringValue("actorDisplayName", "Synthetic Member A")
-                .stringValue("actorRole", "member")
-                .closeObject()
-                .closeArray())
+            .body(Objects.requireNonNull(eventBody, "The claim event body must close into a Pact DSL part"))
             .toPact(V4Pact.class);
     }
 
@@ -210,14 +216,16 @@ class ReferenceApplicationConsumerPactTest {
     }
 
     private static DslPart policyListBody() {
-        return new PactDslJsonBody()
+        DslPart policyItems = new PactDslJsonBody()
             .minMaxArrayLike("items", 1, 1)
             .valueFromProviderState("id", POLICY_ID_EXPRESSION, POLICY_ID)
             .stringValue("policyNumber", "POL-SYN-A-001")
             .stringValue("seedVersion", "v0.1.0")
             .numberValue("claimAmountLimitMinor", 500_000)
-            .closeObject()
-            .closeArray();
+            .closeObject();
+        DslPart policyBody = Objects.requireNonNull(
+            policyItems, "The policy array must close into its parent object").closeArray();
+        return Objects.requireNonNull(policyBody, "The policy list body must close into a Pact DSL part");
     }
 
     private static DslPart claimResponseBody(int amountMinor) {
