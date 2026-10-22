@@ -67,7 +67,7 @@ public final class OpenApiResponseValidator {
             .as(operationName + " status " + statusCode + " response body is present for documented content")
             .isNotBlank();
 
-        String contentType = normalizedMediaType(response.header("Content-Type"));
+        String contentType = normalizedMediaType(responseHeader(response, "Content-Type"));
         assertThat(contentType)
             .as(operationName + " status " + statusCode + " response Content-Type is present")
             .isNotBlank();
@@ -216,6 +216,14 @@ public final class OpenApiResponseValidator {
             return null;
         }
         return mediaType.split(";", 2)[0].trim().toLowerCase(Locale.ROOT);
+    }
+
+    private static String responseHeader(Response response, String name) {
+        return response.headers().asList().stream()
+            .filter(header -> name.equalsIgnoreCase(header.getName()))
+            .map(header -> header.getValue())
+            .findFirst()
+            .orElse(null);
     }
 
     private static String responseBody(Response response) {
