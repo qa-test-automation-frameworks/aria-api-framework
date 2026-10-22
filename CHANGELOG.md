@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Added a bounded claims API state model with deterministic journeys, sanitized replay receipts, and hosted regression controls.
+
 ## 1.0.0 - 2026-05-24
 
 - Added layered RestAssured API framework for Restful Booker and GitHub.

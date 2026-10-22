@@ -266,12 +266,14 @@ jobs:
 
   shared-reference-app:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     permissions:
       contents: read
     env:
       APP_IMAGE: quality-reference-application:aria-${{ github.run_id }}
       APP_IMAGE_LOCAL: 'true'
       APP_SOURCE_REVISION: 21af1f41561a6d83ae44933dd36d9daa5e6a6e4c
+      FRAMEWORK_SOURCE_REVISION: ${{ github.sha }}
       APP_FIXTURE_VERSION: v0.1.0
       JAVA_VERSION: '21'
       ENV: reference-app
@@ -308,11 +310,18 @@ jobs:
       - name: Build immutable APP source locally
         run: docker build --build-arg "APP_SOURCE_SHA=${APP_SOURCE_REVISION}" --tag "${APP_IMAGE}" reference-app
 
+      - name: Record the built APP image identity
+        run: |
+          echo "APP_IMAGE_DIGEST=$(docker image inspect --format '{{.Id}}' "$APP_IMAGE")" >> "$GITHUB_ENV"
+
       - name: Start pinned APP and run ARIA shared-target suite
         run: bash scripts/with-reference-application.sh ./gradlew --no-daemon --max-workers=1 sharedReferenceAppTest sharedReferencePactVerificationTest
 
       - name: Check Pact against hosted-only breaking and additive candidates
         run: bash scripts/verify-reference-pact-mutations.sh reference-app
+
+      - name: Check claims exploration against controlled provider regressions
+        run: bash scripts/verify-claim-model-mutations.sh reference-app
 
       - name: Emit shared target execution evidence
         if: always()
@@ -337,6 +346,12 @@ jobs:
             build/test-results/sharedReferenceAppTest/TEST-*.xml
             build/test-results/sharedReferencePactVerificationTest/TEST-*.xml
             work/audit-2026-10-21/A3/controls/**
+            work/audit-2026-10-21/F2/summary.md
+            work/audit-2026-10-21/F2/sequences/*.json
+            work/audit-2026-10-21/F2/controls/*/counterexample.json
+            work/audit-2026-10-21/F2/controls/*/replay.json
+            work/audit-2026-10-21/F2/controls/*/control-summary.json
+            work/audit-2026-10-21/F2/controls/*/test-results/**/*.xml
           if-no-files-found: error
           retention-days: 30
 
@@ -350,6 +365,10 @@ jobs:
             echo "- Source revision: ${APP_SOURCE_REVISION}"
             echo "- Fixture version: ${APP_FIXTURE_VERSION}"
             echo '- Isolation: one ephemeral PostgreSQL database, container network, app namespace, and synthetic test token per CI job'
+            if test -s work/audit-2026-10-21/F2/summary.md; then
+              echo
+              cat work/audit-2026-10-21/F2/summary.md
+            fi
           } >> "$GITHUB_STEP_SUMMARY"
 
   evidence-failure-control:

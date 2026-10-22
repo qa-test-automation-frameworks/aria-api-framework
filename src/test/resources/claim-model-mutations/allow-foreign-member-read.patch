@@ -1,0 +1,11 @@
+diff --git a/src/server.js b/src/server.js
+index 1a1f1f1..a9a9a9a 100644
+--- a/src/server.js
++++ b/src/server.js
+@@ -283,7 +283,7 @@
+     );
+     const claim = claimResult.rows[0];
+-    if (!claim || (actor.role !== 'reviewer' && claim.ownerId !== actor.id)) {
++    if (!claim) {
+       throw httpError(404, 'RESOURCE_NOT_FOUND', 'The requested claim was not found.');
+     }
