@@ -100,6 +100,9 @@ class ReferenceApplicationConsumerPactTest {
             .closeObject();
         DslPart eventBody = Objects.requireNonNull(
             eventItems, "The claim event array must close into its parent object").closeArray();
+        if (eventBody == null) {
+            throw new IllegalStateException("The claim event body must close into a Pact DSL part");
+        }
 
         return builder
             .given("a member owns a submitted version 2 claim")
@@ -111,7 +114,7 @@ class ReferenceApplicationConsumerPactTest {
             .willRespondWith()
             .status(200)
             .headers(Map.of("Content-Type", JSON_CONTENT_TYPE))
-            .body(Objects.requireNonNull(eventBody, "The claim event body must close into a Pact DSL part"))
+            .body(eventBody)
             .toPact(V4Pact.class);
     }
 
@@ -225,7 +228,10 @@ class ReferenceApplicationConsumerPactTest {
             .closeObject();
         DslPart policyBody = Objects.requireNonNull(
             policyItems, "The policy array must close into its parent object").closeArray();
-        return Objects.requireNonNull(policyBody, "The policy list body must close into a Pact DSL part");
+        if (policyBody == null) {
+            throw new IllegalStateException("The policy list body must close into a Pact DSL part");
+        }
+        return policyBody;
     }
 
     private static DslPart claimResponseBody(int amountMinor) {
