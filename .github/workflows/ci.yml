@@ -340,6 +340,23 @@ jobs:
           EVIDENCE_TARGET_ENVIRONMENT: isolated-github-actions
         run: python3 scripts/emit_junit_evidence.py --reports build/test-results/sharedReferenceAppTest --output build/evidence/shared-app.json --scope aria.shared-app
 
+      - name: Preserve clean shared-target JUnit reports
+        if: always()
+        run: |
+          set -euo pipefail
+          for suite in sharedReferenceAppTest sharedReferencePactVerificationTest; do
+            source_dir="build/test-results/${suite}"
+            if [[ -d "$source_dir" ]]; then
+              destination="build/evidence/clean-native/${suite}"
+              mkdir -p "$destination"
+              for report in "$source_dir"/TEST-*.xml; do
+                if [[ -f "$report" ]]; then
+                  cp "$report" "$destination/"
+                fi
+              done
+            fi
+          done
+
       - name: Check Pact against hosted-only breaking and additive candidates
         run: bash scripts/verify-reference-pact-mutations.sh reference-app
 
@@ -357,8 +374,8 @@ jobs:
           name: evidence-aria-shared-app
           path: |
             build/evidence/shared-app.json
-            build/test-results/sharedReferenceAppTest/TEST-*.xml
-            build/test-results/sharedReferencePactVerificationTest/TEST-*.xml
+            build/evidence/clean-native/sharedReferenceAppTest/TEST-*.xml
+            build/evidence/clean-native/sharedReferencePactVerificationTest/TEST-*.xml
             work/audit-2026-10-21/A3/controls/**
             work/audit-2026-10-21/F2/summary.md
             work/audit-2026-10-21/F2/sequences/*.json
@@ -501,6 +518,23 @@ jobs:
           EVIDENCE_TARGET_ENVIRONMENT: isolated-github-actions
         run: python3 scripts/emit_junit_evidence.py --reports build/test-results/sharedReferenceAppTest --output build/evidence/shared-app.json --scope aria.shared-app
 
+      - name: Preserve clean candidate JUnit reports
+        if: always() && steps.release.outcome == 'success'
+        run: |
+          set -euo pipefail
+          for suite in sharedReferenceAppTest sharedReferencePactVerificationTest; do
+            source_dir="build/test-results/${suite}"
+            if [[ -d "$source_dir" ]]; then
+              destination="build/evidence/clean-native/${suite}"
+              mkdir -p "$destination"
+              for report in "$source_dir"/TEST-*.xml; do
+                if [[ -f "$report" ]]; then
+                  cp "$report" "$destination/"
+                fi
+              done
+            fi
+          done
+
       - name: Check Pact against hosted-only breaking and additive candidates
         run: bash scripts/verify-reference-pact-mutations.sh reference-app
 
@@ -518,8 +552,8 @@ jobs:
           name: evidence-aria-shared-app
           path: |
             build/evidence/shared-app.json
-            build/test-results/sharedReferenceAppTest/TEST-*.xml
-            build/test-results/sharedReferencePactVerificationTest/TEST-*.xml
+            build/evidence/clean-native/sharedReferenceAppTest/TEST-*.xml
+            build/evidence/clean-native/sharedReferencePactVerificationTest/TEST-*.xml
             work/audit-2026-10-21/A3/controls/**
             work/audit-2026-10-21/F2/summary.md
             work/audit-2026-10-21/F2/sequences/*.json
