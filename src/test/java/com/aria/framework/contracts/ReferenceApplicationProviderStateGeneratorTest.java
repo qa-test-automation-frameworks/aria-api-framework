@@ -34,6 +34,7 @@ class ReferenceApplicationProviderStateGeneratorTest {
     }
 
     private static String generate(String expression, Map<String, Object> state, String example) {
-        return (String) new ProviderStateGenerator(expression, DataType.STRING).generate(state, example);
+        return (String) new ProviderStateGenerator(expression, DataType.STRING)
+            .generate(Map.of("providerState", state), example);
     }
 }
