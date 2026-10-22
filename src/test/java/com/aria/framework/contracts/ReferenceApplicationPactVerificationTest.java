@@ -70,7 +70,7 @@ class ReferenceApplicationPactVerificationTest {
         Response events = authorizedRequest(token).get("/api/v2/claims/" + claimId + "/events");
         assertThat(events.statusCode()).as("provider-state initial event read").isEqualTo(200);
         assertThat(events.jsonPath().getList("items")).hasSize(1);
-        assertThat(events.jsonPath().get("items[0].fromStatus")).isNull();
+        assertThat((Object) events.jsonPath().get("items[0].fromStatus")).isNull();
         assertThat(events.jsonPath().getString("items[0].toStatus")).isEqualTo("submitted");
         assertThat(events.jsonPath().getInt("items[0].claimVersion")).isEqualTo(1);
         return Map.of("token", token, "policyId", policyId, "claimId", claimId);

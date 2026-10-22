@@ -2,8 +2,8 @@ package com.aria.framework.contracts;
 
 import au.com.dius.pact.consumer.MockServer;
 import au.com.dius.pact.consumer.dsl.DslPart;
-import au.com.dius.pact.consumer.dsl.PactBuilder;
 import au.com.dius.pact.consumer.dsl.PactDslJsonBody;
+import au.com.dius.pact.consumer.dsl.PactDslWithProvider;
 import au.com.dius.pact.consumer.junit5.PactConsumerTestExt;
 import au.com.dius.pact.consumer.junit5.PactTestFor;
 import au.com.dius.pact.core.model.V4Pact;
@@ -35,108 +35,101 @@ class ReferenceApplicationConsumerPactTest {
     private static final String JSON_CONTENT_TYPE = "application/json; charset=utf-8";
 
     @Pact(consumer = "aria-api-framework", provider = "quality-reference-application")
-    V4Pact unauthenticatedPolicyListPact(PactBuilder builder) {
+    V4Pact unauthenticatedPolicyListPact(PactDslWithProvider builder) {
         return builder
-            .expectsToReceiveHttpInteraction("an unauthenticated policy list request", interaction -> interaction
-                .withRequest(request -> request
-                    .method("GET")
-                    .path("/api/v1/policies"))
-                .willRespondWith(response -> response
-                    .status(401)
-                    .header("Content-Type", JSON_CONTENT_TYPE)
-                    .body("""
-                        {"error":{"code":"AUTHENTICATION_REQUIRED"}}
-                        """, JSON_CONTENT_TYPE)))
-            .toPact();
+            .uponReceiving("an unauthenticated policy list request")
+            .path("/api/v1/policies")
+            .method("GET")
+            .willRespondWith()
+            .status(401)
+            .header("Content-Type", JSON_CONTENT_TYPE)
+            .body(new PactDslJsonBody().object("error").stringValue("code", "AUTHENTICATION_REQUIRED").closeObject())
+            .toPact(V4Pact.class);
     }
 
     @Pact(consumer = "aria-api-framework", provider = "quality-reference-application")
-    V4Pact v2PolicyListPact(PactBuilder builder) {
+    V4Pact v2PolicyListPact(PactDslWithProvider builder) {
         return builder
             .given("a member can list version 2 policies")
-            .expectsToReceiveHttpInteraction("an authenticated v2 policy list", interaction -> interaction
-                .withRequest(request -> request
-                    .method("GET")
-                    .path("/api/v2/policies")
-                    .header("Accept", "application/json")
-                    .headerFromProviderState("Authorization", TOKEN_EXPRESSION, "Bearer " + EXAMPLE_TOKEN))
-                .willRespondWith(response -> response
-                    .status(200)
-                    .header("Content-Type", JSON_CONTENT_TYPE)
-                    .body(policyListBody())))
-            .toPact();
+            .uponReceiving("an authenticated v2 policy list")
+            .path("/api/v2/policies")
+            .method("GET")
+            .header("Accept", "application/json")
+            .headerFromProviderState("Authorization", TOKEN_EXPRESSION, "Bearer " + EXAMPLE_TOKEN)
+            .willRespondWith()
+            .status(200)
+            .header("Content-Type", JSON_CONTENT_TYPE)
+            .body(policyListBody())
+            .toPact(V4Pact.class);
     }
 
     @Pact(consumer = "aria-api-framework", provider = "quality-reference-application")
-    V4Pact createV2ClaimPact(PactBuilder builder) {
+    V4Pact createV2ClaimPact(PactDslWithProvider builder) {
         return builder
             .given("a member and policy exist for a version 2 claim")
-            .expectsToReceiveHttpInteraction("a successful v2 claim creation", interaction -> interaction
-                .withRequest(request -> request
-                    .method("POST")
-                    .path("/api/v2/claims")
-                    .header("Accept", "application/json")
-                    .headerFromProviderState("Authorization", TOKEN_EXPRESSION, "Bearer " + EXAMPLE_TOKEN)
-                    .header("Content-Type", "application/json")
-                    .body(new PactDslJsonBody()
-                        .valueFromProviderState("policyId", POLICY_ID_EXPRESSION, POLICY_ID)
-                        .numberValue("amountMinor", 250_000)
-                        .stringValue("currency", "USD")
-                        .stringValue("category", "auto")))
-                .willRespondWith(response -> response
-                    .status(201)
-                    .header("Content-Type", JSON_CONTENT_TYPE)
-                    .body(claimResponseBody(250_000))))
-            .toPact();
+            .uponReceiving("a successful v2 claim creation")
+            .path("/api/v2/claims")
+            .method("POST")
+            .header("Accept", "application/json")
+            .headerFromProviderState("Authorization", TOKEN_EXPRESSION, "Bearer " + EXAMPLE_TOKEN)
+            .header("Content-Type", "application/json")
+            .body(new PactDslJsonBody()
+                .valueFromProviderState("policyId", POLICY_ID_EXPRESSION, POLICY_ID)
+                .numberValue("amountMinor", 250_000)
+                .stringValue("currency", "USD")
+                .stringValue("category", "auto"))
+            .willRespondWith()
+            .status(201)
+            .header("Content-Type", JSON_CONTENT_TYPE)
+            .body(claimResponseBody(250_000))
+            .toPact(V4Pact.class);
     }
 
     @Pact(consumer = "aria-api-framework", provider = "quality-reference-application")
-    V4Pact initialV2ClaimEventPact(PactBuilder builder) {
+    V4Pact initialV2ClaimEventPact(PactDslWithProvider builder) {
         return builder
             .given("a member owns a submitted version 2 claim")
-            .expectsToReceiveHttpInteraction("the initial event for a v2 claim", interaction -> interaction
-                .withRequest(request -> request
-                    .method("GET")
-                    .pathFromProviderState(CLAIM_ID_EXPRESSION, "/api/v2/claims/cccccccc-cccc-4ccc-8ccc-cccccccccccc/events")
-                    .header("Accept", "application/json")
-                    .headerFromProviderState("Authorization", TOKEN_EXPRESSION, "Bearer " + EXAMPLE_TOKEN))
-                .willRespondWith(response -> response
-                    .status(200)
-                    .header("Content-Type", JSON_CONTENT_TYPE)
-                    .body(new PactDslJsonBody()
-                        .minMaxArrayLike("items", 1, 1)
-                        .nullValue("fromStatus")
-                        .stringValue("toStatus", "submitted")
-                        .numberValue("claimVersion", 1)
-                        .stringType("createdAt")
-                        .stringValue("actorDisplayName", "Synthetic Member A")
-                        .stringValue("actorRole", "member")
-                        .closeObject()
-                        .closeArray())))
-            .toPact();
+            .uponReceiving("the initial event for a v2 claim")
+            .pathFromProviderState(CLAIM_ID_EXPRESSION, "/api/v2/claims/cccccccc-cccc-4ccc-8ccc-cccccccccccc/events")
+            .method("GET")
+            .header("Accept", "application/json")
+            .headerFromProviderState("Authorization", TOKEN_EXPRESSION, "Bearer " + EXAMPLE_TOKEN)
+            .willRespondWith()
+            .status(200)
+            .header("Content-Type", JSON_CONTENT_TYPE)
+            .body(new PactDslJsonBody()
+                .minMaxArrayLike("items", 1, 1)
+                .nullValue("fromStatus")
+                .stringValue("toStatus", "submitted")
+                .numberValue("claimVersion", 1)
+                .stringType("createdAt")
+                .stringValue("actorDisplayName", "Synthetic Member A")
+                .stringValue("actorRole", "member")
+                .closeObject()
+                .closeArray())
+            .toPact(V4Pact.class);
     }
 
     @Pact(consumer = "aria-api-framework", provider = "quality-reference-application")
-    V4Pact v1BoundaryClaimPact(PactBuilder builder) {
+    V4Pact v1BoundaryClaimPact(PactDslWithProvider builder) {
         return builder
             .given("a member and policy exist for a version 1 boundary claim")
-            .expectsToReceiveHttpInteraction("a v1 claim at the one million minor-unit limit", interaction -> interaction
-                .withRequest(request -> request
-                    .method("POST")
-                    .path("/api/v1/claims")
-                    .header("Accept", "application/json")
-                    .headerFromProviderState("Authorization", TOKEN_EXPRESSION, "Bearer " + EXAMPLE_TOKEN)
-                    .header("Content-Type", "application/json")
-                    .body(new PactDslJsonBody()
-                        .valueFromProviderState("policyId", POLICY_ID_EXPRESSION, POLICY_ID)
-                        .numberValue("amountMinor", 1_000_000)
-                        .stringValue("currency", "USD")
-                        .stringValue("category", "auto")))
-                .willRespondWith(response -> response
-                    .status(201)
-                    .header("Content-Type", JSON_CONTENT_TYPE)
-                    .body(claimResponseBody(1_000_000))))
-            .toPact();
+            .uponReceiving("a v1 claim at the one million minor-unit limit")
+            .path("/api/v1/claims")
+            .method("POST")
+            .header("Accept", "application/json")
+            .headerFromProviderState("Authorization", TOKEN_EXPRESSION, "Bearer " + EXAMPLE_TOKEN)
+            .header("Content-Type", "application/json")
+            .body(new PactDslJsonBody()
+                .valueFromProviderState("policyId", POLICY_ID_EXPRESSION, POLICY_ID)
+                .numberValue("amountMinor", 1_000_000)
+                .stringValue("currency", "USD")
+                .stringValue("category", "auto"))
+            .willRespondWith()
+            .status(201)
+            .header("Content-Type", JSON_CONTENT_TYPE)
+            .body(claimResponseBody(1_000_000))
+            .toPact(V4Pact.class);
     }
 
     @Test
@@ -197,7 +190,7 @@ class ReferenceApplicationConsumerPactTest {
 
         assertThat(response.statusCode()).isEqualTo(200);
         assertThat(response.jsonPath().getList("items")).hasSize(1);
-        assertThat(response.jsonPath().get("items[0].fromStatus")).isNull();
+        assertThat((Object) response.jsonPath().get("items[0].fromStatus")).isNull();
         assertThat(response.jsonPath().getString("items[0].toStatus")).isEqualTo("submitted");
         assertThat(response.jsonPath().getInt("items[0].claimVersion")).isEqualTo(1);
     }
