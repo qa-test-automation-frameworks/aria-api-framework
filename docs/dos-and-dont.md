@@ -17,6 +17,6 @@
 - Do not commit secrets, `.env`, `build/`, local logs, or generated Allure output.
 - Do not add live tests to the default CI gate.
 - Do not assert public demo API security weaknesses as desired behavior.
-- Do not bypass `RedactionPolicy` for request/response attachments.
+- Do not bypass `DiagnosticSnapshot` for HTTP logs or request/response attachments; reserve `RedactionPolicy` for its conservative mixed-text fallback.
 - Do not add a dependency without updating the lockfile and SBOM path.
 - Do not remove OpenAPI coverage mappings to make a build pass.

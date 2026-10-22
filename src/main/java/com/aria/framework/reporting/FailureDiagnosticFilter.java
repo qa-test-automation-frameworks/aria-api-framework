@@ -21,56 +21,25 @@ public final class FailureDiagnosticFilter implements Filter {
         try {
             Response response = ctx.next(requestSpec, responseSpec);
             if (response.statusCode() >= 400) {
-                attachDiagnostic(requestSpec, response, null);
+                attachDiagnostic(DiagnosticSnapshot.forResponse(requestSpec, response));
             }
             return response;
-        } catch (RuntimeException exception) {
-            attachDiagnostic(requestSpec, null, exception);
-            throw exception;
+        } catch (Exception exception) {
+            attachDiagnostic(DiagnosticSnapshot.forException(requestSpec, exception));
+            return DiagnosticExceptionRethrower.rethrow(exception);
         }
     }
 
-    private static void attachDiagnostic(
-        FilterableRequestSpecification requestSpec,
-        Response response,
-        RuntimeException exception
-    ) {
-        StringBuilder diagnostic = new StringBuilder()
-            .append("Request\n")
-            .append(requestSpec.getMethod())
-            .append(' ')
-            .append(requestSpec.getURI())
-            .append("\n\nHeaders\n")
-            .append(requestSpec.getHeaders())
-            .append("\n\nBody\n")
-            .append(DiagnosticBodyFormatter.bodyAsString(requestSpec.getBody()));
-
-        if (response != null) {
-            diagnostic
-                .append("\n\nResponse\n")
-                .append(response.statusCode())
-                .append("\n\nHeaders\n")
-                .append(response.getHeaders())
-                .append("\n\nBody\n")
-                .append(response.getBody().asString());
-        }
-
-        if (exception != null) {
-            diagnostic
-                .append("\n\nException\n")
-                .append(exception.getClass().getName())
-                .append(": ")
-                .append(exception.getMessage());
-        }
-
+    private static void attachDiagnostic(DiagnosticSnapshot diagnostic) {
         Allure.addAttachment(
             "ARIA HTTP diagnostic",
             "text/plain",
-            sanitize(diagnostic.toString()),
+            diagnostic.render(),
             ".txt"
         );
     }
 
+    /** Conservative fallback for legacy mixed-text diagnostics; structured HTTP paths use snapshots. */
     public static String sanitize(String text) {
         return RedactionPolicy.sanitize(text);
     }

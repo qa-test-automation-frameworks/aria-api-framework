@@ -24,7 +24,7 @@ Request builders provide valid defaults. Datafaker-backed factories expose named
 
 ## Reporting
 
-All API clients attach RestAssured logging, sanitized HTTP diagnostics, and a sanitized Allure RestAssured filter centrally. Successful and failing exchanges are attached with the shared redaction policy; failure diagnostics remain separate for fast triage of 4xx, 5xx, and transport errors. Test classes use Allure epic, feature, story, display names, and JUnit tags to make CI reports navigable.
+All API clients use the same bounded structured snapshot for safe console summaries and Allure request/response/failure attachments. Raw REST Assured URI and validation-failure logging is disabled. Snapshots omit URL userinfo, query values, cookies, unapproved headers, and unsupported bodies; supported JSON is parsed and sensitive-key values are replaced recursively. The legacy mixed-text fallback omits the whole message when it detects a sensitive signal. This protects the named formats and fields; tests should still use synthetic data because arbitrary secrets embedded in ordinary text cannot be identified reliably. Test classes use Allure epic, feature, story, display names, and JUnit tags to make CI reports navigable.
 
 ## Test Execution Strategy
 

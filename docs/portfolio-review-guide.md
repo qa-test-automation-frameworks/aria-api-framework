@@ -6,7 +6,7 @@ This guide is a short evidence-based path through the repository. Claims below l
 
 1. Read the [architecture](ARCHITECTURE.md) and [ADR index](adr/README.md).
 2. Inspect [`BaseApiClient`](../src/main/java/com/aria/framework/clients/BaseApiClient.java), services, and typed request/response models.
-3. Review [`RedactionPolicy`](../src/main/java/com/aria/framework/reporting/RedactionPolicy.java) and the [threat model](security/aria-api-framework-threat-model.md).
+3. Review [`DiagnosticSnapshot`](../src/main/java/com/aria/framework/reporting/DiagnosticSnapshot.java), [`DiagnosticBodyFormatter`](../src/main/java/com/aria/framework/reporting/DiagnosticBodyFormatter.java), the legacy [`RedactionPolicy`](../src/main/java/com/aria/framework/reporting/RedactionPolicy.java) fallback, and the [threat model](security/aria-api-framework-threat-model.md).
 4. Read the owned fixture and atomic concurrency test under [`src/test`](../src/test/java/com/aria/framework/).
 5. Run the deterministic gate and inspect Allure, OpenAPI coverage, runtime metrics, and duration reports.
 6. Review [retry and quarantine rules](RELIABILITY_POLICY.md), [failure triage](failure-example.md), and [seeded defect examples](seeded-defects.md).
@@ -16,7 +16,7 @@ This guide is a short evidence-based path through the repository. Claims below l
 | Capability | Repository evidence | Generated evidence |
 | --- | --- | --- |
 | Layered API design | [`clients`](../src/main/java/com/aria/framework/clients), [`services`](../src/main/java/com/aria/framework/services), [`models`](../src/main/java/com/aria/framework/models) | JUnit and Allure results |
-| Secret-safe diagnostics | [`RedactionPolicy`](../src/main/java/com/aria/framework/reporting/RedactionPolicy.java), [`FailureDiagnosticFilter`](../src/main/java/com/aria/framework/reporting/FailureDiagnosticFilter.java) | Sanitized Allure attachments |
+| Secret-safe diagnostics | [`DiagnosticSnapshot`](../src/main/java/com/aria/framework/reporting/DiagnosticSnapshot.java), [`DiagnosticBodyFormatter`](../src/main/java/com/aria/framework/reporting/DiagnosticBodyFormatter.java), [`SanitizedClientDiagnosticsTest`](../src/test/java/com/aria/framework/reporting/SanitizedClientDiagnosticsTest.java) | Sanitized logs and persisted Allure attachments |
 | Contract coverage | [`contracts`](../src/test/java/com/aria/framework/contracts), [`OpenApiCoverageReporter`](../src/test/java/com/aria/framework/tools/OpenApiCoverageReporter.java) | `build/reports/openapi-coverage.md` |
 | Concurrency behavior | [`ConcurrentBookingBoundaryTest`](../src/test/java/com/aria/framework/concurrency/ConcurrentBookingBoundaryTest.java) | One accepted update, one stale conflict |
 | Retry boundaries | [`RetryUtils`](../src/main/java/com/aria/framework/utils/RetryUtils.java) and retry tests | Zero JUnit retries in portfolio metrics |

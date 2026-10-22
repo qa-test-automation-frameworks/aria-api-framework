@@ -4,15 +4,12 @@ import com.aria.framework.config.ConfigManager;
 import com.aria.framework.config.FrameworkConfig;
 import com.aria.framework.reporting.FailureDiagnosticFilter;
 import com.aria.framework.reporting.SanitizedAllureRestAssured;
+import com.aria.framework.reporting.SanitizedDiagnosticLoggingFilter;
 import com.aria.framework.utils.RetryDeadline;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.config.HttpClientConfig;
-import io.restassured.config.LogConfig;
 import io.restassured.config.RestAssuredConfig;
 import io.restassured.filter.Filter;
-import io.restassured.filter.log.LogDetail;
-import io.restassured.filter.log.RequestLoggingFilter;
-import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -47,7 +44,7 @@ public abstract class BaseApiClient {
     /**
      * Builds a RequestSpecification dynamically for the target microservice/API.
      * Sets Content-Type and Accept headers to JSON by default.
-     * Configures logging to only output full request and response streams on assertion failure.
+     * Configures bounded structured diagnostics for console logs and Allure attachments.
      *
      * @param baseUri String API domain base URI
      * @return RequestSpecification fully constructed spec
@@ -62,8 +59,7 @@ public abstract class BaseApiClient {
                     return client;
                 })
                 .setParam("http.connection.timeout", timeoutMs)
-                .setParam("http.socket.timeout", timeoutMs))
-            .logConfig(LogConfig.logConfig().enableLoggingOfRequestAndResponseIfValidationFails(LogDetail.ALL));
+                .setParam("http.socket.timeout", timeoutMs));
 
         RequestSpecBuilder builder = new RequestSpecBuilder()
             .setBaseUri(baseUri)
@@ -72,9 +68,7 @@ public abstract class BaseApiClient {
             .setConfig(config)
             .addFilter(new SanitizedAllureRestAssured())
             .addFilter(new FailureDiagnosticFilter())
-            .addFilter(new RequestLoggingFilter(LogDetail.METHOD))
-            .addFilter(new RequestLoggingFilter(LogDetail.URI))
-            .addFilter(new ResponseLoggingFilter(LogDetail.STATUS));
+            .addFilter(new SanitizedDiagnosticLoggingFilter());
 
         // Inject all registered client filters
         for (Filter filter : clientFilters) {

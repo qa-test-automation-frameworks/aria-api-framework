@@ -44,7 +44,7 @@ to have a failing main run.
 | How are API tests prevented from becoming endpoint scripts? | Clients own transport, services own business operations, and tests remain intent-focused. |
 | How is deterministic evidence produced? | WireMock, Pact consumer contracts, Pact provider verification, and owned-provider state checks cover API behavior and security boundaries without public-service dependence. |
 | How are specifications connected to execution? | JSON-schema assertions and endpoint-to-test OpenAPI coverage make documented response and coverage gaps visible. |
-| How are failures shared safely? | Structured logs and Allure attachments redact credentials and sensitive payload fields before publication. |
+| How are failures shared safely? | HTTP diagnostics use bounded structured snapshots: credentials, cookies, URL query values, and supported sensitive JSON fields are omitted or redacted before logging and attachment. Unknown, malformed, binary, and oversized bodies are omitted. |
 | How is supply-chain risk controlled? | Wrapper validation, dependency review, OSV scanning, SBOM generation, and a required quality gate. |
 
 ## Release Summary

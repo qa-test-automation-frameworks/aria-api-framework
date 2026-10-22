@@ -3,20 +3,19 @@ package com.aria.framework.reporting;
 import java.util.regex.Pattern;
 
 /**
- * Central redaction rules for HTTP diagnostics, logs, and exception-safe messages.
+ * Conservative fallback for legacy unstructured diagnostic text.
  */
 public final class RedactionPolicy {
 
-    private static final String REDACTED = "<redacted>";
-    private static final Pattern SENSITIVE_HEADER = Pattern.compile(
-        "(?im)^\\s*((?:Authorization|Proxy-Authorization|Cookie|Set-Cookie|X-Api-Key|Api-Key)\\s*[:=]\\s*).+$"
+    private static final String OMITTED = "<unstructured diagnostic omitted>";
+    private static final Pattern SENSITIVE_SIGNAL = Pattern.compile(
+        "(?i)(?:authorization|proxy-authorization|cookie|set-cookie|x-api-key|api[-_.]?key|"
+            + "access[-_. ]?token|refresh[-_. ]?token|id[-_. ]?token|jwt[-_. ]?token|"
+            + "client[-_. ]?secret|github[._-]token|password|secret|token)\\s*[:=]"
+            + "|\\bbearer\\s+\\S+"
     );
-    private static final Pattern SENSITIVE_KEY_VALUE = Pattern.compile(
-        "(?i)([\"']?(?:token|access_token|refresh_token|id_token|api_key|apikey|client_secret|clientSecret|password|secret|github\\.token)[\"']?\\s*[:=]\\s*[\"']?)[^\"'\\r\\n,}&\\s]+"
-    );
-    private static final Pattern SENSITIVE_QUERY_PARAM = Pattern.compile(
-        "(?i)([?&](?:token|access_token|refresh_token|id_token|api_key|client_secret|password)=)[^&\\s]+"
-    );
+    private static final Pattern QUERY_URL = Pattern.compile("(?i)https?://[^\\s]*\\?[^\\s]*");
+    private static final Pattern URL_USER_INFO = Pattern.compile("(?i)https?://[^/@\\s]+@[^/\\s]+");
 
     private RedactionPolicy() {
     }
@@ -25,12 +24,11 @@ public final class RedactionPolicy {
         if (text == null || text.isBlank()) {
             return text == null ? "" : text;
         }
-        return SENSITIVE_QUERY_PARAM
-            .matcher(SENSITIVE_KEY_VALUE
-                .matcher(SENSITIVE_HEADER
-                    .matcher(text)
-                    .replaceAll("$1" + REDACTED))
-                .replaceAll("$1" + REDACTED))
-            .replaceAll("$1" + REDACTED);
+        if (SENSITIVE_SIGNAL.matcher(text).find()
+            || QUERY_URL.matcher(text).find()
+            || URL_USER_INFO.matcher(text).find()) {
+            return OMITTED;
+        }
+        return text;
     }
 }

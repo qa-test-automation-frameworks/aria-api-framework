@@ -72,7 +72,7 @@ The model does not assume an attacker already has repository administrator acces
 | Entry point | Evidence anchor |
 | --- | --- |
 | Environment and system-property configuration | `ConfigManager` |
-| HTTP request/response diagnostics | `BaseApiClient`, `FailureDiagnosticFilter`, `RedactionPolicy` |
+| HTTP request/response diagnostics | `BaseApiClient`, `DiagnosticSnapshot`, `DiagnosticBodyFormatter`, `FailureDiagnosticFilter`, legacy `RedactionPolicy` fallback |
 | Credentialed authentication responses | `TokenManager`, `AuthApiClient` |
 | Retryable external traffic | `RetryUtils` |
 | In-process fixture routes and state | `OwnedApiProvider` |
@@ -95,7 +95,7 @@ The model does not assume an attacker already has repository administrator acces
 
 | ID | Threat | Impact | Existing controls | Further action |
 | --- | --- | --- | --- | --- |
-| TM-001 | Secrets leak through logs or Allure attachments | High | Central redaction, sanitized failure filter, secret-safe policy, public-report separation | Add regression cases for encoded and nested secret shapes |
+| TM-001 | Secrets leak through logs or Allure attachments | High | Bounded structured snapshots, sanitized failure filter, conservative text fallback, public-report separation | Exercise actual client sinks with encoded and nested synthetic canaries |
 | TM-002 | Target URL override redirects credentialed traffic | High | Absolute HTTP(S) validation, explicit live credentials, deterministic default gate | Add optional host allowlists for enterprise targets |
 | TM-003 | Untrusted pull-request code accesses CI secrets | Critical | Read-only default permissions; live secrets used only by scheduled job | Keep fork PRs uncredentialed and protect workflow changes with CODEOWNERS |
 | TM-004 | Dependency or workflow supply-chain compromise | High | Locking, wrapper validation, dependency review, OSV, SBOM | Pin third-party actions to reviewed commit SHAs |
@@ -110,7 +110,7 @@ The model does not assume an attacker already has repository administrator acces
 
 ## Focus Paths
 
-- **TM-001 and TM-005:** Expand `RedactionPolicy` tests whenever diagnostic formats change. Never publish raw fallback bodies.
+- **TM-001 and TM-005:** Expand `SanitizedClientDiagnosticsTest` whenever HTTP diagnostic formats change. Never publish raw fallback bodies.
 - **TM-003:** Keep scheduled credentialed jobs separate from pull-request execution and require review for workflow changes.
 - **TM-004:** Review lockfile and action changes as security-sensitive; replace action tags with immutable commit SHAs.
 - **TM-002 and TM-006:** Apply host allowlists where targets are known and retain the no-test-retry policy.

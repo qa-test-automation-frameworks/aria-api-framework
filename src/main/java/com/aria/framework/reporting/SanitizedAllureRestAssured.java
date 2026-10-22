@@ -18,12 +18,17 @@ public final class SanitizedAllureRestAssured extends AllureRestAssured {
         FilterableResponseSpecification responseSpec,
         FilterContext filterContext
     ) {
-        return Allure.step(stepName(requestSpec), () -> {
-            attach("ARIA HTTP request", requestDiagnostic(requestSpec));
+        DiagnosticSnapshot request = DiagnosticSnapshot.forRequest(requestSpec);
+        attach("ARIA HTTP request", request.render());
+        try {
             Response response = filterContext.next(requestSpec, responseSpec);
-            attach("ARIA HTTP response", responseDiagnostic(response));
+            attach("ARIA HTTP response", DiagnosticSnapshot.forResponse(requestSpec, response).render());
+            Allure.step(request.label() + " returned HTTP " + response.statusCode());
             return response;
-        });
+        } catch (Exception exception) {
+            attach("ARIA HTTP exception", DiagnosticSnapshot.forException(requestSpec, exception).render());
+            return DiagnosticExceptionRethrower.rethrow(exception);
+        }
     }
 
     @Override
@@ -32,35 +37,7 @@ public final class SanitizedAllureRestAssured extends AllureRestAssured {
     }
 
     private static void attach(String name, String diagnostic) {
-        Allure.addAttachment(name, "text/plain", RedactionPolicy.sanitize(diagnostic), ".txt");
-    }
-
-    private static String stepName(FilterableRequestSpecification requestSpec) {
-        return RedactionPolicy.sanitize("HTTP " + requestSpec.getMethod() + " " + requestSpec.getURI());
-    }
-
-    private static String requestDiagnostic(FilterableRequestSpecification requestSpec) {
-        return new StringBuilder()
-            .append(requestSpec.getMethod())
-            .append(' ')
-            .append(requestSpec.getURI())
-            .append("\n\nHeaders\n")
-            .append(requestSpec.getHeaders())
-            .append("\n\nCookies\n")
-            .append(requestSpec.getCookies())
-            .append("\n\nBody\n")
-            .append(DiagnosticBodyFormatter.bodyAsString(requestSpec.getBody()))
-            .toString();
-    }
-
-    private static String responseDiagnostic(Response response) {
-        return new StringBuilder()
-            .append(response.statusLine())
-            .append("\n\nHeaders\n")
-            .append(response.getHeaders())
-            .append("\n\nBody\n")
-            .append(response.getBody().asString())
-            .toString();
+        Allure.addAttachment(name, "text/plain", diagnostic, ".txt");
     }
 
 }

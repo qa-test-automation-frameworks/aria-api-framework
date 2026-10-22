@@ -21,6 +21,16 @@ ARIA is designed so most failures can be triaged from generated artifacts before
 | Contract gaps | OpenAPI coverage report |
 | Public API instability | `live` test reports and `known-demo-api-limitations` tags |
 
+HTTP summaries preserve method, status, path, safe media-type metadata, and
+supported non-sensitive JSON fields. URL userinfo, all query values, cookies,
+unapproved headers, exception messages, and unknown, malformed, binary, or
+over-16-KiB bodies are omitted. Sensitive values under token, access/refresh/id
+token, JWT, API key, client secret, password, secret, and GitHub token keys are
+replaced recursively after case and separator normalization. The text fallback
+omits a whole diagnostic when it sees a sensitive signal. This is a bounded
+policy for known formats; use synthetic request and response data in tests
+because arbitrary secrets inside ordinary text cannot be detected reliably.
+
 ## Common Failure Types
 
 Authentication failures usually mean live credentials are missing, expired, or not visible to the Gradle process. Run `liveSmokeTest` only after setting `BOOKER_USERNAME` and `BOOKER_PASSWORD`.

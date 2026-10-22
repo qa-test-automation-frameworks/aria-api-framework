@@ -1,6 +1,6 @@
 # Failure Example and Triage
 
-The screenshot below shows a sanitized Allure diagnostic attachment. Authorization values and sensitive payload fields are redacted before the evidence reaches logs or report attachments.
+The screenshot below shows a sanitized Allure diagnostic attachment. Structured snapshots omit URL userinfo, query values, cookies, unapproved headers, and unsupported bodies; supported sensitive JSON fields are redacted before logging or attachment. This is a bounded policy for known formats, so use synthetic data in tests and do not rely on it to identify arbitrary secrets in ordinary text.
 
 ![Sanitized Allure diagnostic attachment](assets/allure/allure-diagnostic-attachment.png)
 
