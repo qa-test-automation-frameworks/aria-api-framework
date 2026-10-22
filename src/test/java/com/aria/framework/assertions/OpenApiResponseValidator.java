@@ -57,9 +57,9 @@ public final class OpenApiResponseValidator {
         assertBodylessContractIsConsistent(normalizedMethod, statusCode, content, operationName);
         String body = responseBody(response);
         if (content.isEmpty()) {
-            assertThat(body)
+            assertThat(body.isEmpty())
                 .as(operationName + " status " + statusCode + " documented bodyless response has no body")
-                .isEmpty();
+                .isTrue();
             return;
         }
 
@@ -73,7 +73,8 @@ public final class OpenApiResponseValidator {
             .isNotBlank();
         assertThat(content.keySet())
             .as(operationName + " status " + statusCode + " response Content-Type matches documented content")
-            .anyMatch(documentedMediaType -> contentType.equals(normalizedMediaType(documentedMediaType)));
+            .anyMatch(documentedMediaType -> contentType != null
+                && contentType.equals(normalizedMediaType(documentedMediaType)));
 
         assertBodyMatchesSchema(normalizedMethod, path, statusCode, response, body);
     }
