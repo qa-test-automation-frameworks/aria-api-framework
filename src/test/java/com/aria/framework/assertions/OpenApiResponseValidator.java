@@ -79,24 +79,27 @@ public final class OpenApiResponseValidator {
     }
 
     private Object documentedResponse(Map<?, ?> responses, String statusCode, String operationName) {
-        Object response = responses.entrySet().stream()
-            .filter(entry -> statusCode.equals(String.valueOf(entry.getKey())))
-            .map(Map.Entry::getValue)
-            .findFirst()
-            .orElseGet(() -> responses.entrySet().stream()
-                .filter(entry -> (statusCode.substring(0, 1) + "XX").equalsIgnoreCase(String.valueOf(entry.getKey())))
-                .map(Map.Entry::getValue)
-                .findFirst()
-                .orElseGet(() -> responses.entrySet().stream()
-                    .filter(entry -> "default".equalsIgnoreCase(String.valueOf(entry.getKey())))
-                    .map(Map.Entry::getValue)
-                    .findFirst()
-                    .orElse(null)));
+        Object response = responseForKey(responses, statusCode);
+        if (response == null) {
+            response = responseForKey(responses, statusCode.substring(0, 1) + "XX");
+        }
+        if (response == null) {
+            response = responseForKey(responses, "default");
+        }
 
         assertThat(response)
             .as(operationName + " status " + statusCode + " is documented by an OpenAPI response")
             .isNotNull();
         return response;
+    }
+
+    private static Object responseForKey(Map<?, ?> responses, String expectedKey) {
+        for (Map.Entry<?, ?> entry : responses.entrySet()) {
+            if (expectedKey.equalsIgnoreCase(String.valueOf(entry.getKey()))) {
+                return entry.getValue();
+            }
+        }
+        return null;
     }
 
     private Map<String, Object> resolveResponse(Object response, String operationName, String statusCode,
