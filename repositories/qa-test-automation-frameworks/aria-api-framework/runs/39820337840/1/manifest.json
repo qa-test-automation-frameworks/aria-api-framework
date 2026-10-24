@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "repository": "qa-test-automation-frameworks/aria-api-framework",
+  "run": {
+    "id": "39820337840",
+    "attempt": 1,
+    "sourceSha": "18bc18c1313829bdee901a8e1620149cb3f851e8",
+    "event": "workflow_dispatch",
+    "branch": "main",
+    "workflowName": "ARIA API Framework CI",
+    "conclusion": "failure",
+    "completedAt": "2026-10-22T17:15:04.000Z",
+    "url": "https://github.com/qa-test-automation-frameworks/aria-api-framework/actions/runs/39820337840"
+  },
+  "records": [
+    {
+      "scope": "aria.container",
+      "evidenceClass": "controlled",
+      "execution": "passed",
+      "integrity": "complete",
+      "path": "records/e07a0bbf821864544906bb04.json",
+      "sha256": "4835bfd991edb7cbbabaa0f5a6d1fde7350d471561a17631845ccb1a4d4b4b83"
+    },
+    {
+      "scope": "aria.contract",
+      "evidenceClass": "controlled",
+      "execution": "passed",
+      "integrity": "complete",
+      "path": "records/fda981026ae289cf3f5860c9.json",
+      "sha256": "90e695ac07d2f37d345bd63abde63fa45ba7d07d1b08a0d29c5415f2b7d4e2e4"
+    },
+    {
+      "scope": "aria.pact-provider",
+      "evidenceClass": "controlled",
+      "execution": "passed",
+      "integrity": "complete",
+      "path": "records/23a3d7550e39db52aeed0e56.json",
+      "sha256": "17c9a88bbf5c5c78f2cda00c2a99667e2048b1ba3d0a0b9e7e24b078ef32fa35"
+    },
+    {
+      "scope": "aria.deterministic",
+      "evidenceClass": "controlled",
+      "execution": "passed",
+      "integrity": "complete",
+      "path": "records/3acae86ed566f693303a437e.json",
+      "sha256": "ce9568e84b46f51ddc81993c4fdd95f638af7174f9b9f0d7d4576d9fcf19fdf3"
+    },
+    {
+      "scope": "aria.evidence-failure-control",
+      "evidenceClass": "controlled",
+      "execution": "failed",
+      "integrity": "complete",
+      "path": "records/8cc764cbf8758b3337708287.json",
+      "sha256": "6ddc595e4201e30e388ca221a19e334cdb4b11e7296f33c059d6db9a49afe098"
+    },
+    {
+      "scope": "aria.live-smoke",
+      "evidenceClass": "credentialed",
+      "execution": "skipped",
+      "integrity": "unavailable",
+      "path": "records/a4786353e618df50d59b9cf8.json",
+      "sha256": "4592e183ebac7bce7a6b3f6d6700b2a72d43a71cd1ee3df741ebaeeb5f3150ea"
+    }
+  ]
+}

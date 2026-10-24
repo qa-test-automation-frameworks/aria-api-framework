@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "repository": "qa-test-automation-frameworks/aria-api-framework",
+  "run": {
+    "id": "39770712451",
+    "attempt": 1,
+    "sourceSha": "103b4f020676e3cb249a0c2c625a63e342654ec4",
+    "event": "push",
+    "branch": "main",
+    "workflowName": "ARIA API Framework CI",
+    "conclusion": "success",
+    "completedAt": "2026-10-22T11:31:53.000Z",
+    "url": "https://github.com/qa-test-automation-frameworks/aria-api-framework/actions/runs/39770712451"
+  },
+  "records": [
+    {
+      "scope": "aria.container",
+      "evidenceClass": "controlled",
+      "execution": "passed",
+      "integrity": "complete",
+      "path": "records/e07a0bbf821864544906bb04.json",
+      "sha256": "81e9cd97487896c6d47a1aa04e540f1d891aebc3802e597309739fb434b28b0c"
+    },
+    {
+      "scope": "aria.contract",
+      "evidenceClass": "controlled",
+      "execution": "passed",
+      "integrity": "complete",
+      "path": "records/fda981026ae289cf3f5860c9.json",
+      "sha256": "00ff54270f18621e7a2f7f398c165d2bc565db90e94a74ae36c4b5c61bd77929"
+    },
+    {
+      "scope": "aria.pact-provider",
+      "evidenceClass": "controlled",
+      "execution": "passed",
+      "integrity": "complete",
+      "path": "records/23a3d7550e39db52aeed0e56.json",
+      "sha256": "a7d07ddb8b7c3b1ca34e3fa6e204e8e1628a28296ed0ac3d9d052fd1852a48fe"
+    },
+    {
+      "scope": "aria.deterministic",
+      "evidenceClass": "controlled",
+      "execution": "passed",
+      "integrity": "complete",
+      "path": "records/3acae86ed566f693303a437e.json",
+      "sha256": "0f8bbae6855bd74a955e3d1c3ac624d144e75ed3f5920d882558b472b5284bca"
+    },
+    {
+      "scope": "aria.evidence-failure-control",
+      "evidenceClass": "controlled",
+      "execution": "failed",
+      "integrity": "complete",
+      "path": "records/8cc764cbf8758b3337708287.json",
+      "sha256": "cebaa366fa820ead564dab9d3c88196ecf2db69540c9f4fa3d6436513e3a28ea"
+    },
+    {
+      "scope": "aria.live-smoke",
+      "evidenceClass": "credentialed",
+      "execution": "skipped",
+      "integrity": "unavailable",
+      "path": "records/a4786353e618df50d59b9cf8.json",
+      "sha256": "4028f16c528258adf1ed36d27a782263db2a1c66a57d4be3bf99d86f5f21c691"
+    },
+    {
+      "scope": "aria.shared-app",
+      "evidenceClass": "controlled",
+      "execution": "failed",
+      "integrity": "complete",
+      "path": "records/d802d9f9be3664ea389ce5be.json",
+      "sha256": "e16a3658bf44c0c5233d188f9c1f22104172a367906f1960fb12df27b3c834f8"
+    }
+  ]
+}

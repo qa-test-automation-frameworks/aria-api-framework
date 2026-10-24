@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 3,
+  "repository": "qa-test-automation-frameworks/aria-api-framework",
+  "sourceSha": "8f9675c12f4185da2dfcd76880664b077fde0954",
+  "limitations": [
+    "JUnit testcase names, parameters, failure text and environment values are omitted.",
+    "Retries are counted only when native flakyFailure/flakyError elements are present."
+  ],
+  "kind": "execution",
+  "workflow": {
+    "id": "qa-test-automation-frameworks/aria-api-framework/.github/workflows/ci.yml@refs/heads/main",
+    "name": "ARIA API Framework CI",
+    "runId": "39276014342",
+    "attempt": 1,
+    "url": "https://github.com/qa-test-automation-frameworks/aria-api-framework/actions/runs/39276014342",
+    "trigger": "push",
+    "branch": "main"
+  },
+  "scope": {
+    "id": "aria.live-smoke",
+    "evidenceClass": "credentialed",
+    "required": false,
+    "freshnessPolicy": "quarterly_experiment_v1"
+  },
+  "target": {
+    "identity": "aria-owned-provider",
+    "revision": null,
+    "fixtureVersion": null,
+    "environment": "dev",
+    "profile": null,
+    "tools": {
+      "java": "unknown",
+      "gradle": "unknown"
+    }
+  },
+  "execution": {
+    "disposition": "skipped",
+    "reason": "Live smoke was not requested for this workflow event.",
+    "startedAt": null,
+    "completedAt": null,
+    "integrity": "unavailable",
+    "counts": {
+      "unit": "parameter_case",
+      "selected": null,
+      "executed": null,
+      "passed": null,
+      "failed": null,
+      "skipped": null,
+      "retried": null,
+      "semantics": "JUnit XML testcase invocations; selected includes skips; errors are combined with failures."
+    },
+    "measurements": [],
+    "shards": {
+      "expected": [
+        "aria.live-smoke"
+      ],
+      "received": []
+    }
+  },
+  "publication": {
+    "disposition": "pending",
+    "reason": null,
+    "publishedAt": null,
+    "reportUrl": null,
+    "artifacts": []
+  },
+  "generator": {
+    "name": "aria-gradle-junit-evidence",
+    "version": "1.0.0"
+  }
+}
