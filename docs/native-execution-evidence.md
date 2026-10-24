@@ -31,7 +31,7 @@ optional `aria.live-smoke` scope. Missing credentials are a failed preflight; th
 are never relabeled as a successful skip. The main CI workflow no longer emits a
 live-smoke record.
 
-The checked-in JSON schema and freshness policy are snapshots of the E01
+The checked-in JSON schema and freshness policy are snapshots of the organization evidence
 contract. Schema SHA-256:
 `40502a47e825755d216e35ea19716ad7de69e47accd6aed1cfb3607160e4d1b9`.
 Freshness policy SHA-256:

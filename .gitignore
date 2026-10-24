@@ -33,3 +33,6 @@ codebase-memory/
 *.local.properties
 *.log
 /work/
+
+# Machine-specific agent preferences
+CLAUDE.local.md

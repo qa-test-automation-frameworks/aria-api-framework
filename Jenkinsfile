@@ -1,8 +1,8 @@
+// Reference pipeline for teams that run Jenkins. This repository does not execute it;
+// GitHub Actions (.github/workflows/ci.yml) is the executed pipeline.
+
 pipeline {
     agent any
-
-    // GitHub Actions is the primary CI quality gate. This Jenkinsfile is a reference
-    // pipeline for teams that need Jenkins-hosted execution.
 
     parameters {
         choice(name: 'ENV', choices: ['dev', 'staging', 'prod'], description: 'Target test environment')

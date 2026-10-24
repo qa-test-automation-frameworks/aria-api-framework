@@ -10,7 +10,7 @@ bash "$REPO_ROOT/scripts/verify-reference-app-mutation-source.sh" "$REFERENCE_SO
 
 cd "$REPO_ROOT"
 
-EVIDENCE_DIR="$REPO_ROOT/work/audit-2026-10-21/A3/controls"
+EVIDENCE_DIR="$REPO_ROOT/work/evidence/pact-controls/controls"
 mkdir -p "$EVIDENCE_DIR"
 : > "$EVIDENCE_DIR/summary.tsv"
 

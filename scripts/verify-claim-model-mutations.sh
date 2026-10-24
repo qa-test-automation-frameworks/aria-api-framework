@@ -9,7 +9,7 @@ fi
 bash "$REPO_ROOT/scripts/verify-reference-app-mutation-source.sh" "$REFERENCE_SOURCE"
 
 cd "$REPO_ROOT"
-EVIDENCE_ROOT="$REPO_ROOT/work/audit-2026-10-21/F2/controls"
+EVIDENCE_ROOT="$REPO_ROOT/work/evidence/claim-model-controls/controls"
 mkdir -p "$EVIDENCE_ROOT"
 
 run_control() {

@@ -302,3 +302,5 @@ Do not distribute `.gradle/`, `.idea/`, or `build/` as part of the portfolio sou
 7. Expand an OpenAPI YAML file with request bodies, path/query parameters, response statuses, schemas, and security requirements.
 8. Add every endpoint to `endpoint-test-coverage.csv` with default-CI and live references where applicable.
 9. Add Pact consumer expectations and provider-state verification when the provider is owned or represented by an executable fixture.
+
+Reference pipeline for teams that run Jenkins. This repository does not execute it; GitHub Actions (`.github/workflows/ci.yml`) is the executed pipeline.

@@ -372,13 +372,13 @@ jobs:
             build/evidence/shared-app.json
             build/evidence/clean-native/sharedReferenceAppTest/TEST-*.xml
             build/evidence/clean-native/sharedReferencePactVerificationTest/TEST-*.xml
-            work/audit-2026-10-21/A3/controls/**
-            work/audit-2026-10-21/F2/summary.md
-            work/audit-2026-10-21/F2/sequences/*.json
-            work/audit-2026-10-21/F2/controls/*/counterexample.json
-            work/audit-2026-10-21/F2/controls/*/replay.json
-            work/audit-2026-10-21/F2/controls/*/control-summary.json
-            work/audit-2026-10-21/F2/controls/*/test-results/**/*.xml
+            work/evidence/pact-controls/controls/**
+            work/evidence/claim-model-controls/summary.md
+            work/evidence/claim-model-controls/sequences/*.json
+            work/evidence/claim-model-controls/controls/*/counterexample.json
+            work/evidence/claim-model-controls/controls/*/replay.json
+            work/evidence/claim-model-controls/controls/*/control-summary.json
+            work/evidence/claim-model-controls/controls/*/test-results/**/*.xml
           if-no-files-found: error
           retention-days: 30
 
@@ -392,9 +392,9 @@ jobs:
             echo "- Source revision: ${APP_SOURCE_REVISION}"
             echo "- Fixture version: ${APP_FIXTURE_VERSION}"
             echo '- Isolation: one ephemeral PostgreSQL database, container network, app namespace, and synthetic test token per CI job'
-            if test -s work/audit-2026-10-21/F2/summary.md; then
+            if test -s work/evidence/claim-model-controls/summary.md; then
               echo
-              cat work/audit-2026-10-21/F2/summary.md
+              cat work/evidence/claim-model-controls/summary.md
             fi
           } >> "$GITHUB_STEP_SUMMARY"
 
@@ -550,13 +550,13 @@ jobs:
             build/evidence/shared-app.json
             build/evidence/clean-native/sharedReferenceAppTest/TEST-*.xml
             build/evidence/clean-native/sharedReferencePactVerificationTest/TEST-*.xml
-            work/audit-2026-10-21/A3/controls/**
-            work/audit-2026-10-21/F2/summary.md
-            work/audit-2026-10-21/F2/sequences/*.json
-            work/audit-2026-10-21/F2/controls/*/counterexample.json
-            work/audit-2026-10-21/F2/controls/*/replay.json
-            work/audit-2026-10-21/F2/controls/*/control-summary.json
-            work/audit-2026-10-21/F2/controls/*/test-results/**/*.xml
+            work/evidence/pact-controls/controls/**
+            work/evidence/claim-model-controls/summary.md
+            work/evidence/claim-model-controls/sequences/*.json
+            work/evidence/claim-model-controls/controls/*/counterexample.json
+            work/evidence/claim-model-controls/controls/*/replay.json
+            work/evidence/claim-model-controls/controls/*/control-summary.json
+            work/evidence/claim-model-controls/controls/*/test-results/**/*.xml
           if-no-files-found: error
           retention-days: 30
 

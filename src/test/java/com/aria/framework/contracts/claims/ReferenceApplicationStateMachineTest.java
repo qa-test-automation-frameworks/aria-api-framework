@@ -46,7 +46,7 @@ class ReferenceApplicationStateMachineTest {
     private static final String CONTROL_TOKEN_ENV = "TEST_CONTROL_TOKEN";
     private static final String REPLAY_RECEIPT_ENV = "CLAIM_MODEL_REPLAY_RECEIPT";
     private static final String CONTROL_NAME_ENV = "CLAIM_MODEL_CONTROL_NAME";
-    private static final String DEFAULT_RECEIPT_ROOT = "work/audit-2026-10-21/F2/sequences";
+    private static final String DEFAULT_RECEIPT_ROOT = "work/evidence/claim-model-controls/sequences";
 
     private String baseUrl;
     private String frameworkRevision;
@@ -259,7 +259,7 @@ class ReferenceApplicationStateMachineTest {
                 .append(" | `").append(receipt.coverage().transitionEdges()).append('`')
                 .append(" | `").append(receipt.coverage().errorCodes()).append("` |\n");
         }
-        Path path = Path.of("work/audit-2026-10-21/F2/summary.md");
+        Path path = Path.of("work/evidence/claim-model-controls/summary.md");
         Path parent = path.getParent();
         if (parent == null) {
             throw new IOException("The F2 summary path must have a parent directory.");
@@ -604,7 +604,7 @@ class ReferenceApplicationStateMachineTest {
         String filename = "api-v" + apiVersion + "-seed-" + Long.toHexString(seed) + ".json";
         String replay = System.getenv(REPLAY_RECEIPT_ENV);
         if (controlName != null && !controlName.isBlank()) {
-            return Path.of("work/audit-2026-10-21/F2/controls", controlName,
+            return Path.of("work/evidence/claim-model-controls/controls", controlName,
                 replay == null || replay.isBlank() ? "counterexample.json" : "replay.json");
         }
         return Path.of(DEFAULT_RECEIPT_ROOT, filename);

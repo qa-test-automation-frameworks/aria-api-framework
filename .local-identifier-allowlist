@@ -1,0 +1,2 @@
+scripts/check-local-identifiers.sh # Scanner patterns include rejected identifiers; explicit roadmap self-exclusion.
+docs/security/scans/2026-10-04-remediation/ # Dated security scan evidence; retain original bytes and workstation paths.
