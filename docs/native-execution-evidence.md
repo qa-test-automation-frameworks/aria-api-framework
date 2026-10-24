@@ -26,11 +26,10 @@ command to fail, validates the resulting record, and checks its source/run
 identity, exact one-failure counts, and native report digest before the quality
 gate accepts it.
 
-When live smoke is not requested, CI emits a separate `skipped` record with a
-reason and null result counts/timestamps. Requested live smoke with missing
-credentials is still a failed preflight; it is never relabeled as a successful
-skip. Live execution remains optional outside the scheduled and explicitly
-requested workflow events.
+Live smoke runs in its own weekly workflow (`live-smoke.yml`) and publishes the
+optional `aria.live-smoke` scope. Missing credentials are a failed preflight; they
+are never relabeled as a successful skip. The main CI workflow no longer emits a
+live-smoke record.
 
 The checked-in JSON schema and freshness policy are snapshots of the E01
 contract. Schema SHA-256:

@@ -186,13 +186,13 @@ Response-time SLA thresholds are environment-configurable through `sla.responseT
 - CycloneDX SBOM generation in CI
 - Secret-sanitized failure diagnostics and structured test logs under `build/logs`
 
-GitHub Actions also runs dependency review, OSV scanning, Gradle wrapper validation, Docker-backed container tests, scheduled live smoke tests, and uploads Allure, SpotBugs, PIT mutation, test-result, log, SBOM, and OpenAPI coverage artifacts. Failure-only logs and test-result bundles are clearly labeled as failure diagnostics. Scheduled smoke is required by its aggregate gate. A manual CI dispatch can opt in with `run_live_smoke=true`; the default remains deterministic. Live JUnit/Allure diagnostics are retained even when that job fails. Existing Booker test credentials are required; a credential preflight is not a successful live test run.
+GitHub Actions also runs dependency review, OSV scanning, Gradle wrapper validation, Docker-backed container tests, a separate weekly live smoke workflow, and uploads Allure, SpotBugs, PIT mutation, test-result, log, SBOM, and OpenAPI coverage artifacts. Failure-only logs and test-result bundles are clearly labeled as failure diagnostics. The live smoke runs weekly in its own workflow (`.github/workflows/live-smoke.yml`) against the public restful-booker demo with existing Booker test credentials; a red run signals an external-dependency outage and does not gate ARIA CI, which runs daily against owned targets. Live JUnit/Allure diagnostics are retained even when that job fails; a credential preflight is not a successful live test run.
 
 The aggregate policy is exercised by `bash scripts/test-ci-gates.sh`. Local vulnerability verification requires OSV v2 on PATH: `./gradlew securityScan -PrequireOsvScanner=true`. The tested scanner version is 2.3.8; the task scans its generated SBOM with `osv-scanner scan source --sbom`.
 
 ## Runtime Metrics and CI Shape
 
-The main CI gate runs deterministic JUnit, Spotless, SpotBugs, OpenAPI coverage, SBOM/security checks, and Allure generation on Ubuntu with Java 21. A separate Ubuntu job enforces Docker-backed tests, while scheduled live smoke tests remain outside the deterministic gate.
+The main CI gate runs deterministic JUnit, Spotless, SpotBugs, OpenAPI coverage, SBOM/security checks, and Allure generation on Ubuntu with Java 21. A separate Ubuntu job enforces Docker-backed tests, while the weekly live smoke workflow remains outside the deterministic gate.
 
 After `test`, Gradle writes:
 

@@ -4,6 +4,7 @@ on:
   workflow_run:
     workflows:
       - ARIA API Framework CI
+      - ARIA live smoke (external dependency)
     types: [completed]
     branches: [main]
 
@@ -20,4 +21,4 @@ jobs:
     uses: qa-test-automation-frameworks/.github/.github/workflows/publish-evidence.yml@7960801249c036ef56370f54abdf79570b5a7bd8
     with:
       source-run-id: ${{ github.event.workflow_run.id }}
-      workflow-file: .github/workflows/ci.yml
+      workflow-file: ${{ github.event.workflow_run.name == 'ARIA live smoke (external dependency)' && '.github/workflows/live-smoke.yml' || '.github/workflows/ci.yml' }}

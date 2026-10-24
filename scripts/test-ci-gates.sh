@@ -17,14 +17,12 @@ check() {
   checks=$((checks + 1))
 }
 
+ok=(JAVA_POLICY_RESULT=success TEST_RESULT=success OSV_RESULT=success CONTAINER_RESULT=success SHARED_APP_RESULT=success CONTROL_RESULT=success CANDIDATE_SELECTED=false CANDIDATE_RESULT=skipped)
+
 for event in push pull_request schedule workflow_dispatch; do
   dependency=skipped
-  live=skipped
-  skip_evidence=success
   [ "$event" != pull_request ] || dependency=success
-  [ "$event" != schedule ] || live=success
-  [ "$event" != schedule ] || skip_evidence=skipped
-  base=(CI_EVENT="$event" RUN_LIVE_SMOKE=false CANDIDATE_SELECTED=false CANDIDATE_RESULT=skipped JAVA_POLICY_RESULT=success TEST_RESULT=success OSV_RESULT=success CONTAINER_RESULT=success SHARED_APP_RESULT=success CONTROL_RESULT=success SKIP_EVIDENCE_RESULT="$skip_evidence" DEPENDENCY_REVIEW_RESULT="$dependency" LIVE_RESULT="$live")
+  base=(CI_EVENT="$event" "${ok[@]}" DEPENDENCY_REVIEW_RESULT="$dependency")
   check pass '' "${base[@]}"
   for disposition in failure cancelled skipped ''; do
     check fail 'java-runtime-policy must succeed' "${base[@]}" JAVA_POLICY_RESULT="$disposition"
@@ -36,22 +34,14 @@ for event in push pull_request schedule workflow_dispatch; do
   done
 done
 
-base=(CI_EVENT=workflow_dispatch RUN_LIVE_SMOKE=true CANDIDATE_SELECTED=false CANDIDATE_RESULT=skipped JAVA_POLICY_RESULT=success TEST_RESULT=success OSV_RESULT=success CONTAINER_RESULT=success SHARED_APP_RESULT=success CONTROL_RESULT=success SKIP_EVIDENCE_RESULT=skipped DEPENDENCY_REVIEW_RESULT=skipped LIVE_RESULT=success)
-check pass '' "${base[@]}"
-for event in schedule workflow_dispatch; do
-  for disposition in failure cancelled skipped ''; do
-    check fail 'live-smoke must succeed' "${base[@]}" CI_EVENT="$event" LIVE_RESULT="$disposition"
-  done
-done
-check fail 'Not-requested evidence job must be skipped' "${base[@]}" SKIP_EVIDENCE_RESULT=success
+base=(CI_EVENT=push "${ok[@]}" DEPENDENCY_REVIEW_RESULT=skipped)
 for disposition in failure cancelled skipped ''; do
-  check fail 'dependency-review must succeed' "${base[@]}" CI_EVENT=pull_request RUN_LIVE_SMOKE=false LIVE_RESULT=skipped DEPENDENCY_REVIEW_RESULT="$disposition"
+  check fail 'dependency-review must succeed' "${base[@]}" CI_EVENT=pull_request DEPENDENCY_REVIEW_RESULT="$disposition"
 done
-check fail 'Unrequested live-smoke must be skipped' "${base[@]}" RUN_LIVE_SMOKE=false
-check fail 'run_live_smoke must be true or false' "${base[@]}" RUN_LIVE_SMOKE=yes
+check fail 'dependency-review must be skipped outside a PR' "${base[@]}" DEPENDENCY_REVIEW_RESULT=success
 check fail 'Unsupported or missing CI event' "${base[@]}" CI_EVENT=unknown
 
-candidate=(CI_EVENT=workflow_dispatch RUN_LIVE_SMOKE=false CANDIDATE_SELECTED=true CANDIDATE_RESULT=success JAVA_POLICY_RESULT=success TEST_RESULT=success OSV_RESULT=success CONTAINER_RESULT=success SHARED_APP_RESULT=skipped CONTROL_RESULT=success SKIP_EVIDENCE_RESULT=success DEPENDENCY_REVIEW_RESULT=skipped LIVE_RESULT=skipped)
+candidate=(CI_EVENT=workflow_dispatch CANDIDATE_SELECTED=true CANDIDATE_RESULT=success JAVA_POLICY_RESULT=success TEST_RESULT=success OSV_RESULT=success CONTAINER_RESULT=success SHARED_APP_RESULT=skipped CONTROL_RESULT=success DEPENDENCY_REVIEW_RESULT=skipped)
 check pass '' "${candidate[@]}"
 for disposition in failure cancelled skipped ''; do
   check fail 'shared-reference-app-candidate must succeed' "${candidate[@]}" CANDIDATE_RESULT="$disposition"

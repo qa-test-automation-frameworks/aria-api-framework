@@ -1,0 +1,71 @@
+name: ARIA live smoke (external dependency)
+
+on:
+  schedule:
+    - cron: '0 0 * * 0'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  live-smoke:
+    runs-on: ubuntu-latest
+    env:
+      ENV: dev
+      GITHUB_TOKEN: ${{ github.token }}
+      BOOKER_USERNAME: ${{ secrets.BOOKER_USERNAME }}
+      BOOKER_PASSWORD: ${{ secrets.BOOKER_PASSWORD }}
+      pact_do_not_track: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Node for evidence contract validation
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
+        with:
+          node-version-file: .nvmrc
+
+      - name: Record live smoke start
+        run: echo "EVIDENCE_STARTED_AT=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_ENV"
+
+      - name: Set up Java 21
+        uses: actions/setup-java@dd06d9cba3e5552c54d9f8ea23572deb30010f7c # v6.0.0
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: gradle
+
+      - name: Capture actual Java and Gradle versions
+        run: bash scripts/capture-build-versions.sh
+
+      - name: Validate live smoke credentials
+        run: |
+          set -euo pipefail
+          test -n "${GITHUB_TOKEN}" || { echo 'GitHub job token is required' >&2; exit 1; }
+          test -n "${BOOKER_USERNAME}" || { echo 'BOOKER_USERNAME is required for requested public-demo smoke' >&2; exit 1; }
+          test -n "${BOOKER_PASSWORD}" || { echo 'BOOKER_PASSWORD is required for requested public-demo smoke' >&2; exit 1; }
+
+      - name: Run requested live smoke tests
+        run: ./gradlew liveSmokeTest -Denv=${ENV}
+
+      - name: Collect live smoke JUnit evidence
+        if: always()
+        run: python3 scripts/emit_junit_evidence.py --reports build/test-results/liveSmokeTest --output build/evidence/live-smoke.json --scope aria.live-smoke
+
+      - name: Validate live smoke evidence
+        if: always()
+        run: node scripts/validate-evidence.mjs build/evidence/live-smoke.json
+
+      - name: Upload live smoke evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: live-smoke-evidence
+          path: |
+            build/evidence/live-smoke.json
+            build/test-results/liveSmokeTest/**
+            build/reports/tests/liveSmokeTest/**
+            build/allure-results/**
+            build/logs/**
+          retention-days: 30

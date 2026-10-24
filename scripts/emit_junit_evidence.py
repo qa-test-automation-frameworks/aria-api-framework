@@ -102,8 +102,9 @@ def main():
         "limitations": ["JUnit testcase names, parameters, failure text and environment values are omitted.",
                         "Retries are counted only when native flakyFailure/flakyError elements are present."],
         "kind": "execution",
-        "workflow": {"id": f"{repo}/.github/workflows/ci.yml@refs/heads/{env.get('GITHUB_REF_NAME', 'unknown')}",
-                     "name": "ARIA API Framework CI", "runId": run_id, "attempt": int(attempt),
+        "workflow": {"id": env.get("GITHUB_WORKFLOW_REF")
+                     or f"{repo}/.github/workflows/ci.yml@refs/heads/{env.get('GITHUB_REF_NAME', 'unknown')}",
+                     "name": env.get("GITHUB_WORKFLOW") or "ARIA API Framework CI", "runId": run_id, "attempt": int(attempt),
                      "url": f"https://github.com/{repo}/actions/runs/{run_id}",
                      "trigger": env.get("GITHUB_EVENT_NAME", "unknown"), "branch": env.get("GITHUB_REF_NAME", "unknown")},
         "scope": {"id": args.scope, "evidenceClass": "controlled" if args.scope != "aria.live-smoke" else "credentialed",
