@@ -131,5 +131,33 @@ class JunitEvidenceTests(unittest.TestCase):
             self.assertEqual(record["target"]["fixtureVersion"], "v0.1.0")
             self.assertEqual(record["execution"]["disposition"], "passed")
 
+    def test_workflow_identity_comes_from_the_running_workflow(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            reports = root / "reports"
+            output = root / "live.json"
+            self.write(reports, '<testsuite tests="1" failures="0" errors="0" skipped="0"><testcase/></testsuite>')
+            environment = {
+                "GITHUB_SHA": "a" * 40,
+                "GITHUB_RUN_ID": "7",
+                "GITHUB_RUN_ATTEMPT": "1",
+                "GITHUB_REPOSITORY": "qa-test-automation-frameworks/aria-api-framework",
+                "GITHUB_REF_NAME": "main",
+                "GITHUB_EVENT_NAME": "schedule",
+                "GITHUB_WORKFLOW": "ARIA live smoke (external dependency)",
+                "GITHUB_WORKFLOW_REF": "qa-test-automation-frameworks/aria-api-framework/.github/workflows/live-smoke.yml@refs/heads/main",
+                "EVIDENCE_STARTED_AT": "2026-10-17T00:00:00Z",
+                "JAVA_VERSION": "21.0.8",
+                "GRADLE_VERSION": "8.7",
+            }
+            with patch.dict(os.environ, environment, clear=True), patch.object(
+                sys, "argv", ["emit_junit_evidence.py", "--reports", str(reports), "--output", str(output), "--scope", "aria.live-smoke"]
+            ):
+                self.assertEqual(EMITTER.main(), 0)
+            workflow = json.loads(output.read_text(encoding="utf-8"))["workflow"]
+            self.assertTrue(workflow["id"].endswith("/.github/workflows/live-smoke.yml@refs/heads/main"))
+            self.assertEqual(workflow["name"], "ARIA live smoke (external dependency)")
+
+
 if __name__ == "__main__":
     unittest.main()
